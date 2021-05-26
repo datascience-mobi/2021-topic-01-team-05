@@ -7,7 +7,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r}
+```{r c1}
 
 ## creating a data frame df_cl consisting of DepMap_IDs and lineages
 lineage <- prism.cl$lineage
@@ -27,7 +27,7 @@ dim(df_ovary_cl)
 
 vector_ovary_DepMI <- as.vector(df_ovary_cl$DepMap_ID)
 ```
-```{r}
+```{r c2}
 
 ## creating a subset dataframe of prism with only the ovary DepMap_IDs and their proliferation values   
 
