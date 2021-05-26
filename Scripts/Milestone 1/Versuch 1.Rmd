@@ -1,0 +1,40 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+
+## creating a data frame df_cl consisting of DepMap_IDs and lineages
+lineage <- prism.cl$lineage
+DepMap_ID <- prism.cl$DepMap_ID 
+
+df_cl <- data.frame(DepMap_ID, lineage)
+
+## subsetting data frame to obtain only ovary cell lines with their DepMap_IDs
+
+df_ovary_cl <- subset(df_ovary_cl, lineage == "ovary")
+
+df_ovary_cl
+
+dim(df_ovary_cl)
+
+## creating a vector with ovary cancer DepMap_IDs 
+
+vector_ovary_DepMI <- as.vector(df_ovary_cl$DepMap_ID)
+```
+```{r}
+
+## creating a subset dataframe of prism with only the ovary DepMap_IDs and their proliferation values   
+
+vector_ovary_DepMI
+
+df_ovary_DepMI_prism  <- subset(prism, DepMap_ID %in% vector_ovary_DepMI)
+
+df_ovary_DepMI_prism
+```
+
