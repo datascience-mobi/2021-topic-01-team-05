@@ -17,7 +17,7 @@ df_cl <- data.frame(DepMap_ID, lineage)
 
 ## subsetting data frame to obtain only ovary cell lines with their DepMap_IDs
 
-df_ovary_cl <- subset(df_ovary_cl, lineage == "ovary")
+df_ovary_cl <- subset(df_cl, lineage == "ovary")
 
 df_ovary_cl
 
