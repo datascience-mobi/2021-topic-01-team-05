@@ -1,0 +1,17 @@
+.DS_Store
+*.out
+*.log
+.*
+*.dat
+*.html
+*.tex
+*.md
+*.pdf
+*.RData
+*.rda
+*.rds
+*.png
+*.RData
+*.rdb
+*.rdx
+
