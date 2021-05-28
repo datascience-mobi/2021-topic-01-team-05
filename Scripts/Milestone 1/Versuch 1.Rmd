@@ -56,7 +56,8 @@ prism_reduced = data.frame(row.names = rownames(prism))
 for (i in 1:(ncol(prism)/8)){
   prism_subset = prism[,(8*(i-1)+1):(8*i)]
   max_effect = apply(prism_subset, 1, min)
-  prism_reduced[i] = max_effect
+  drug = toString(prism.treat$name[which(rownames(prism.treat)== colnames(prism)[i*8])])
+  prism_reduced[drug] = max_effect
 }
   
 ## doing the same for ovary cell lines 
@@ -66,8 +67,8 @@ prism_reduced_ovary = data.frame(row.names = rownames(df_ovary_DepMI_prism))
 for (i in 1:(ncol(df_ovary_DepMI_prism)/8)){
   prism_subset_ovary = df_ovary_DepMI_prism[,(8*(i-1)+1):(8*i)]
   max_effect = apply(prism_subset_ovary, 1, min)
-  prism_reduced_ovary[i] = max_effect
+  drug = toString(prism.treat$name[which(rownames(prism.treat)== colnames(prism)[i*8])])
+  prism_reduced_ovary[drug] = max_effect
 }
-
 ```
 
