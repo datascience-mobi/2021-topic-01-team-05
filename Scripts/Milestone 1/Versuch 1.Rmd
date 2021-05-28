@@ -72,3 +72,12 @@ for (i in 1:(ncol(df_ovary_DepMI_prism)/8)){
 }
 ```
 
+
+```{r c5}
+numeric_prism_reduced_ovary <- lapply(prism_reduced_ovary, as.numeric)
+
+hist(prism_reduced_ovary[,1])
+
+
+```
+
