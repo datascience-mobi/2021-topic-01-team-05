@@ -38,3 +38,44 @@ df_ovary_DepMI_prism  <- subset(prism, DepMap_ID %in% vector_ovary_DepMI)
 df_ovary_DepMI_prism
 ```
 
+```{r S1: Trying to create a data frame with the prism data using the drug names instead of the Broad IDs}
+
+# Calculating the mean of the proliferation values of ovary cancer cell lines (all drugs) 
+apply(df_ovary_DepMI_prism, 1, mean, na.rm = TRUE) 
+
+# Creating a data frame consisting of broad IDs and drug names
+
+BroadIDs <- prism.treat$broad_id
+BroadIDs
+
+DrugNames <- prism.treat$name
+DrugNames
+
+df_names_BRD <- data.frame(DrugNames, BroadIDs)
+df_names_BRD
+
+## this is irrelevant
+```
+
+```{r S2 Cut, summarize and paste together}
+
+#Reducing prism to the lowest proliferation value of each drug treatment 
+
+prism_reduced = data.frame(row.names = rownames(prism))
+
+for (i in 1:(ncol(prism)/8)){
+  prism_subset = prism[,(8*(i-1)+1):(8*i)]
+  max_effect = apply(prism_subset, 1, min)
+  drug = toString(prism.treat$name[which(rownames(prism.treat)== colnames(prism)[i*8])])
+  prism_reduced[drug] = max_effect
+}
+```
+
+```{r S3 Plotting the data from prism_reduced}
+
+plot(x = prism_reduced$x_var, y = prism_reduced$y_var)
+
+```
+
+
+
