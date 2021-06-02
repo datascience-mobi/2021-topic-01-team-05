@@ -155,7 +155,7 @@ p = ggplot(prism_reduced_ovary_mean_values_df, aes(x = prism_reduced_ovary_mean_
 ggtitle("test")
 xlab("cell lines")
 ylab("meds")
-p2 = p + geom_point(alpha = 0.01, colour="purple") +
+p2 = p + geom_point(alpha = 0.01, color="purple") +
   theme_bw()
 grid.arrange(p2,ncol=1)
 ```
