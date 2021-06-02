@@ -1,0 +1,173 @@
+---
+title: "Milestone2.1 - data exploration & organisation"
+author: 
+date: "5/27/2021"
+output: rmdformats::material
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# Loading packages
+library(tidyverse)
+library(knitr)
+library(rmdformats)
+library(dplyr)
+
+# Global options
+options(max.print="120")
+opts_chunk$set(echo=TRUE,
+	             cache=TRUE,
+               prompt=FALSE,
+               tidy=TRUE,
+               comment=NA,
+               message=FALSE,
+               warning=FALSE)
+opts_knit$set(width=120)
+
+```
+
+```{r Load the data, include=FALSE}
+#Load the data sets
+prism_datasets = load("./prism_datasets.rda")
+
+cellline_datasets = load("./cellline_datasets.rda")
+```
+
+```{r r1}
+# Get the raw data - ovary cancer celllines, treatment, mutations
+ treatment <- prism.treat
+celllines <- prism.cl
+mutations <- prism.snv
+
+# Show the dimensions of the datasets
+dim(prism.treat)
+dim(prism.cl)
+dim(prism.snv)
+
+# Create a subset of the data containing ovarian cancer cell lines 
+# Find DepMap_IDs of ovary celllines according to their lineage
+lineage <- prism.cl$lineage
+
+DepMap_ID <- prism.cl$DepMap_ID
+
+dat <- data.frame(lineage, DepMap_ID)
+
+subset1 = subset(dat, lineage == 'ovary')
+
+DepMap_ID.ovary = c(subset1$DepMap_ID)
+
+DepMap_ID.ovary
+
+
+# Extract only the ovary cell lines and the corresponding drugs
+# Table with ovary celllines, applied drugs and the effect on cell proliferation
+prism_ovary <- subset(prism, DepMap_ID %in% DepMap_ID.ovary)
+prism_ovary
+
+# Get the names and the head part of prism.cl dataset
+names(prism.cl)
+head(prism.cl)
+names(prism.treat)
+head(prism.treat)
+names(prism.snv)
+head(prism.snv)
+
+# Count missing values in the datasets
+
+celllines_na <- sum(is.na(celllines))
+print(celllines_na)
+treatment_na <- sum(is.na(treatment))
+print(treatment_na)
+mutations_na <- sum(is.na(mutations))
+print(mutations_na)
+
+# Define the types of the datasets
+class(prism.cl)
+class(prism.treat)
+class(prism.snv)
+
+
+# Distribution of the data
+prism_ovary = seq(-4,4,by=0.1)
+y = dnorm(prism_ovary)
+plot(prism_ovary,y,type='l',lwd=3,col='red')
+
+# Histogram of the prism_ovary cell lines
+hist(prism_ovary)
+
+# Count number of missing values for each column(variable)
+summary(prism.cl)
+summary(prism.snv)
+summary(prism.treat)
+
+
+```
+
+
+```{r  r2 pressure, echo=FALSE, message = FALSE}
+
+# Data visualization
+
+plot(prism.cl, prism.treat, na.rm = TRUE, type = "o", xlim = range(prism.cl), ylim = range(prism.treat), pch = 16, xlab = "Cancer cell lines", ylab = "Applied drugs")
+
+# Visualizing the datasets with ggplot
+ggplot(prism.snv, aes(x = Hugo_Symbol), ylim(0,100)) + geom_bar()
+
+ggplot(prism.treat, aes(x = broad_id, y = dose)) + geom_point()
+
+ggplot(prism.cl, aes(x = DepMap_ID, y = lineage)) + geom_point()
+
+```
+
+
+
+```{r, r2 message = TRUE}
+
+# Distribution of the mean sensitivity across ovary cell lines and all drugs
+par (mfrow = c(1,2))
+
+hist(apply(prism_ovary, 1, function(x){mean(x,na.rm=TRUE)}),border = "black",col = "lightblue", xlim = c(-0.9,0.1),breaks = 50, main = "Ovary cell lines", xlab = "Mean log fold-change in ovarian cell proliferation")
+
+hist(apply(prism, 2, function(x){mean(x,na.rm=TRUE)}), border = "black",col = "lightblue", xlim = c(-8,1), breaks = 50, main = "Drugs", xlab = "Mean log fold-change in ovarian cell proliferation")
+
+# Histogram
+summary(prism_ovary) 
+quantile(prism_ovary)
+hist(prism_ovary, xlab ="", main ="Mean log fold-change in ovarian cell proliferation"); abline(v=summary(prism_ovary)[2:5], col = c("blue", "red", "black", "orange"), lty=2)
+
+# Density plot
+plot(density(prism_ovary), xlab ="", main ="Mean log fold-change in ovarian cell proliferation")
+abline(v=summary(prism_ovary)[2:5], col = c("blue", "red", "black", "orange"), lty=2)
+
+
+# Boxplots
+boxplot.stats(prism.cl$DepMap_ID)
+boxplot(prism.cl$DepMap_ID, xlab ="Mean log-fold change in cell growth", horizontal = T);abline(v=boxplot.stats(prism.cl)$stats, col = c("blue", "red", "black", "orange","green"), lty=2)
+boxplot(prism.cl$DepMap_ID, xlab ="Mean log-fold change in cell growth", horizontal = T);abline(v=boxplot.stats(prism.cl)$stats[c(1,5)], col = c("blue", "red", "black", "orange","green"), lty=2)
+as.factor(prism)
+as.factor(prism_ovary)
+as.factor(prism.treat)
+
+# Creating a ggplot
+ggplot(prism, aes(x = prism_ovary, fill = prism.treat )) + geom_point()
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
