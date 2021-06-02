@@ -196,15 +196,25 @@ for (i in 1:(ncol(prism)/8)){
 
 ```{r S3 Plotting the data from prism_reduced}
 
-
+# Try 1
 plot(x = prism_reduced$x_var, y = prism_reduced$y_var) ## Fehlermeldung: error in plot.window(...) : need finite 'xlim' values
 
+#Try 2
 qplot(as.matrix(prism_reduced)) ## works, but not sure which values are being shown
 
+#Try 3
 ggplot(fortify(prism_reduced)) ## produces only a gray background, not sure why
 
-ggplot(prism_reduced, aes(x = prism_reduced[1:481,], y = prism_reduced[,1:1394])) + geom_point()
+#Try 4
+ggplot(prism_reduced, aes(x = prism_redu, y = prism_reduced[,1:1394])) + geom_point()
 
+#Try 5
+hist_prism_reduced <- hist(unlist(prism_reduced), xlab = "Proliferation values", main = "Proliferation values of prism_reduced", breaks = 100) ## THIS IS THE ONE THAT WORKS!! produces similar graph as in try 2
+
+print(hist_prism_reduced)
+```
+
+```{r S4 Plotting prism_reduced with a for loop}
 
 ## graphing prism_reduced with a for loop
 
@@ -224,11 +234,43 @@ for (i in loop.vector) { # Loop over loop.vector
        xlab = "Cell line",
        xlim = c(0, 100))
 }
+
+##this doesn't work
 ```
 
-```{r S3}
+```{r S5 Replacing NAs in prism_reduced with the column means}
+
+summary(unlist(prism_reduced))
+
+prism_reduced
+prism_reduced_no_NAs = prism_reduced ## create a copy of prism_reduced to keep a version that includes the NAs
+
+for(i in 1:ncol(prism_reduced)){
+  prism_reduced_no_NAs[is.na(prism_reduced[, i]), i] <- mean(prism_reduced[, i], na.rm = TRUE)
+}  ## this code replaces the NAs in prism_reduced with the col mean and saves it into a new data frame called prism_reduced_no_NAs
+
+hist(unlist(prism_reduced_no_NAs), breaks = 100, xlab = "Proliferation values", main = "Proliferation values of prism_reduced_no_NAs")
+```
+
+```{r S6 K means clustering of prism_reduced_no_NAs}
+
+kmeans(prism_reduced_no_NAs, 20) ## Fehlermeldung: Error in do_one(nmeth) : NA/NaN/Inf in foreign function call (arg 1)
+
+# Checking for NA/NaN/Inf values:
+
+is.finite(unlist(prism_reduced_no_NAs)) ## returns all TRUE
+
+is.na(unlist(prism_reduced_no_NAs)) ## returns all FALSE
+
+is.nan(unlist(prism_reduced_no_NAs)) ## returns all FALSE
+
+# what is the problem????
+```
+
+
+```{r S7 Schwellenwert festlegen um unsignifikante Medikamente aus prism_reduced zu entfernen}
+
 
 
 ```
-
 
