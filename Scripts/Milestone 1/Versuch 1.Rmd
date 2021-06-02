@@ -377,6 +377,25 @@ is.nan(unlist(prism_reduced_no_NAs)) ## returns all FALSE
 
 ```{r S7 Schwellenwert festlegen um unsignifikante Medikamente aus prism_reduced zu entfernen}
 
+min_values_treat_prism_reduced <- apply(prism_reduced, 2, min, na.rm=TRUE)
+
+min_values_treat_prism_reduced_vector <- as.vector(min_values_treat_prism_reduced)
+
+names(min_values_treat_prism_reduced_vector) = colnames(prism_reduced)
+
+min_values_treat_prism_reduced_vector
+
+hist(min_values_treat_prism_reduced_vector)
+abline(v = quantile(min_values_treat_prism_reduced_vector, 0.1), col = "red")
+
+quantile(min_values_treat_prism_reduced_vector, 0.1)
+
+min_values_treat_prism_reduced_vector_no_Inf = min_values_treat_prism_reduced_vector
+
+summary(min_values_treat_prism_reduced_vector)
+```
+
+```{r}
 
 
 ```
