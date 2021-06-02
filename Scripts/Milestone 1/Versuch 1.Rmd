@@ -135,18 +135,32 @@ hist(vector_prism_reduced_ovary_negative_proliferation)
 
 prism_reduced_ovary
 
-min_values_cl_prism_reduced_ovary <- apply(prism_reduced_ovary, 1, min, na.rm=TRUE)
-
-min_values_cl_prism_reduced_ovary
+## creating a vector that contains the drugs and the corresponding strongest anti-proliferating values
 
 min_values_treat_prism_reduced_ovary <- apply(prism_reduced_ovary, 2, min, na.rm=TRUE)
 
-min_values_treat_prism_reduced_ovary
+min_values_treat_prism_reduced_ovary_vector <- as.vector(min_values_treat_prism_reduced_ovary)
 
-data.frame(min_values_cl_prism_reduced_ovary, rownames(prism_reduced_ovary))
+## vector containing drug names and corresponding min values 
 
-data.frame(min_values_treat_prism_reduced_ovary, colnames(prism_reduced_ovary))
+names(min_values_treat_prism_reduced_ovary_vector) = colnames(prism_reduced)
 
+## printing vector
+min_values_treat_prism_reduced_ovary_vector
+ 
+##trying to remove Inf values 
+min_values_treat_prism_reduced_ovary_vector[min_values_treat_prism_reduced_ovary_vector > 10] = 0
+
+## displaying histogram and summary
+hist(min_values_treat_prism_reduced_ovary_vector)
+
+summary(min_values_treat_prism_reduced_ovary_vector)
+
+## setting threshold at 10% quantile
+quantile(min_values_treat_prism_reduced_ovary_vector, 0.1)
+
+hist(min_values_treat_prism_reduced_ovary_vector)
+abline(v=quantile(min_values_treat_prism_reduced_ovary_vector, 0.1), col="red")
 
 ```
 
