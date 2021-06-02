@@ -27,6 +27,8 @@ dim(df_ovary_cl)
 
 vector_ovary_DepMI <- as.vector(df_ovary_cl$DepMap_ID)
 ```
+
+
 ```{r c2}
 
 ## creating a subset dataframe of prism with only the ovary DepMap_IDs and their proliferation values   
@@ -37,6 +39,8 @@ df_ovary_DepMI_prism  <- subset(prism, DepMap_ID %in% vector_ovary_DepMI)
 
 df_ovary_DepMI_prism
 ```
+
+
 ```{r c3}
 ## computing histograms of distribution of mean sensitivity across all ovary cell lines and all drugs
 
@@ -76,9 +80,12 @@ for (i in 1:(ncol(df_ovary_DepMI_prism)/8)){
 ```{r c5}
 numeric_prism_reduced_ovary <- lapply(prism_reduced_ovary, as.numeric)
 
-##fml 
-hist(prism_reduced_ovary[,1])
+## fml 
 
+for(i in 1:481) {
+   i <- i+1
+   print(paste(hist(prism_reduced_ovary[,i])))
+}
 
 ```
 
