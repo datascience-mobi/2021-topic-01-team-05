@@ -300,9 +300,39 @@ for (i in 1:(ncol(prism)/8)){
 
 ```{r S3 Plotting the data from prism_reduced}
 
-plot(x = prism_reduced$x_var, y = prism_reduced$y_var)
 
+plot(x = prism_reduced$x_var, y = prism_reduced$y_var) ## Fehlermeldung: error in plot.window(...) : need finite 'xlim' values
+
+qplot(as.matrix(prism_reduced)) ## works, but not sure which values are being shown
+
+ggplot(fortify(prism_reduced)) ## produces only a gray background, not sure why
+
+ggplot(prism_reduced, aes(x = prism_reduced[1:481,], y = prism_reduced[,1:1394])) + geom_point()
+
+
+## graphing prism_reduced with a for loop
+
+par(mfrow = c(481, 1394))  # Set up a plotting space
+
+# Create the loop.vector (all the columns)
+loop.vector <- 1:1394
+
+for (i in loop.vector) { # Loop over loop.vector
+
+  # store data in column.i as x
+  x <- prism_reduced[,i]
+  
+  # Plot histogram of x
+  hist(x,
+       main = paste("Drug", i),
+       xlab = "Cell line",
+       xlim = c(0, 100))
+}
 ```
 
+```{r S3}
+
+
+```
 
 
