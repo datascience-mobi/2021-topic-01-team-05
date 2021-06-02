@@ -143,8 +143,11 @@ min_values_treat_prism_reduced_ovary <- apply(prism_reduced_ovary, 2, min, na.rm
 
 min_values_treat_prism_reduced_ovary
 
-data.frame(min_values_cl_prism_reduced_ovary)
-#data.frame(apply(prism_reduced_ovary, 2, min, na.rm=TRUE))
+data.frame(min_values_cl_prism_reduced_ovary, rownames(prism_reduced_ovary))
+
+data.frame(min_values_treat_prism_reduced_ovary, colnames(prism_reduced_ovary))
+
+
 ```
 
 
