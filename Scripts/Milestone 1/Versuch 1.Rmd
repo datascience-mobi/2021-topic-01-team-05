@@ -63,7 +63,8 @@ for (i in 1:(ncol(prism)/8)){
   drug = toString(prism.treat$name[which(rownames(prism.treat)== colnames(prism)[i*8])])
   prism_reduced[drug] = max_effect
 }
-  
+
+prism_reduced 
 ## doing the same for ovary cell lines 
 
 prism_reduced_ovary = data.frame(row.names = rownames(df_ovary_DepMI_prism))
@@ -74,11 +75,14 @@ for (i in 1:(ncol(df_ovary_DepMI_prism)/8)){
   drug = toString(prism.treat$name[which(rownames(prism.treat)== colnames(prism)[i*8])])
   prism_reduced_ovary[drug] = max_effect
 }
+
+prism_reduced_ovary
 ```
 
 
 ```{r c5}
 numeric_prism_reduced_ovary <- lapply(prism_reduced_ovary, as.numeric)
+
 
 ## fml 
 
@@ -88,6 +92,74 @@ for(i in 1:481) {
 }
 
 ```
+
+```{r c6}
+
+prism_reduced_ovary_mean_values <- apply(prism_reduced_ovary, 2, mean, na.rm=TRUE)
+
+
+library(ggplot2)
+
+## klappt alles nicht 
+# t1 <- as.matrix(prism_reduced_ovary[,1:1394])
+
+# t2 <- as.matrix(prism_reduced_ovary[1:30,])
+
+
+# cor_t1_t2 <- cor(t1,t2, method = "pearson")
+
+
+# cor_t1_t2
+
+
+# geom_boxplot(prism_reduced_ovary)
+
+```
+
+
+
+```{r c7}
+## trash
+## topVar = apply(prism_reduced_ovary, 1, var, na.rm=TRUE)
+
+
+## summary(topVar)
+
+```
+
+```{r c8}
+
+## fail 
+
+library(ggplot2)
+library(colorspace)
+library(gridExtra)
+
+prism_reduced_ovary_mean_values
+
+prism_reduced_ovary_mean_values_df <- as.data.frame(prism_reduced_ovary_mean_values)
+
+
+p = ggplot(prism_reduced_ovary_mean_values_df, aes(x = prism_reduced_ovary_mean_values_df[,], y = prism_reduced_ovary_mean_values_df[,]))
+ggtitle("test")
+xlab("cell lines")
+ylab("meds")
+p2 = p 
+stat_bin_hex(color="white", na.rm=TRUE)
+scale_fill_gradientn(colors=c("purple", "green"), name = "Frequency", na.value=NA)
+grid.arrange(p2,ncol=1)
+
+
+
+p = ggplot(prism_reduced_ovary_mean_values_df, aes(x = prism_reduced_ovary_mean_values_df[,], y = prism_reduced_ovary_mean_values_df[,]), na.rm=TRUE)
+ggtitle("test")
+xlab("cell lines")
+ylab("meds")
+p2 = p + geom_point(alpha = 0.01, colour="purple") +
+  theme_bw()
+grid.arrange(p2,ncol=1)
+```
+
 
 ```{r S1: Trying to create a data frame with the prism data using the drug names instead of the Broad IDs}
 
