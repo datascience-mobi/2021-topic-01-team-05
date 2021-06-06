@@ -105,6 +105,8 @@ hist_vector_prism_reduced_ovary
 # nach drugs filtern durch schwellenwert definieren
 # p wert bestimmen (multiple testing problem)
 ```
+
+
 ```{r c4.2 - data exploration - defining the threshold value as zero for testing purposes in order to determine drug efficiency}
 
 ## analyzing the data a little bit further
@@ -209,6 +211,60 @@ reduced_prism_treat_ovary_df_2
 plot(reduced_prism_treat_ovary_df_2, pch=20)
 ```
 
+
+```{r c4.6.1 - analyzing our data - failed}
+
+## performin k-means
+
+#reduced_prism_treat_ovary_df_2_na_rm <- na.omit(reduced_prism_treat_ovary_df_2)
+
+
+#length(reduced_prism_treat_ovary_df_2_na_rm["NA" == TRUE])
+
+#reduced_prism_treat_ovary_df_2_na_rm[reduced_prism_treat_ovary_df_2_na_rm  == "Inf"] = 0
+
+
+#kmeans(rank(reduced_prism_treat_ovary_df_2$moa, na.last = NA), centers = 2, nstart = 10)
+
+#library(cluster)
+
+#silhouette(kmeans(rank(reduced_prism_treat_ovary_df_2$moa, na.last = NA), centers = 2, nstart = 10))
+
+##km_cluster <- kmeans(reduced_prism_treat_ovary_df_2_na_rm$moa, centers = 1, nstart=10)
+
+#------------------------------------
+
+### new try 
+
+## creating vector with all the drug targets (except NAs) of the most efficient drugs within ovary cancer treatment
+
+
+sort(as.vector(na.omit(reduced_prism_treat_ovary_df_2$target)))
+
+## vector with disease areas that the drugs are normally used for
+
+names_reduced_df <- as.vector(reduced_prism_treat_ovary_df_2$name)
+
+x66 <- sort(as.vector(na.omit(reduced_prism_treat_ovary_df_2$disease.area)))
+
+test66 <- subset(reduced_prism_treat_ovary_df_2, names_reduced_df %in% x66)
+
+test66
+
+### this doesn't work 
+
+### 
+
+```
+```{r r c4.6.2 - analyzing our data - }
+
+## summary of our findings
+
+summary(reduced_prism_treat_ovary_df_2)
+
+## 
+
+```
 
 
 ```{r c5}
