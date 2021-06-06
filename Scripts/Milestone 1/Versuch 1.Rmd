@@ -437,16 +437,29 @@ is.nan(unlist(prism_reduced_no_NAs)) ## returns all FALSE
 
 ```{r S7 Schwellenwert festlegen um unsignifikante Medikamente aus prism_reduced zu entfernen}
 
+## creating a vector that contains the drugs and the corresponding strongest anti-proliferating values
 min_values_treat_prism_reduced <- apply(prism_reduced, 2, min, na.rm=TRUE)
 
 min_values_treat_prism_reduced_vector <- as.vector(min_values_treat_prism_reduced)
 
+## vector containing drug names and corresponding min values
 names(min_values_treat_prism_reduced_vector) = colnames(prism_reduced)
 
 min_values_treat_prism_reduced_vector
 
+##trying to remove Inf values 
+min_values_treat_prism_reduced_vector[min_values_treat_prism_reduced_vector > 10] = 0
+
+## displaying histogram and summary
 hist(min_values_treat_prism_reduced_vector)
-abline(v = quantile(min_values_treat_prism_reduced_vector, 0.1), col = "red")
+
+summary(min_values_treat_prism_reduced_vector)
+
+## setting threshold at 10% quantile
+quantile(min_values_treat_prism_reduced_vector, 0.1)
+
+hist(min_values_treat_prism_reduced_vector)
+abline(v=quantile(min_values_treat_prism_reduced_vector, 0.1), col="red")
 
 quantile(min_values_treat_prism_reduced_vector, 0.1)
 
@@ -455,8 +468,33 @@ min_values_treat_prism_reduced_vector_no_Inf = min_values_treat_prism_reduced_ve
 summary(min_values_treat_prism_reduced_vector)
 ```
 
-```{r}
+```{r S8}
 
+## Creating a vector with all of the min values in prism_reduced under the threshold of the 10% quantile
+prism_reduced_under_threshold = data.frame(min_values_treat_prism_reduced[min_values_treat_prism_reduced < quantile(min_values_treat_prism_reduced_vector, 0.1)])
 
+prism_reduced_under_threshold
+```
+
+```{r S9 Finding the cell lines corresponding to the lowest proliferation value of each drug}
+
+## Reducing prism.treat so that it only includes the data for the proliferation values under the threshold
+prism.treat_reduced <- prism.treat[which(prism.treat$name %in% rownames(prism_reduced_under_threshold)),]
+
+prism.treat_reduced
+
+```
+
+```{r Finding out if the medications in the 10% quantile are oncological/non-oncological}
+
+## Selecting every 8th row of prism.treat_reduced 
+prism.treat_reduced = prism.treat_reduced[seq(1, nrow(prism.treat_reduced),8),]
+
+prism.treat_reduced
+
+## Creating a new dataframe that only includes columns that are interesting for us 
+prism.treat_reduced_2 = prism.treat_reduced[,which(colnames(prism.treat_reduced) %in% c("name", "moa", "target", "disease.area", "indication"))]
+
+prism.treat_reduced_2
 ```
 
