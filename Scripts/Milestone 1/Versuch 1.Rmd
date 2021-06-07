@@ -105,6 +105,8 @@ hist_vector_prism_reduced_ovary
 # nach drugs filtern durch schwellenwert definieren
 # p wert bestimmen (multiple testing problem)
 ```
+
+
 ```{r c4.2 - data exploration - defining the threshold value as zero for testing purposes in order to determine drug efficiency}
 
 ## analyzing the data a little bit further
@@ -137,13 +139,14 @@ prism_reduced_ovary
 
 ## creating a vector that contains the drugs and the corresponding strongest anti-proliferating values
 
+###for loop erstellen mit data frame 
 min_values_treat_prism_reduced_ovary <- apply(prism_reduced_ovary, 2, min, na.rm=TRUE)
 
 min_values_treat_prism_reduced_ovary_vector <- as.vector(min_values_treat_prism_reduced_ovary)
 
 ## vector containing drug names and corresponding min values 
 
-names(min_values_treat_prism_reduced_ovary_vector) = colnames(prism_reduced)
+names(min_values_treat_prism_reduced_ovary_vector) = colnames(prism_reduced_ovary)
 
 ## printing vector
 min_values_treat_prism_reduced_ovary_vector
@@ -152,15 +155,114 @@ min_values_treat_prism_reduced_ovary_vector
 min_values_treat_prism_reduced_ovary_vector[min_values_treat_prism_reduced_ovary_vector > 10] = 0
 
 ## displaying histogram and summary
-hist(min_values_treat_prism_reduced_ovary_vector)
+hist(min_values_treat_prism_reduced_ovary_vector, main= "Most effective drug-proliferation values in ovary cell lines", xlab = "Minimum values for each drug")
 
 summary(min_values_treat_prism_reduced_ovary_vector)
 
 ## setting threshold at 10% quantile
 quantile(min_values_treat_prism_reduced_ovary_vector, 0.1)
 
-hist(min_values_treat_prism_reduced_ovary_vector)
+hist(min_values_treat_prism_reduced_ovary_vector, main= "Most effective drug-proliferation values in ovary cell lines", xlab = "Minimum values for each drug")
 abline(v=quantile(min_values_treat_prism_reduced_ovary_vector, 0.1), col="red")
+```
+
+```{r c4.4. - data organization - creating vector with ovary proliferation values that lie below threshold}
+
+## creating vector with values smaller than threshold value at 10 % quantile
+
+under_threshold_prism_reduced_ovary <- min_values_treat_prism_reduced_ovary_vector[min_values_treat_prism_reduced_ovary_vector < quantile(min_values_treat_prism_reduced_ovary_vector, 0.1)]
+
+under_threshold_prism_reduced_ovary
+
+## inspecting vector
+
+sort(under_threshold_prism_reduced_ovary, decreasing = FALSE)
+summary(under_threshold_prism_reduced_ovary)
+length(under_threshold_prism_reduced_ovary)
+```
+
+```{r c4.5. - data exploration - exploring the drugs corresponding to the proliferation values below threshold}
+
+## looking at values below threshold
+
+hist(under_threshold_prism_reduced_ovary)
+
+plot(under_threshold_prism_reduced_ovary, pch=20)
+
+class(under_threshold_prism_reduced_ovary)
+
+## creating a data frame using prism.treat that contains the relevant information in order to analyze the drugs that were used regarding the lowest proliferation values (below threshold) in ovary cell lines
+
+reduced_prism_treat_ovary_df <- prism.treat[which(prism.treat$name %in% rownames(under_threshold_prism_reduced_ovary_df)),]
+
+
+## changing the dataframe so only every 8th row is shown
+
+reduced_prism_treat_ovary_df = reduced_prism_treat_ovary_df[seq(1, nrow(reduced_prism_treat_ovary_df),8),]
+
+reduced_prism_treat_ovary_df
+
+## reducing the dataframe even further and getting rid of irrelevant information 
+
+reduced_prism_treat_ovary_df_2 = reduced_prism_treat_ovary_df[,which(colnames(reduced_prism_treat_ovary_df) %in% c("name", "moa", "target", "disease.area", "indication"))]
+
+reduced_prism_treat_ovary_df_2
+
+plot(reduced_prism_treat_ovary_df_2, pch=20)
+```
+
+
+```{r c4.6.1 - analyzing our data - failed}
+
+## performin k-means
+
+#reduced_prism_treat_ovary_df_2_na_rm <- na.omit(reduced_prism_treat_ovary_df_2)
+
+
+#length(reduced_prism_treat_ovary_df_2_na_rm["NA" == TRUE])
+
+#reduced_prism_treat_ovary_df_2_na_rm[reduced_prism_treat_ovary_df_2_na_rm  == "Inf"] = 0
+
+
+#kmeans(rank(reduced_prism_treat_ovary_df_2$moa, na.last = NA), centers = 2, nstart = 10)
+
+#library(cluster)
+
+#silhouette(kmeans(rank(reduced_prism_treat_ovary_df_2$moa, na.last = NA), centers = 2, nstart = 10))
+
+##km_cluster <- kmeans(reduced_prism_treat_ovary_df_2_na_rm$moa, centers = 1, nstart=10)
+
+#------------------------------------
+
+### new try 
+
+## creating vector with all the drug targets (except NAs) of the most efficient drugs within ovary cancer treatment
+
+
+sort(as.vector(na.omit(reduced_prism_treat_ovary_df_2$target)))
+
+## vector with disease areas that the drugs are normally used for
+
+names_reduced_df <- as.vector(reduced_prism_treat_ovary_df_2$name)
+
+x66 <- sort(as.vector(na.omit(reduced_prism_treat_ovary_df_2$disease.area)))
+
+test66 <- subset(reduced_prism_treat_ovary_df_2, names_reduced_df %in% x66)
+
+test66
+
+### this doesn't work 
+
+### 
+
+```
+```{r r c4.6.2 - analyzing our data - }
+
+## summary of our findings
+
+summary(reduced_prism_treat_ovary_df_2)
+
+## 
 
 ```
 
