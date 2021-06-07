@@ -439,7 +439,7 @@ prism.treat_reduced
 
 ```
 
-```{r Finding out if the medications in the 10% quantile are oncological/non-oncological}
+```{r S10 Finding out if the medications in the 10% quantile are oncological/non-oncological}
 
 ## Selecting every 8th row of prism.treat_reduced 
 prism.treat_reduced = prism.treat_reduced[seq(1, nrow(prism.treat_reduced),8),]
@@ -450,5 +450,13 @@ prism.treat_reduced
 prism.treat_reduced_2 = prism.treat_reduced[,which(colnames(prism.treat_reduced) %in% c("name", "moa", "target", "disease.area", "indication"))]
 
 prism.treat_reduced_2
+
+summary(prism.treat_reduced_2)
+```
+
+```{r S11 Trying to cluster ANYTHING}
+
+
+
 ```
 
