@@ -159,18 +159,18 @@ hist(min_values_treat_prism_reduced_ovary_vector, main= "Most effective drug-pro
 
 summary(min_values_treat_prism_reduced_ovary_vector)
 
-## setting threshold at 10% quantile
-quantile(min_values_treat_prism_reduced_ovary_vector, 0.1)
+## setting threshold at 5% quantile
+quantile(min_values_treat_prism_reduced_ovary_vector, 0.05)
 
 hist(min_values_treat_prism_reduced_ovary_vector, main= "Most effective drug-proliferation values in ovary cell lines", xlab = "Minimum values for each drug")
-abline(v=quantile(min_values_treat_prism_reduced_ovary_vector, 0.1), col="red")
+abline(v=quantile(min_values_treat_prism_reduced_ovary_vector, 0.05), col="red")
 ```
 
 ```{r c4.4. - data organization - creating vector with ovary proliferation values that lie below threshold}
 
 ## creating vector with values smaller than threshold value at 10 % quantile
 
-under_threshold_prism_reduced_ovary <- min_values_treat_prism_reduced_ovary_vector[min_values_treat_prism_reduced_ovary_vector < quantile(min_values_treat_prism_reduced_ovary_vector, 0.1)]
+under_threshold_prism_reduced_ovary <- min_values_treat_prism_reduced_ovary_vector[min_values_treat_prism_reduced_ovary_vector < quantile(min_values_treat_prism_reduced_ovary_vector, 0.05)]
 
 under_threshold_prism_reduced_ovary
 
@@ -193,7 +193,7 @@ class(under_threshold_prism_reduced_ovary)
 
 ## creating a data frame using prism.treat that contains the relevant information in order to analyze the drugs that were used regarding the lowest proliferation values (below threshold) in ovary cell lines
 
-reduced_prism_treat_ovary_df <- prism.treat[which(prism.treat$name %in% rownames(under_threshold_prism_reduced_ovary_df)),]
+reduced_prism_treat_ovary_df <- prism.treat[which(prism.treat$name %in% names(under_threshold_prism_reduced_ovary)),]
 
 
 ## changing the dataframe so only every 8th row is shown
@@ -205,6 +205,8 @@ reduced_prism_treat_ovary_df
 ## reducing the dataframe even further and getting rid of irrelevant information 
 
 reduced_prism_treat_ovary_df_2 = reduced_prism_treat_ovary_df[,which(colnames(reduced_prism_treat_ovary_df) %in% c("name", "moa", "target", "disease.area", "indication"))]
+
+reduced_prism_treat_ovary_df_2 <- droplevels(reduced_prism_treat_ovary_df_2)
 
 reduced_prism_treat_ovary_df_2
 
@@ -256,15 +258,33 @@ test66
 ### 
 
 ```
-```{r r c4.6.2 - analyzing our data - }
+
+
+
+
+```{r c4.6.2 - analyzing our data and findings}
 
 ## summary of our findings
 
 summary(reduced_prism_treat_ovary_df_2)
 
-## 
+vector_disease_area <- sort(as.vector(na.omit(reduced_prism_treat_ovary_df_2$disease.area)))
+
+
+plot(table(reduced_prism_treat_ovary_df_2$disease.area),  las = 3)
+
 
 ```
+
+
+```{r c4.7}
+
+sort(unique(as.vector(na.omit(reduced_prism_treat_ovary_df_2$moa))))
+
+as.data.frame()
+
+```
+
 
 
 ```{r c5}
