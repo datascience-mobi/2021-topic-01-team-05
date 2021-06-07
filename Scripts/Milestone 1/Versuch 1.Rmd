@@ -511,13 +511,11 @@ hist(min_values_treat_prism_reduced_vector)
 
 summary(min_values_treat_prism_reduced_vector)
 
-## setting threshold at 10% quantile
-quantile(min_values_treat_prism_reduced_vector, 0.1)
+## setting threshold at 5% quantile
+quantile(min_values_treat_prism_reduced_vector, 0.05)
 
 hist(min_values_treat_prism_reduced_vector)
-abline(v=quantile(min_values_treat_prism_reduced_vector, 0.1), col="red")
-
-quantile(min_values_treat_prism_reduced_vector, 0.1)
+abline(v=quantile(min_values_treat_prism_reduced_vector, 0.05), col="red")
 
 min_values_treat_prism_reduced_vector_no_Inf = min_values_treat_prism_reduced_vector
 
@@ -526,8 +524,8 @@ summary(min_values_treat_prism_reduced_vector)
 
 ```{r S8}
 
-## Creating a vector with all of the min values in prism_reduced under the threshold of the 10% quantile
-prism_reduced_under_threshold = data.frame(min_values_treat_prism_reduced[min_values_treat_prism_reduced < quantile(min_values_treat_prism_reduced_vector, 0.1)])
+## Creating a vector with all of the min values in prism_reduced under the threshold of the 5% quantile
+prism_reduced_under_threshold = data.frame(min_values_treat_prism_reduced[min_values_treat_prism_reduced < quantile(min_values_treat_prism_reduced_vector, 0.05)])
 
 prism_reduced_under_threshold
 ```
@@ -541,24 +539,32 @@ prism.treat_reduced
 
 ```
 
-```{r S10 Finding out if the medications in the 10% quantile are oncological/non-oncological}
+```{r S10 Finding out if the medications in the 5% quantile are oncological/non-oncological}
 
 ## Selecting every 8th row of prism.treat_reduced 
 prism.treat_reduced = prism.treat_reduced[seq(1, nrow(prism.treat_reduced),8),]
 
-prism.treat_reduced
+prism.treat_reduced = droplevels(prism.treat_reduced)
 
 ## Creating a new dataframe that only includes columns that are interesting for us 
 prism.treat_reduced_2 = prism.treat_reduced[,which(colnames(prism.treat_reduced) %in% c("name", "moa", "target", "disease.area", "indication"))]
 
-prism.treat_reduced_2
-
 summary(prism.treat_reduced_2)
 ```
 
-```{r S11 Trying to cluster ANYTHING}
+```{r S11 Analysing our data}
+
+## Plotting the number of medications belonging to a selected amount of disease areas
+plot(table(prism.treat_reduced$disease.area), srt = 90, las = 3)
+
+## Sorting the moa values in prism.treat_reduced alphabetically
+sort(unique(as.vector(na.omit(prism.treat_reduced$moa))))
+```
 
 
+```{r S12 Trying to cluster ANYTHING}
+
+sort(unique(as.vector(na.omit(prism.treat_reduced$moa))))
 
 ```
 
