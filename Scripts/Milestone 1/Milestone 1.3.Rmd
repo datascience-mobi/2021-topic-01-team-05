@@ -26,8 +26,32 @@ broadID2
 
 df_treat2<- data.frame (broadID2, dosage)
 df_treat2
+
+
 ```
 
+```{r}
+##We employed a 2-stage screening strategy whereby drugs were first screened in triplicate at a single dose (2.5 μM). 1,448 screening positives were then re-screened in triplicate in an 8-point dose-response ranging from 10 μM to 600 pM
+
+## only the low dosages < 2.5 μM
+df_treat_lowdose<-df_treat[dosage<2.5, c("broadID","dosage")]
+df_treat_lowdose
+
+#### wie mache ich das mit dem broadID2?
+
+##only the high dosages > 2.5μM
+df_treat_highdose<-df_treat[dosage>2.5, c("broadID","dosage")]
+df_treat_highdose
+
+
+
+
+
+
+
+
+
+```
 
 
 ```{r}
@@ -55,7 +79,21 @@ vector_ovary_DepMI
 
 ## creating a subset dataframe of prism with only the ovary DepMap_IDs and their proliferation values   
 df_ovary_DepMI_prism  <- subset(prism, DepMap_ID %in% vector_ovary_DepMI)
-
 df_ovary_DepMI_prism
+
+
+```
+```{r}
+## creating a dataframe with the ovary DepMap_IDs their ploriferation values and the dose
+
+df_treat$ovary_DepMapID<-df_ovary_DepMI_prism
+df_treat$ovary_DepMapID<-vector_ovary_DepMI
+
+df_ovary_DepMI_prism$dosage<-prism.treat$dose
+df_ovary_DepMI_prism$dosage
+
+
+#### wie mache ich das ich eine Tabelle mit  ovary DepMApID,ploriferation values, broad ID und dose
+
 ```
 
