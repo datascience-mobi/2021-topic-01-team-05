@@ -439,20 +439,11 @@ for (i in 1:(ncol(prism)/8)){
 
 ```{r S3 Plotting the data from prism_reduced}
 
-# Try 1
-plot(x = prism_reduced$x_var, y = prism_reduced$y_var) ## Fehlermeldung: error in plot.window(...) : need finite 'xlim' values
-
-#Try 2
+#Try 1
 qplot(as.matrix(prism_reduced)) ## works, but not sure which values are being shown
 
-#Try 3
-ggplot(fortify(prism_reduced)) ## produces only a gray background, not sure why
-
-#Try 4
-ggplot(prism_reduced, aes(x = prism_redu, y = prism_reduced[,1:1394])) + geom_point()
-
-#Try 5
-hist_prism_reduced <- hist(unlist(prism_reduced), xlab = "Proliferation values", main = "Proliferation values of prism_reduced", breaks = 100) ## THIS IS THE ONE THAT WORKS!! produces similar graph as in try 2
+#Try 2
+hist_prism_reduced <- hist(unlist(prism_reduced), xlab = "Proliferation values", main = "Proliferation values of prism_reduced", breaks = 100) ## THIS IS THE ONE THAT WORKS!! produces similar graph as in try 1
 
 print(hist_prism_reduced)
 ```
@@ -466,16 +457,16 @@ par(mfrow = c(481, 1394))  # Set up a plotting space
 # Create the loop.vector (all the columns)
 loop.vector <- 1:1394
 
-for (i in loop.vector) { # Loop over loop.vector
+##for (i in loop.vector) { # Loop over loop.vector
 
   # store data in column.i as x
-  x <- prism_reduced[,i]
+#  x <- prism_reduced[,i]
   
   # Plot histogram of x
-  hist(x,
-       main = paste("Drug", i),
-       xlab = "Cell line",
-       xlim = c(0, 100))
+#  hist(x,
+#       main = paste("Drug", i),
+ #      xlab = "Cell line",
+  $     xlim = c(0, 100))
 }
 
 ##this doesn't work
@@ -497,7 +488,7 @@ hist(unlist(prism_reduced_no_NAs), breaks = 100, xlab = "Proliferation values", 
 
 ```{r S6 K means clustering of prism_reduced_no_NAs}
 
-kmeans(prism_reduced_no_NAs, 20) ## Fehlermeldung: Error in do_one(nmeth) : NA/NaN/Inf in foreign function call (arg 1)
+#kmeans(prism_reduced_no_NAs, 20) ## Fehlermeldung: Error in do_one(nmeth) : NA/NaN/Inf in foreign function call (arg 1)
 
 # Checking for NA/NaN/Inf values:
 
