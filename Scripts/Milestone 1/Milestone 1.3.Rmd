@@ -85,15 +85,20 @@ df_ovary_DepMI_prism
 ```
 ```{r}
 ## creating a dataframe with the ovary DepMap_IDs their ploriferation values and the dose
+new_df_treat<-as.data.frame(t(df_treat))
+new_df_treat
 
-df_treat$ovary_DepMapID<-df_ovary_DepMI_prism
-df_treat$ovary_DepMapID<-vector_ovary_DepMI
+##oben den Namen von den Spalten ändern
 
-df_ovary_DepMI_prism$dosage<-prism.treat$dose
-df_ovary_DepMI_prism$dosage
+
 
 
 #### wie mache ich das ich eine Tabelle mit  ovary DepMApID,ploriferation values, broad ID und dose
 
+
+df_ovary_DepMI_prism$dosage<-new_df_treat$dose
+df_ovary_DepMI_prism
+
+df_ovary_DepMI_prism$dose<-new_df_treat(c("broadID","dosage"))
 ```
 
