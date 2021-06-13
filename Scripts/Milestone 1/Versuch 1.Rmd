@@ -446,6 +446,9 @@ for (i in 1:(ncol(prism)/8)){
 
 ```{r S3 Plotting the data from prism_reduced}
 
+## Downlaoding ggplot package
+library(ggplot2)
+
 #Try 1
 qplot(as.matrix(prism_reduced)) ## works, but not sure which values are being shown
 
@@ -565,7 +568,7 @@ prism.treat_reduced = prism.treat_reduced[seq(1, nrow(prism.treat_reduced),8),]
 prism.treat_reduced = droplevels(prism.treat_reduced)
 
 ## Creating a new dataframe that only includes columns that are interesting for us 
-prism.treat_reduced_2 = prism.treat_reduced[,which(colnames(prism.treat_reduced) %in% c("name", "moa", "target", "disease.area", "indication"))]
+prism.treat_reduced_2 = prism.treat_reduced[,which(colnames(prism.treat_reduced) %in% c("name", "moa", "target", "disease.area", "indication", "broad_id"))]
 
 summary(prism.treat_reduced_2)
 ```
@@ -577,10 +580,52 @@ plot(table(prism.treat_reduced$disease.area), srt = 90, las = 3)
 
 ## Sorting the moa values in prism.treat_reduced alphabetically
 sort(unique(as.vector(na.omit(prism.treat_reduced$moa))))
+
+## making a barplot with the moas of the prims.treat_reduced_2 dataframe
+
+ggplot(data=as.data.frame(prism.treat_reduced_2$moa), aes(x=0,1, y=prism.treat_reduced_2$moa)) +
+  geom_bar(stat="identity") ##trash
+
+barplot(which(as.list(prism.treat_reduced_2$moa)>1))
+
+
+##Creating dataframe with the frequency of the different moas in prism.treat_reduced_2
+library(dplyr)
+
+prism.treat_reduced_2 %>% count(moa)
+
+moa_frequencies = prism.treat_reduced_2 %>% count(moa) %>% filter(n >= 2)
+
+moa_frequencies
+
+prism.treat_reduced_2 %>% count(moa) %>% filter(n >= 2) %>% .$x
+
+as.vector((prism.treat_reduced_2 %>% count(moa) %>% filter(n >= 2) %>% .$x)$n)
+
+##Plotting the frequency of the different moas
+par(mar=c(4, 20, 4, 4))
+barplot(moa_frequencies$n, names.arg = moa_frequencies$moa, las = 1, xlab = "Frequency", horiz = TRUE) ## The 3 NAs still have to be removed here, but I don't know how
+## This still needs to be organized by frequency but the values and names are not connected
+
+summary(prism.treat_reduced_2)
+
+```
+
+```{r S12 Finding out in which celllines the HDAC inhibitor shows up}
+
+## Extracting the data from prism.treat_reduced_2 where the moa is HDAC
+prism.treat_reduced_2[prism.treat_reduced_2$moa == "HDAC inhibitor",]
+
+## Extracting broad IDs of HDAC moas
+as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "HDAC inhibitor",])$broad_id)) 
+
+## Extracting the cell lines from prism using the above extracted broad IDs
+prism[prism$colnames == as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "HDAC inhibitor",])$broad_id)) ]
+
 ```
 
 
-```{r S12 Trying to cluster ANYTHING}
+```{r S13 Trying to cluster ANYTHING}
 
 sort(unique(as.vector(na.omit(prism.treat_reduced$moa))))
 
