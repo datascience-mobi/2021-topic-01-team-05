@@ -189,8 +189,6 @@ hist(under_threshold_prism_reduced_ovary)
 
 plot(under_threshold_prism_reduced_ovary, pch=20)
 
-class(under_threshold_prism_reduced_ovary)
-
 ## creating a data frame using prism.treat that contains the relevant information in order to analyze the drugs that were used regarding the lowest proliferation values (below threshold) in ovary cell lines
 
 reduced_prism_treat_ovary_df <- prism.treat[which(prism.treat$name %in% names(under_threshold_prism_reduced_ovary)),]
@@ -204,65 +202,15 @@ reduced_prism_treat_ovary_df
 
 ## reducing the dataframe even further and getting rid of irrelevant information 
 
-reduced_prism_treat_ovary_df_2 = reduced_prism_treat_ovary_df[,which(colnames(reduced_prism_treat_ovary_df) %in% c("name", "moa", "target", "disease.area", "indication"))]
+reduced_prism_treat_ovary_df_2 = reduced_prism_treat_ovary_df[,which(colnames(reduced_prism_treat_ovary_df) %in% c("broad_id", "name", "moa", "target", "disease.area", "indication"))]
 
 reduced_prism_treat_ovary_df_2 <- droplevels(reduced_prism_treat_ovary_df_2)
 
 reduced_prism_treat_ovary_df_2
-
-plot(reduced_prism_treat_ovary_df_2, pch=20)
 ```
 
 
-```{r c4.6.1 - analyzing our data - failed}
-
-## performin k-means
-
-#reduced_prism_treat_ovary_df_2_na_rm <- na.omit(reduced_prism_treat_ovary_df_2)
-
-
-#length(reduced_prism_treat_ovary_df_2_na_rm["NA" == TRUE])
-
-#reduced_prism_treat_ovary_df_2_na_rm[reduced_prism_treat_ovary_df_2_na_rm  == "Inf"] = 0
-
-
-#kmeans(rank(reduced_prism_treat_ovary_df_2$moa, na.last = NA), centers = 2, nstart = 10)
-
-#library(cluster)
-
-#silhouette(kmeans(rank(reduced_prism_treat_ovary_df_2$moa, na.last = NA), centers = 2, nstart = 10))
-
-##km_cluster <- kmeans(reduced_prism_treat_ovary_df_2_na_rm$moa, centers = 1, nstart=10)
-
-#------------------------------------
-
-### new try 
-
-## creating vector with all the drug targets (except NAs) of the most efficient drugs within ovary cancer treatment
-
-
-sort(as.vector(na.omit(reduced_prism_treat_ovary_df_2$target)))
-
-## vector with disease areas that the drugs are normally used for
-
-names_reduced_df <- as.vector(reduced_prism_treat_ovary_df_2$name)
-
-x66 <- sort(as.vector(na.omit(reduced_prism_treat_ovary_df_2$disease.area)))
-
-test66 <- subset(reduced_prism_treat_ovary_df_2, names_reduced_df %in% x66)
-
-test66
-
-### this doesn't work 
-
-### 
-
-```
-
-
-
-
-```{r c4.6.2 - analyzing our data and findings}
+```{r c4.6.1 - analyzing our data and findings}
 
 ## summary of our findings
 
@@ -279,19 +227,45 @@ plot(table(reduced_prism_treat_ovary_df_2$disease.area),  las = 3)
 
 ```{r c4.7}
 
-sort(unique(as.vector(na.omit(reduced_prism_treat_ovary_df_2$moa))))
-
 ### barplot machen von kategorisierten daten
 ### nach dosis filtern auch noch wichtig
-###mhdac war am meisten dann clustern nach cell lines oder welche gene passen
-### verhaältnis von hdac inhibitors bei cancer cell lines im gegensatz zu allen mal schauen--> wilkixon test, (fisher, chi square -> gut für kategorisch gegen kategorisch)
+### hdac war am meisten dann clustern nach cell lines oder welche gene passen
+### verhältnis von hdac inhibitors bei cancer cell lines im gegensatz zu allen mal schauen--> wilkixon test, (fisher, chi square -> gut für kategorisch gegen kategorisch)
 
 
 ##1.3 dosage response plotten -->  dosis auf x achse und effekt auf y achse 
 ## regressionsmodell (?)
 
+
+## this does not give the correct results 
+#names(which(table(reduced_prism_treat_ovary_df_2$moa) > 1))
+
+
+#barplot(which(table(reduced_prism_treat_ovary_df_2$moa) > 1), las=3)
+##
+
+## creating a barplot with the most frequent moas 
+
+library(dplyr)
+reduced_prism_treat_ovary_df_2 %>% count(moa)
+
+testdf <- reduced_prism_treat_ovary_df_2 %>% count(moa) %>% filter(n >= 2)
+
+par(mar=c(4,20,4,4))
+barplot(testdf$n, names.arg = testdf$moa, las = 1, xlab = "Frequency", horiz=TRUE)
 ```
 
+```{r - c4.8 - analyzing HDAC inhibitors}
+## Extracting the data from prism.treat_reduced_2 where the moa is HDAC
+reduced_prism_treat_ovary_df_2[reduced_prism_treat_ovary_df_2$moa == "HDAC inhibitor",]
+
+## Extracting broad IDs of HDAC moas
+as.vector(na.omit((reduced_prism_treat_ovary_df_2[reduced_prism_treat_ovary_df_2$moa == "HDAC inhibitor",])$broad_id)) 
+
+## Extracting the cell lines from prism using the above extracted broad IDs
+prism[prism$colnames == as.vector(na.omit((reduced_prism_treat_ovary_df_2[reduced_prism_treat_ovary_df_2$moa == "HDAC inhibitor",])$broad_id))]
+
+```
 
 
 ```{r c5}
