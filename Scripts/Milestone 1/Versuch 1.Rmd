@@ -281,7 +281,14 @@ plot(table(reduced_prism_treat_ovary_df_2$disease.area),  las = 3)
 
 sort(unique(as.vector(na.omit(reduced_prism_treat_ovary_df_2$moa))))
 
-as.data.frame()
+### barplot machen von kategorisierten daten
+### nach dosis filtern auch noch wichtig
+###mhdac war am meisten dann clustern nach cell lines oder welche gene passen
+### verhaältnis von hdac inhibitors bei cancer cell lines im gegensatz zu allen mal schauen--> wilkixon test, (fisher, chi square -> gut für kategorisch gegen kategorisch)
+
+
+##1.3 dosage response plotten -->  dosis auf x achse und effekt auf y achse 
+## regressionsmodell (?)
 
 ```
 
