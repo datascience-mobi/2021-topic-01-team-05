@@ -294,7 +294,6 @@ ovary_cl_topoisomerase_inhibitor
 
 prism.cl[prism.cl$DepMap_ID %in% ovary_cl_topoisomerase_inhibitor,]
 ```
-```
 ```{r - c4.10 - fisher exact test}
 
 
