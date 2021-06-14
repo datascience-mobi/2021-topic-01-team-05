@@ -37,7 +37,7 @@ vector_ovary_DepMI
 
 vector_ovary_DepMI
 
-df_ovary_DepMI_prism  <- subset(prism, DepMap_ID %in% vector_ovary_DepMI)
+df_ovary_DepMI_prism  <- prism[rownames(prism) %in% vector_ovary_DepMI,]
 
 df_ovary_DepMI_prism
 ```
@@ -160,17 +160,17 @@ hist(min_values_treat_prism_reduced_ovary_vector, main= "Most effective drug-pro
 summary(min_values_treat_prism_reduced_ovary_vector)
 
 ## setting threshold at 5% quantile
-quantile(min_values_treat_prism_reduced_ovary_vector, 0.05)
+quantile(min_values_treat_prism_reduced_ovary_vector, 0.1)
 
 hist(min_values_treat_prism_reduced_ovary_vector, main= "Most effective drug-proliferation values in ovary cell lines", xlab = "Minimum values for each drug")
-abline(v=quantile(min_values_treat_prism_reduced_ovary_vector, 0.05), col="red")
+abline(v=quantile(min_values_treat_prism_reduced_ovary_vector, 0.1), col="red")
 ```
 
 ```{r c4.4. - data organization - creating vector with ovary proliferation values that lie below threshold}
 
 ## creating vector with values smaller than threshold value at 10 % quantile
 
-under_threshold_prism_reduced_ovary <- min_values_treat_prism_reduced_ovary_vector[min_values_treat_prism_reduced_ovary_vector < quantile(min_values_treat_prism_reduced_ovary_vector, 0.05)]
+under_threshold_prism_reduced_ovary <- min_values_treat_prism_reduced_ovary_vector[min_values_treat_prism_reduced_ovary_vector < quantile(min_values_treat_prism_reduced_ovary_vector, 0.1)]
 
 under_threshold_prism_reduced_ovary
 
@@ -189,8 +189,6 @@ hist(under_threshold_prism_reduced_ovary)
 
 plot(under_threshold_prism_reduced_ovary, pch=20)
 
-class(under_threshold_prism_reduced_ovary)
-
 ## creating a data frame using prism.treat that contains the relevant information in order to analyze the drugs that were used regarding the lowest proliferation values (below threshold) in ovary cell lines
 
 reduced_prism_treat_ovary_df <- prism.treat[which(prism.treat$name %in% names(under_threshold_prism_reduced_ovary)),]
@@ -204,65 +202,15 @@ reduced_prism_treat_ovary_df
 
 ## reducing the dataframe even further and getting rid of irrelevant information 
 
-reduced_prism_treat_ovary_df_2 = reduced_prism_treat_ovary_df[,which(colnames(reduced_prism_treat_ovary_df) %in% c("name", "moa", "target", "disease.area", "indication"))]
+reduced_prism_treat_ovary_df_2 = reduced_prism_treat_ovary_df[,which(colnames(reduced_prism_treat_ovary_df) %in% c("broad_id", "name", "moa", "target", "disease.area", "indication"))]
 
 reduced_prism_treat_ovary_df_2 <- droplevels(reduced_prism_treat_ovary_df_2)
 
 reduced_prism_treat_ovary_df_2
-
-plot(reduced_prism_treat_ovary_df_2, pch=20)
 ```
 
 
-```{r c4.6.1 - analyzing our data - failed}
-
-## performin k-means
-
-#reduced_prism_treat_ovary_df_2_na_rm <- na.omit(reduced_prism_treat_ovary_df_2)
-
-
-#length(reduced_prism_treat_ovary_df_2_na_rm["NA" == TRUE])
-
-#reduced_prism_treat_ovary_df_2_na_rm[reduced_prism_treat_ovary_df_2_na_rm  == "Inf"] = 0
-
-
-#kmeans(rank(reduced_prism_treat_ovary_df_2$moa, na.last = NA), centers = 2, nstart = 10)
-
-#library(cluster)
-
-#silhouette(kmeans(rank(reduced_prism_treat_ovary_df_2$moa, na.last = NA), centers = 2, nstart = 10))
-
-##km_cluster <- kmeans(reduced_prism_treat_ovary_df_2_na_rm$moa, centers = 1, nstart=10)
-
-#------------------------------------
-
-### new try 
-
-## creating vector with all the drug targets (except NAs) of the most efficient drugs within ovary cancer treatment
-
-
-sort(as.vector(na.omit(reduced_prism_treat_ovary_df_2$target)))
-
-## vector with disease areas that the drugs are normally used for
-
-names_reduced_df <- as.vector(reduced_prism_treat_ovary_df_2$name)
-
-x66 <- sort(as.vector(na.omit(reduced_prism_treat_ovary_df_2$disease.area)))
-
-test66 <- subset(reduced_prism_treat_ovary_df_2, names_reduced_df %in% x66)
-
-test66
-
-### this doesn't work 
-
-### 
-
-```
-
-
-
-
-```{r c4.6.2 - analyzing our data and findings}
+```{r c4.6.1 - analyzing our data and findings}
 
 ## summary of our findings
 
@@ -279,11 +227,112 @@ plot(table(reduced_prism_treat_ovary_df_2$disease.area),  las = 3)
 
 ```{r c4.7}
 
-sort(unique(as.vector(na.omit(reduced_prism_treat_ovary_df_2$moa))))
+### barplot machen von kategorisierten daten
+### nach dosis filtern auch noch wichtig
+### hdac war am meisten dann clustern nach cell lines oder welche gene passen
+### verhältnis von hdac inhibitors bei cancer cell lines im gegensatz zu allen mal schauen--> wilkixon test, (fisher, chi square -> gut für kategorisch gegen kategorisch)
 
-as.data.frame()
+
+##1.3 dosage response plotten -->  dosis auf x achse und effekt auf y achse 
+## regressionsmodell (?)
+
+## creating a barplot with the most frequent moas 
+
+library(dplyr)
+reduced_prism_treat_ovary_df_2 %>% count(moa)
+
+testdf <- reduced_prism_treat_ovary_df_2 %>% count(moa) %>% filter(n >= 3)
+
+testdf <- testdf[0:8,]
+
+par(mar=c(4,20,4,4))
+barplot(testdf$n, names.arg = testdf$moa, las = 1, xlab = "Frequency", horiz=TRUE)
+```
+
+```{r - c4.8 - analyzing HDAC inhibitors for ovary cancer cell lines}
+## Extracting the data from reduced_prism_treat_ovary_df_2 where the moa is HDAC
+reduced_prism_treat_ovary_df_2[reduced_prism_treat_ovary_df_2$moa == "HDAC inhibitor",]
+
+## Extracting broad IDs of HDAC moas
+hdac_inhibitors_ovary <- as.vector(na.omit((reduced_prism_treat_ovary_df_2[reduced_prism_treat_ovary_df_2$moa == "HDAC inhibitor",])$name)) 
+
+## finding the matching DepMap_IDs regarding the most efficient HDAC inhibitors 
+
+ovary_cl_hdac <- vector()
+
+for (drug in hdac_inhibitors_ovary) {
+  ovary_cl_hdac <- c(ovary_cl_hdac, rownames(prism_reduced_ovary)[which(prism_reduced_ovary[drug] == min(prism_reduced_ovary[,drug], na.rm=TRUE))])
+}
+
+ovary_cl_hdac
+
+prism.cl[prism.cl$DepMap_ID %in% ovary_cl_hdac,]
+```
+
+
+```{r - c4.9 - analyzing topoisomerase inhibitors for ovary cancer cell lines}
+
+
+## Extracting the data from reduced_prism_treat_ovary_df_2 where the moa is topoisomerase inhibitor
+reduced_prism_treat_ovary_df_2[reduced_prism_treat_ovary_df_2$moa == "topoisomerase inhibitor",]
+
+## Extracting broad IDs of topoisomerase moas
+topoisomerase_inhibitors_ovary <- as.vector(na.omit((reduced_prism_treat_ovary_df_2[reduced_prism_treat_ovary_df_2$moa == "topoisomerase inhibitor",])$name)) 
+
+## finding the matching DepMap_IDs regarding the most efficient topoisomerase inhibitors 
+
+ovary_cl_topoisomerase_inhibitor <- vector()
+
+for (drug in topoisomerase_inhibitors_ovary) {
+  ovary_cl_topoisomerase_inhibitor <- c(ovary_cl_topoisomerase_inhibitor, rownames(prism_reduced_ovary)[which(prism_reduced_ovary[drug] == min(prism_reduced_ovary[,drug], na.rm=TRUE))])
+}
+
+ovary_cl_topoisomerase_inhibitor
+
+
+## showing these cell lines with their prism.cl data 
+
+prism.cl[prism.cl$DepMap_ID %in% ovary_cl_topoisomerase_inhibitor,]
+```
+
+
+
+```{r - c4.10 - fisher exact test}
+
+## fisher test topoisomerase inhibitors 
+
+fisher_topoisomerase <- data.frame(c(6, 4), c(64, 66), row.names = c("Ovary Cell Lines", "Non-Ovary Cell Lines"))
+
+
+
+colnames(fisher_topoisomerase) <- c("Topoisomerase Inhibitor", "Other")
+
+fisher_topoisomerase
+
+fisher.test(fisher_topoisomerase)
+
+## OR = 1.542097 
+## --> OR > 1 which means HO: The proportion of ovary cancer cell lines with TOPO working is not lower than the proportion of non ovary cell lines with TOPO working.
+
+
+
+## fisher test hdac inhibitors 
+
+fisher_hdac <- data.frame(c(5, 5), c(65, 64), row.names = c("Ovary Cell Lines", "Non-Ovary Cell Lines"))
+
+
+
+colnames(fisher_hdac) <- c("HDAC Inhibitor", "Other")
+
+fisher_hdac
+
+fisher.test(fisher_hdac)
+
+## OR =  0.9847232 
+## --> OR < 1 which means HO: The proportion of ovary cancer cell lines with HDAC working is not higher than the proportion of non ovary cancer cell lines with HDAC working.
 
 ```
+
 
 
 
@@ -439,6 +488,9 @@ for (i in 1:(ncol(prism)/8)){
 
 ```{r S3 Plotting the data from prism_reduced}
 
+## Downlaoding ggplot package
+library(ggplot2)
+
 #Try 1
 qplot(as.matrix(prism_reduced)) ## works, but not sure which values are being shown
 
@@ -523,10 +575,10 @@ hist(min_values_treat_prism_reduced_vector)
 summary(min_values_treat_prism_reduced_vector)
 
 ## setting threshold at 5% quantile
-quantile(min_values_treat_prism_reduced_vector, 0.05)
+quantile(min_values_treat_prism_reduced_vector, 0.1)
 
 hist(min_values_treat_prism_reduced_vector)
-abline(v=quantile(min_values_treat_prism_reduced_vector, 0.05), col="red")
+abline(v=quantile(min_values_treat_prism_reduced_vector, 0.1), col="red")
 
 min_values_treat_prism_reduced_vector_no_Inf = min_values_treat_prism_reduced_vector
 
@@ -536,7 +588,7 @@ summary(min_values_treat_prism_reduced_vector)
 ```{r S8}
 
 ## Creating a vector with all of the min values in prism_reduced under the threshold of the 5% quantile
-prism_reduced_under_threshold = data.frame(min_values_treat_prism_reduced[min_values_treat_prism_reduced < quantile(min_values_treat_prism_reduced_vector, 0.05)])
+prism_reduced_under_threshold = data.frame(min_values_treat_prism_reduced[min_values_treat_prism_reduced < quantile(min_values_treat_prism_reduced_vector, 0.1)])
 
 prism_reduced_under_threshold
 ```
@@ -558,7 +610,7 @@ prism.treat_reduced = prism.treat_reduced[seq(1, nrow(prism.treat_reduced),8),]
 prism.treat_reduced = droplevels(prism.treat_reduced)
 
 ## Creating a new dataframe that only includes columns that are interesting for us 
-prism.treat_reduced_2 = prism.treat_reduced[,which(colnames(prism.treat_reduced) %in% c("name", "moa", "target", "disease.area", "indication"))]
+prism.treat_reduced_2 = prism.treat_reduced[,which(colnames(prism.treat_reduced) %in% c("name", "moa", "target", "disease.area", "indication", "broad_id"))]
 
 summary(prism.treat_reduced_2)
 ```
@@ -570,12 +622,92 @@ plot(table(prism.treat_reduced$disease.area), srt = 90, las = 3)
 
 ## Sorting the moa values in prism.treat_reduced alphabetically
 sort(unique(as.vector(na.omit(prism.treat_reduced$moa))))
+
+## making a barplot with the moas of the prims.treat_reduced_2 dataframe
+
+barplot(which(as.list(prism.treat_reduced_2$moa)>1))
+
+
+##Creating dataframe with the frequency of the different moas in prism.treat_reduced_2
+library(dplyr)
+
+prism.treat_reduced_2 %>% count(moa)
+
+moa_frequencies = prism.treat_reduced_2 %>% count(moa) %>% filter(n >= 3)
+
+moa_frequencies = moa_frequencies[0:9,]
+
+moa_frequencies
+
+
+prism.treat_reduced_2 %>% count(moa) %>% filter(n >= 3) %>% .$x
+
+as.vector((prism.treat_reduced_2 %>% count(moa) %>% filter(n >= 3) %>% .$x)$n)
+
+##Plotting the frequency of the different moas
+par(mar=c(4, 20, 4, 4))
+barplot(moa_frequencies$n, names.arg = moa_frequencies$moa, las = 1, xlab = "Frequency", horiz = TRUE) ## The 3 NAs still have to be removed here, but I don't know how
+## This still needs to be organized by frequency but the values and names are not connected
+
+summary(prism.treat_reduced_2)
+
+```
+
+```{r S12 Finding out in which celllines the HDAC inhibitor shows up}
+
+## Extracting the data from prism.treat_reduced_2 where the moa is HDAC
+prism.treat_reduced_2[prism.treat_reduced_2$moa == "HDAC inhibitor",]
+
+## Extracting the medication names of HDAC moas
+hdac_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "HDAC inhibitor",])$name)) 
+
+## Extracting the DepmapIDs that the above found out medications were used on 
+cl_hdac = vector()
+for (drug in hdac_inhibitors) {
+  cl_hdac = c(cl_hdac, rownames(prism_reduced)[which(prism_reduced[drug] == min(prism_reduced[,drug], na.rm = TRUE))])
+}
+
+## Finding the matching cell lines
+prism.cl[prism.cl$DepMap_ID %in% cl_hdac,]
+
+```
+
+```{r S 13 Chunk 12 for topoisomerase inhibitor}
+
+## Extracting the data from prism.treat_reduced_2 where the moa is topoisomerase inhibitor
+prism.treat_reduced_2[prism.treat_reduced_2$moa == "topoisomerase inhibitor",]
+
+## Extracting the medication names of topoisomerase moas
+topoisomerase_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "topoisomerase inhibitor",])$name)) 
+
+## Extracting the DepmapIDs that the above found out medications were used on 
+cl_topoisomerase_inhibitor = vector()
+for (drug in topoisomerase_inhibitors) {
+  cl_topoisomerase_inhibitor = c(cl_topoisomerase_inhibitor, rownames(prism_reduced)[which(prism_reduced[drug] == min(prism_reduced[,drug], na.rm = TRUE))])
+}
+
+## Finding the matching cell lines
+prism.cl[prism.cl$DepMap_ID %in% cl_topoisomerase_inhibitor,]
+
 ```
 
 
-```{r S12 Trying to cluster ANYTHING}
+```{r S14 Fisher's exact test for the Topoisomerase Inhibitor}
 
-sort(unique(as.vector(na.omit(prism.treat_reduced$moa))))
+fisher_topoisomerase <- data.frame(c(6, 4), c(64, 66), row.names = c("Ovary Cell Lines", "Non-Ovary Cell Lines"))
+
+colnames(fisher_topoisomerase) <- c("Topoisomerase Inhibitor", "Other")
+
+fisher.test(fisher_topoisomerase)
+```
+
+```{r S15 Fisher's exact test for the HDAC Inhibitor}
+
+fisher_hdac <- data.frame(c(5, 5), c(65, 64), row.names = c("Ovary Cell Lines", "Non-Ovary Cell Lines"))
+
+colnames(fisher_hdac) <- c("HDAC", "Other")
+
+fisher.test(fisher_hdac)
 
 ```
 
