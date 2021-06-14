@@ -23,6 +23,7 @@ df_treat
 
 broadID2<- prism.treat[,0]
 broadID2
+broadID3<-rownames(prism.treat)
 
 df_treat2<- data.frame (broadID2, dosage)
 df_treat2
@@ -83,22 +84,108 @@ df_ovary_DepMI_prism
 
 
 ```
-```{r}
+```{r, dataframe dose and ovary cell lines}
 ## creating a dataframe with the ovary DepMap_IDs their ploriferation values and the dose
-new_df_treat<-as.data.frame(t(df_treat))
-new_df_treat
+
+new_df_ovary_DepMI_prism<- as.data.frame(t(df_ovary_DepMI_prism))
+new_df_ovary_DepMI_prism
 
 ##oben den Namen von den Spalten ändern
 
+colnames(new_df_treat)<-broadID3
+new_df_treat
 
 
+##creating a dataframe from the ovary cell lines with DepMApID,ploriferation values, broad ID und dose
+new_df_ovary_DepMI_prism$dose<-df_treat$dosage
+df_ovary_DepMI_dose<-new_df_ovary_DepMI_prism
 
-#### wie mache ich das ich eine Tabelle mit  ovary DepMApID,ploriferation values, broad ID und dose
+
+##command to switch rows (copied out of the internet https://www.it-swarm.com.de/de/r/verschieben-von-spalten-innerhalb-eines-data.frame-ohne-erneutes-eingeben/969073031/)
+moveme <- function (invec, movecommand) {
+  movecommand <- lapply(strsplit(strsplit(movecommand, ";")[[1]], 
+                                 ",|\\s+"), function(x) x[x != ""])
+  movelist <- lapply(movecommand, function(x) {
+    Where <- x[which(x %in% c("before", "after", "first", 
+                              "last")):length(x)]
+    ToMove <- setdiff(x, Where)
+    list(ToMove, Where)
+  })
+  myVec <- invec
+  for (i in seq_along(movelist)) {
+    temp <- setdiff(myVec, movelist[[i]][[1]])
+    A <- movelist[[i]][[2]][1]
+    if (A %in% c("before", "after")) {
+      ba <- movelist[[i]][[2]][2]
+      if (A == "before") {
+        after <- match(ba, temp) - 1
+      }
+      else if (A == "after") {
+        after <- match(ba, temp)
+      }
+    }
+    else if (A == "first") {
+      after <- 0
+    }
+    else if (A == "last") {
+      after <- length(myVec)
+    }
+    myVec <- append(temp, values = movelist[[i]][[1]], after = after)
+  }
+  myVec
+}
+##shifting dose to the first row
+df_ovary_DepMI_dose<-df_ovary_DepMI_dose[moveme(names(df_ovary_DepMI_dose), "dose first")]
+df_ovary_DepMI_dose
 
 
-df_ovary_DepMI_prism$dosage<-new_df_treat$dose
-df_ovary_DepMI_prism
+```
 
-df_ovary_DepMI_prism$dose<-new_df_treat(c("broadID","dosage"))
+```{r}
+## removing all missing values
+rmv.rows = apply(df_ovary_DepMI_dose,1,function(x){sum(is.na(x))})
+df_ovary_DepMI_dose_NA = df_ovary_DepMI_dose[- which(rmv.rows > 0),]
+df_ovary_DepMI_dose_NA
+
+## plotting the decency of single ovary cell proliferation to different doses
+plot(df_ovary_DepMI_dose_NA$dose,
+     df_ovary_DepMI_dose_NA$"ACH-000091",
+     xlab='dosage',
+     ylab='ovary cell proliferation'
+     )
+####würde ich gerne mit sapply auf alle Zellen anwenden Wie?
+
+```
+```{r}
+##histogram of a single ovary cell proliferation
+summary(df_ovary_DepMI_dose_NA)
+histMeanMedCol <- function(x, mean.col, median.col){
+  hist(x)
+  abline(v = c(summary(x)[4],summary(x)[3]), col = c(mean.col,median.col))
+}
+  
+histMeanMedCol(df_ovary_DepMI_dose_NA$`ACH-000091`, "pink","green")
+####würde ich gerne mit sapply auf alle Zellen anwenden Wie?
+```
+
+```{r}
+
+##We now can compute the correlation of the two variables; remember that we can compute the **Pearson correlation** or the **Spearman correlation**
+
+##Pearson correlations
+cor(df_ovary_DepMI_dose_NA$dose,df_ovary_DepMI_dose_NA$"ACH-000091",method='pearson')
+
+##Spearman correlation
+cor(df_ovary_DepMI_dose_NA$dose,df_ovary_DepMI_dose_NA$"ACH-000091",method='spearman')
+
+##spearman correlation table with all variations
+cor.dose1<-cor(df_ovary_DepMI_dose_NA,method='spearman')
+
+##trying to do it with all ovary cells to the column dose
+sapply(cor(df_ovary_DepMI_dose_NA$dose,df_ovary_DepMI_dose_NA[2,],method = "spearman"))
+```
+```{r}
+library(pheatmap)
+pheatmap(cor.dose1)
 ```
 
