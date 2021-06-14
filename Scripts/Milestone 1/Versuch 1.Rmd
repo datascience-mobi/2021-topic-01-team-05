@@ -638,7 +638,10 @@ prism.treat_reduced_2 %>% count(moa)
 
 moa_frequencies = prism.treat_reduced_2 %>% count(moa) %>% filter(n >= 2)
 
+moa_frequencies = moa_frequencies[0:9,]
+
 moa_frequencies
+
 
 prism.treat_reduced_2 %>% count(moa) %>% filter(n >= 2) %>% .$x
 
@@ -658,18 +661,43 @@ summary(prism.treat_reduced_2)
 ## Extracting the data from prism.treat_reduced_2 where the moa is HDAC
 prism.treat_reduced_2[prism.treat_reduced_2$moa == "HDAC inhibitor",]
 
-## Extracting broad IDs of HDAC moas
-as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "HDAC inhibitor",])$broad_id)) 
+## Extracting the medication names of HDAC moas
+hdac_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "HDAC inhibitor",])$name)) 
 
-## Extracting the cell lines from prism using the above extracted broad IDs
-prism[prism$colnames == as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "HDAC inhibitor",])$broad_id)) ]
+## Extracting the DepmapIDs that the above found out medications were used on 
+cl_hdac = vector()
+for (drug in hdac_inhibitors) {
+  cl_hdac = c(cl_hdac, rownames(prism_reduced)[which(prism_reduced[drug] == min(prism_reduced[,drug], na.rm = TRUE))])
+}
+
+## Finding the matching cell lines
+prism.cl[prism.cl$DepMap_ID %in% cl_hdac,]
+
+```
+
+```{r S 13 Chunk 12 for topoisomerase inhibitor}
+
+## Extracting the data from prism.treat_reduced_2 where the moa is topoisomerase inhibitor
+prism.treat_reduced_2[prism.treat_reduced_2$moa == "topoisomerase inhibitor",]
+
+## Extracting the medication names of topoisomerase moas
+topoisomerase_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "topoisomerase inhibitor",])$name)) 
+
+## Extracting the DepmapIDs that the above found out medications were used on 
+cl_topoisomerase_inhibitor = vector()
+for (drug in topoisomerase_inhibitors) {
+  cl_topoisomerase_inhibitor = c(cl_topoisomerase_inhibitor, rownames(prism_reduced)[which(prism_reduced[drug] == min(prism_reduced[,drug], na.rm = TRUE))])
+}
+
+## Finding the matching cell lines
+prism.cl[prism.cl$DepMap_ID %in% cl_topoisomerase_inhibitor,]
 
 ```
 
 
-```{r S13 Trying to cluster ANYTHING}
+```{r S14 Fisher exact test}
 
-sort(unique(as.vector(na.omit(prism.treat_reduced$moa))))
+
 
 ```
 
