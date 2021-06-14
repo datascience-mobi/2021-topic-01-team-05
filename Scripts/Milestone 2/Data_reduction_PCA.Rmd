@@ -122,7 +122,7 @@ count(k2_complete, cluster)
 # Color them using their cluster
 ggplot(k2_complete, aes(x = x, y = y, color = factor(cluster))) = geom_point()
 
-# not sure where is the error on line 126
+# not sure where is the error on line 123
 
 
 # Create a dendrogram from hclust variable and plot it
