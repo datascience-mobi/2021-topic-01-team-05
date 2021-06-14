@@ -541,10 +541,10 @@ hist(min_values_treat_prism_reduced_vector)
 summary(min_values_treat_prism_reduced_vector)
 
 ## setting threshold at 5% quantile
-quantile(min_values_treat_prism_reduced_vector, 0.05)
+quantile(min_values_treat_prism_reduced_vector, 0.1)
 
 hist(min_values_treat_prism_reduced_vector)
-abline(v=quantile(min_values_treat_prism_reduced_vector, 0.05), col="red")
+abline(v=quantile(min_values_treat_prism_reduced_vector, 0.1), col="red")
 
 min_values_treat_prism_reduced_vector_no_Inf = min_values_treat_prism_reduced_vector
 
@@ -554,7 +554,7 @@ summary(min_values_treat_prism_reduced_vector)
 ```{r S8}
 
 ## Creating a vector with all of the min values in prism_reduced under the threshold of the 5% quantile
-prism_reduced_under_threshold = data.frame(min_values_treat_prism_reduced[min_values_treat_prism_reduced < quantile(min_values_treat_prism_reduced_vector, 0.05)])
+prism_reduced_under_threshold = data.frame(min_values_treat_prism_reduced[min_values_treat_prism_reduced < quantile(min_values_treat_prism_reduced_vector, 0.1)])
 
 prism_reduced_under_threshold
 ```
@@ -591,9 +591,6 @@ sort(unique(as.vector(na.omit(prism.treat_reduced$moa))))
 
 ## making a barplot with the moas of the prims.treat_reduced_2 dataframe
 
-ggplot(data=as.data.frame(prism.treat_reduced_2$moa), aes(x=0,1, y=prism.treat_reduced_2$moa)) +
-  geom_bar(stat="identity") ##trash
-
 barplot(which(as.list(prism.treat_reduced_2$moa)>1))
 
 
@@ -602,16 +599,16 @@ library(dplyr)
 
 prism.treat_reduced_2 %>% count(moa)
 
-moa_frequencies = prism.treat_reduced_2 %>% count(moa) %>% filter(n >= 2)
+moa_frequencies = prism.treat_reduced_2 %>% count(moa) %>% filter(n >= 3)
 
 moa_frequencies = moa_frequencies[0:9,]
 
 moa_frequencies
 
 
-prism.treat_reduced_2 %>% count(moa) %>% filter(n >= 2) %>% .$x
+prism.treat_reduced_2 %>% count(moa) %>% filter(n >= 3) %>% .$x
 
-as.vector((prism.treat_reduced_2 %>% count(moa) %>% filter(n >= 2) %>% .$x)$n)
+as.vector((prism.treat_reduced_2 %>% count(moa) %>% filter(n >= 3) %>% .$x)$n)
 
 ##Plotting the frequency of the different moas
 par(mar=c(4, 20, 4, 4))
@@ -661,9 +658,22 @@ prism.cl[prism.cl$DepMap_ID %in% cl_topoisomerase_inhibitor,]
 ```
 
 
-```{r S14 Fisher exact test}
+```{r S14 Fisher's exact test for the Topoisomerase Inhibitor}
 
+fisher_topoisomerase <- data.frame(c(6, 4), c(64, 66), row.names = c("Ovary Cell Lines", "Non-Ovary Cell Lines"))
 
+colnames(fisher_topoisomerase) <- c("Topoisomerase Inhibitor", "Other")
+
+fisher.test(fisher_topoisomerase)
+```
+
+```{r S15 Fisher's exact test for the HDAC Inhibitor}
+
+fisher_hdac <- data.frame(c(5, 5), c(65, 64), row.names = c("Ovary Cell Lines", "Non-Ovary Cell Lines"))
+
+colnames(fisher_hdac) <- c("HDAC", "Other")
+
+fisher.test(fisher_hdac)
 
 ```
 
