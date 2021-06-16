@@ -1,0 +1,154 @@
+---
+title: 
+author: "Rositsa Todorovska"
+date: "6/13/2021"
+output: html_document
+---
+
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(devtools)
+install_github("vqv/ggbiplot")
+library(dplyr)
+library(ggplot2)
+library(dendextend)
+
+```
+
+
+
+```{r  }
+
+# Copied from Versuch 1, Milestone 1
+
+## creating a data frame df_cl consisting of DepMap_IDs and lineages
+lineage <- prism.cl$lineage
+DepMap_ID <- prism.cl$DepMap_ID 
+df_cl <- data.frame(DepMap_ID, lineage)
+
+## subsetting data frame to obtain only ovary cell lines with their DepMap_IDs
+df_ovary_cl <- subset(df_cl, lineage == "ovary")
+df_ovary_cl
+dim(df_ovary_cl)
+
+## creating a vector that only contains the ovary cancer DepMap_IDs 
+vector_ovary_DepMI <- as.vector(df_ovary_cl$DepMap_ID)
+vector_ovary_DepMI
+
+## creating a subset dataframe of prism with only the ovary DepMap_IDs and their proliferation values   
+vector_ovary_DepMI
+df_ovary_DepMI_prism  <- prism[rownames(prism) %in% vector_ovary_DepMI,]
+df_ovary_DepMI_prism
+
+```
+
+```{r r1 Principal component analysis of prism.exp dataset, based only on ovary cancer cell lines}
+
+
+## Extract only the ovary cancer cell lines and the investigated genes from prism.exp dataset
+## Creating a dataframe with transcripts per million values for ovary cell lines
+df_ovary_DepMI_prism.exp  <- subset(prism.exp, DepMap_ID %in% vector_ovary_DepMI)
+df_ovary_DepMI_prism.exp
+# Perform PCA
+
+A = as.matrix(df_ovary_DepMI_prism.exp)
+
+prism.exp_ovary_pca = prcomp(t(A), scale = TRUE)
+
+plot(prism.exp_ovary_pca$x[,1], prism.exp_ovary_pca$x[,2])
+
+prism.exp_ovary_pca.var = prism.exp_ovary_pca$sdev^2
+prism.exp_ovary_pca.var.per = round(prism.exp_ovary_pca.var/sum(prism.exp_ovary_pca.var)*100,1)
+barplot(prism.exp_ovary_pca.var.per, main = "Distribution of the variation of the data explained by PCs", xlab = "Principal component", ylab = "Percent variation")
+
+```
+
+```{r r2 }
+
+summary(prcomp(A))
+
+# Compute the covariance between the first two columns of A
+cov(A[, 1], A[, 2])
+
+# Plot of PC1 against PC2
+plot(prism.exp_ovary_pca$x[,1], prism.exp_ovary_pca$x[,2], xlab="PC1", ylab = "PC2", main = "PC1 / PC2 - plot")
+
+# To compute a graphic of the PCs additional tools are required
+# library(ggbiplot)
+# ggbiplot(prism.exp_ovary_pca)
+
+
+columns = colnames(df_ovary_DepMI_prism.exp) == "Genes"
+rows = rownames(df_ovary_DepMI_prism.exp) == "Ovary cancer cell lines"
+
+# Creating a 2D plot 
+library("factoextra")
+fviz_pca_ind(prism.exp_ovary_pca, geom.ind = "point", pointshape = 21, 
+             pointsize = 2, 
+             fill.ind = ,
+             col.ind = "darkblue", 
+             palette = "jco", 
+             addEllipses = TRUE,
+             label = "var",
+             col.var = "red",
+             repel = TRUE,
+             legend.title = "Genes") +
+  ggtitle("2D PCA-plot") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+# Plot of the resultant PCs
+biplot(prism.exp_ovary_pca, scale = 1)
+```
+
+```{r r3 Performing cluster analysis }
+
+# Perform clustering to identify celllines with similar response/observations
+
+dist_genes_celllines = dist(df_ovary_DepMI_prism.exp)
+
+# Perfrom hierarchical clustering using complete linkage
+hc_ovary = hclust(dist_genes_celllines, method = "complete")
+
+# Calculate assignment vector with k = 2
+clusters_k2 = cutree( hc_ovary, k = 2)
+
+k2_complete = mutate(df_ovary_DepMI_prism.exp, cluster = clusters_k2 )
+
+# Count cluster assignments
+count(k2_complete, cluster)
+
+# Plot the transcripts per milion for ovarian cancer cell lines and corresponding genes
+# Color them using their cluster
+ggplot(k2_complete, aes(x = x, y = y, color = factor(cluster))) = geom_point()
+
+# not sure where is the error on line 123
+
+
+# Create a dendrogram from hclust variable and plot it
+dend_ovary_prism.exp = as.dendrogram(hc_ovary)
+plot( dend_ovary_prism.exp)
+
+dend_200 = color_branches(hc_ovary, h = 200)
+plot(dend_200)
+
+```
+
+```{r r4}
+# K-means clustering
+
+# this does not work
+
+# Build a kmeans model
+model_km2 = kmeans(df_ovary_DepMI_prism.exp, centers = 2)
+
+# Extract cluster assignment vector from the model
+clust_km2 = model_km2$cluster
+
+# Insert the cluster assignment in a new data frame 
+ovary_DepMI_prism.exp_km2 = mutate(df_ovary_DepMI_prism.exp, cluster = clust_km2)
+
+# this does not work?
+ggplot(ovary_DepMI_prism.exp_km2, aes(x = x, y = y, color = factor(cluster))) + geom_point()
+
+```

@@ -72,14 +72,15 @@ df_ovary_cl
 
 dim(df_ovary_cl)
 
-## creating a vector with ovary cancer DepMap_IDs 
+## creating a vector that only contains the ovary cancer DepMap_IDs 
 
 vector_ovary_DepMI <- as.vector(df_ovary_cl$DepMap_ID)
-vector_ovary_DepMI <- as.vector(df_ovary_cl$DepMap_ID)
+
+
 vector_ovary_DepMI
 
-## creating a subset dataframe of prism with only the ovary DepMap_IDs and their proliferation values   
-df_ovary_DepMI_prism  <- subset(prism, DepMap_ID %in% vector_ovary_DepMI)
+df_ovary_DepMI_prism  <- prism[rownames(prism) %in% vector_ovary_DepMI,]
+
 df_ovary_DepMI_prism
 
 
@@ -149,7 +150,7 @@ df_ovary_DepMI_dose_NA
 
 ## plotting the decency of single ovary cell proliferation to different doses
 plot(df_ovary_DepMI_dose_NA$dose,
-     df_ovary_DepMI_dose_NA$"ACH-000091",
+     df_ovary_DepMI_dose_NA$"ACH-000013",
      xlab='dosage',
      ylab='ovary cell proliferation'
      )
@@ -164,7 +165,7 @@ histMeanMedCol <- function(x, mean.col, median.col){
   abline(v = c(summary(x)[4],summary(x)[3]), col = c(mean.col,median.col))
 }
   
-histMeanMedCol(df_ovary_DepMI_dose_NA$`ACH-000091`, "pink","green")
+histMeanMedCol(df_ovary_DepMI_dose_NA$`ACH-000013`, "pink","green")
 ####würde ich gerne mit sapply auf alle Zellen anwenden Wie?
 ```
 
@@ -173,10 +174,12 @@ histMeanMedCol(df_ovary_DepMI_dose_NA$`ACH-000091`, "pink","green")
 ##We now can compute the correlation of the two variables; remember that we can compute the **Pearson correlation** or the **Spearman correlation**
 
 ##Pearson correlations
-cor(df_ovary_DepMI_dose_NA$dose,df_ovary_DepMI_dose_NA$"ACH-000091",method='pearson')
+cor(df_ovary_DepMI_dose_NA$dose,df_ovary_DepMI_dose_NA$"ACH-000013",method='pearson')
 
 ##Spearman correlation
-cor(df_ovary_DepMI_dose_NA$dose,df_ovary_DepMI_dose_NA$"ACH-000091",method='spearman')
+cor(df_ovary_DepMI_dose_NA$dose,df_ovary_DepMI_dose_NA$"ACH-000013",method='spearman')
+
+####alle 8 Zeilen verschiedene Wirkstoffe
 
 ##spearman correlation table with all variations
 cor.dose1<-cor(df_ovary_DepMI_dose_NA,method='spearman')
