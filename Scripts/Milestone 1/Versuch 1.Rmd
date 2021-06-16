@@ -301,7 +301,7 @@ prism.cl[prism.cl$DepMap_ID %in% ovary_cl_topoisomerase_inhibitor,]
 
 ## fisher test topoisomerase inhibitors 
 
-fisher_topoisomerase <- data.frame(c(6, 4), c(64, 66), row.names = c("Ovary Cell Lines", "Non-Ovary Cell Lines"))
+fisher_topoisomerase <- data.frame(c(9, 8), c(131, 131), row.names = c("Ovary Cell Lines", "Non-Ovary Cell Lines"))
 
 
 
@@ -311,14 +311,14 @@ fisher_topoisomerase
 
 fisher.test(fisher_topoisomerase)
 
-## OR = 1.542097 
+## OR =  1.124525 
 ## --> OR > 1 which means HO: The proportion of ovary cancer cell lines with TOPO working is not lower than the proportion of non ovary cell lines with TOPO working.
 
 
 
 ## fisher test hdac inhibitors 
 
-fisher_hdac <- data.frame(c(5, 5), c(65, 64), row.names = c("Ovary Cell Lines", "Non-Ovary Cell Lines"))
+fisher_hdac <- data.frame(c(10, 7), c(130, 131), row.names = c("Ovary Cell Lines", "Non-Ovary Cell Lines"))
 
 
 
@@ -328,7 +328,16 @@ fisher_hdac
 
 fisher.test(fisher_hdac)
 
-## OR =  0.9847232 
+## OR = 1.437682 
+
+## --> OR > 1 which means HO: The proportion of ovary cancer cell lines with TOPO working is not lower than the proportion of non ovary cell lines with TOPO working.
+
+
+
+
+###
+
+
 ## --> OR < 1 which means HO: The proportion of ovary cancer cell lines with HDAC working is not higher than the proportion of non ovary cancer cell lines with HDAC working.
 
 ```
