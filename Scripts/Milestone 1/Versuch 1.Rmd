@@ -185,7 +185,7 @@ length(under_threshold_prism_reduced_ovary)
 
 ## looking at values below threshold
 
-hist(under_threshold_prism_reduced_ovary)
+hist(under_threshold_prism_reduced_ovary, xlab = "Proliferation values", main = "Under Threshold Drug-Proliferation Values in Ovary Cell Lines")
 
 plot(under_threshold_prism_reduced_ovary, pch=20)
 
@@ -289,7 +289,6 @@ for (drug in topoisomerase_inhibitors_ovary) {
 
 ovary_cl_topoisomerase_inhibitor
 
-
 ## showing these cell lines with their prism.cl data 
 
 prism.cl[prism.cl$DepMap_ID %in% ovary_cl_topoisomerase_inhibitor,]
@@ -301,8 +300,7 @@ prism.cl[prism.cl$DepMap_ID %in% ovary_cl_topoisomerase_inhibitor,]
 
 ## fisher test topoisomerase inhibitors 
 
-fisher_topoisomerase <- data.frame(c(9, 8), c(131, 131), row.names = c("Ovary Cell Lines", "Non-Ovary Cell Lines"))
-
+fisher_topoisomerase <- data.frame(c(9,9), c(131,131), row.names = c("Ovary Cell Lines", "Non-Ovary Cell Lines"))
 
 
 colnames(fisher_topoisomerase) <- c("Topoisomerase Inhibitor", "Other")
@@ -311,15 +309,9 @@ fisher_topoisomerase
 
 fisher.test(fisher_topoisomerase)
 
-## OR =  1.124525 
-## --> OR > 1 which means HO: The proportion of ovary cancer cell lines with TOPO working is not lower than the proportion of non ovary cell lines with TOPO working.
-
-
-
 ## fisher test hdac inhibitors 
 
-fisher_hdac <- data.frame(c(10, 7), c(130, 131), row.names = c("Ovary Cell Lines", "Non-Ovary Cell Lines"))
-
+fisher_hdac <- data.frame(c(10,9), c(130, 131), row.names = c("Ovary Cell Lines", "Non-Ovary Cell Lines"))
 
 
 colnames(fisher_hdac) <- c("HDAC Inhibitor", "Other")
@@ -327,137 +319,44 @@ colnames(fisher_hdac) <- c("HDAC Inhibitor", "Other")
 fisher_hdac
 
 fisher.test(fisher_hdac)
-
-## OR = 1.437682 
-
-## --> OR > 1 which means HO: The proportion of ovary cancer cell lines with TOPO working is not lower than the proportion of non ovary cell lines with TOPO working.
-
-
-
-
-###
-
-
-## --> OR < 1 which means HO: The proportion of ovary cancer cell lines with HDAC working is not higher than the proportion of non ovary cancer cell lines with HDAC working.
-
 ```
 
+```{r - c4.11. clustering ovary cell lines based on their drug response}
 
 
 
-```{r c5}
-numeric_prism_reduced_ovary <- lapply(prism_reduced_ovary, as.numeric)
+prism_reduced_ovary_no_NAs = prism_reduced_ovary ## create a copy of prism_reduced to keep a version that includes the NAs
 
-
-## fml 
-
-for(i in 1:481) {
-   i <- i+1
-   print(paste(hist(prism_reduced_ovary[,i])))
-}
-
-```
-
-```{r c6}
-
-prism_reduced_ovary_mean_values <- apply(prism_reduced_ovary, 2, mean, na.rm=TRUE)
-
-
-library(ggplot2)
-
-## klappt alles nicht 
-# t1 <- as.matrix(prism_reduced_ovary[,1:1394])
-
-# t2 <- as.matrix(prism_reduced_ovary[1:30,])
-
-
-# cor_t1_t2 <- cor(t1,t2, method = "pearson")
-
-
-# cor_t1_t2
-
-
-# geom_boxplot(prism_reduced_ovary)
-
-```
+for(i in 1:ncol(prism_reduced_ovary)){
+  prism_reduced_ovary_no_NAs[is.na(prism_reduced_ovary[, i]), i] <- mean(prism_reduced_ovary[, i], na.rm = TRUE)
+}  ## this code replaces the NAs in prism_reduced with the col mean and saves it into a new data frame called prism_reduced_ovary_no_NAs
 
 
 
-```{r c7}
-## trash
-## topVar = apply(prism_reduced_ovary, 1, var, na.rm=TRUE)
+km <- kmeans(prism_reduced_ovary_no_NAs[!is.na(prism_reduced_ovary_no_NAs)], centers=5)
 
+km$cluster
 
-## summary(topVar)
+str(km)
 
-```
+km$tot.withinss
 
-```{r c8}
+library(ggpubr)
+library(factoextra)
+install.packages("tidyverse")
+install.packages("readxl")
+install.packages("FactoMineR")
+install.packages("factoextra")
 
-## fail 
+# Load Libraries
+library(tidyverse)
+library(readxl)
+library(FactoMineR)
+library(factoextra)
 
-library(ggplot2)
-library(colorspace)
-library(gridExtra)
-
-prism_reduced_ovary_mean_values
-
-prism_reduced_ovary_mean_values_df <- as.data.frame(prism_reduced_ovary_mean_values)
-
-
-p = ggplot(prism_reduced_ovary_mean_values_df, aes(x = prism_reduced_ovary_mean_values_df[,], y = prism_reduced_ovary_mean_values_df[,]))
-ggtitle("test")
-xlab("cell lines")
-ylab("meds")
-p2 = p 
-stat_bin_hex(color="white", na.rm=TRUE)
-scale_fill_gradientn(colors=c("purple", "green"), name = "Frequency", na.value=NA)
-grid.arrange(p2,ncol=1)
-
-
-
-p = ggplot(prism_reduced_ovary_mean_values_df, aes(x = prism_reduced_ovary_mean_values_df[,], y = prism_reduced_ovary_mean_values_df[,]), na.rm=TRUE)
-ggtitle("test")
-xlab("cell lines")
-ylab("meds")
-p2 = p + geom_point(alpha = 0.01, color="purple") +
-  theme_bw()
-grid.arrange(p2,ncol=1)
-```
-```{r c9}
-
-boxplot(prism_reduced_ovary)
-
-rm(boxplot1)
-
-summary(prism_reduced_ovary)
-
-```
-
-```{r c10}
-## trying again to create a histogram of prism_reduced_ovary
-
-library(MASS)
-library(car)
-library(ggplot2)
-
-
-ggplot(data = prism_reduced_ovary, mapping = aes(x = 1)) 
-  geom_histogram(bins = 20, fill = "red") 
-  labs(x = "celllines") 
-  ggtitle("Histogram of prism_reduced_ovary") 
-  theme(plot.title = element_text(hjust = 0.5))
-
-
-
-```
-```{r}
-## trying a pca
-
-dat_test = prism_reduced_ovary[apply(prism_reduced_ovary,2,function(x) {sum(is.na(x))==0},),]
-
-
-
+dim(km)
+fviz_nbclust(scale(prism_reduced_ovary_no_NAs[!is.na(prism_reduced_ovary_no_NAs)]), kmeans, nstart=10, method = "wss") + 
+  geom_vline(xintercept = 5, linetype = 1)
 ```
 
 
