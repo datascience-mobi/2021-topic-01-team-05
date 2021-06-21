@@ -394,6 +394,8 @@ for (i in 1:(ncol(prism)/8)){
 }
 
 prism_reduced = prism_reduced[-which(rownames(prism_reduced) %in% vector_ovary_DepMI),]
+
+prism_reduced = prism_reduced[, !is.na(apply(prism_reduced, 2, mean, na.rm = TRUE))]
 ```
 
 ```{r S3 Plotting the data from prism_reduced}
@@ -414,7 +416,6 @@ print(hist_prism_reduced)
 
 summary(unlist(prism_reduced))
 
-prism_reduced
 prism_reduced_no_NAs = prism_reduced ## create a copy of prism_reduced to keep a version that includes the NAs
 
 for(i in 1:ncol(prism_reduced)){
@@ -605,14 +606,37 @@ fisher_hdac
 fisher.test(fisher_hdac)
 ```
 
-```{r}
+```{r k means clustering}
 
-summary(unlist(prism_reduced_no_NAs))
-kmeans(na_mean(prism_reduced_no_NAs), centers = 2, nstart = 25)
+## k means clustering by medications
+kmeans(prism_reduced_no_NAs, centers = 4, nstart = 25) ## the elbow plot isnt very aussagekräftig, so we decided to write a for loop testing which number of centers works best 
 
-test = na_mean(prism_reduced_no_NAs)
-summary(unlist(test))
-kmeans(test, centers = 2, nstart = 25)
+## Elbow plot clustered by cell lines 
+wss = sapply(2:15,function(k) { 
+  kmeans(prism_reduced_no_NAs, centers =k)$tot.withinss
+})
+plot(2:15,wss,type='b',pch=19,xlab="Number of clusters K",
+     ylab="Total within-clusters sum of squares")
+
+## Silhouette plot 
+## This is for the medications
+D = dist(prism_reduced_no_NAs)
+
+library(cluster)
+km = kmeans(prism_reduced_no_NAs, centers = 4, nstart = 10)
+s = silhouette(km$cluster, D, col="red")
+plot(s, border = NA)
+
+## For loop checking how many centers are best
+## this is clustered by cell lines
+par(mfrow = c(2,3))
+for (i in 3:14){
+  km = kmeans(prism_reduced_no_NAs, centers = i, nstart = 20)
+  s = silhouette(km$cluster, D, col="red")
+  plot(s, border = NA)
+}
+
+
 ```
 
 
