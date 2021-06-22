@@ -734,9 +734,6 @@ biplot(pca1, scale = 1)
 
 ```{r r2 - Performing PCA of prism_reduced_ovary_no_NAs }
 
-# Error is shown
-# Remove NAs from prism_reduced_ovary_NAs
-
 summary(unlist(prism_reduced_ovary))
 
 prism_reduced_ovary_no_NAs = prism_reduced_ovary ## create a copy of prism_reduced to keep a version that includes the NAs
@@ -791,9 +788,6 @@ fviz_pca_ind(pca1, geom.ind = "point", pointshape = 21,
 
 # Plot of the resultant PCs
 biplot(pca2, scale = 1)
-
-# Count NAs in prism_reduced_ovary_no_NAs
-print(paste(c("Percentage of NAs:", round(sum(apply(prism_reduced_ovary_no_NAs, 2, function(x){sum(is.na(x))})) / (nrow(prism_reduced_ovary_no_NAs)*ncol(prism_reduced_ovary_no_NAs)),2)), collapse = " "))
 
 ```
 
