@@ -684,4 +684,116 @@ for (i in 3:14){
 
 ```
 
+```{r - r1 performing PCA of the datasets prism_reduced_no_NAs and prism_reduced_ovary_no_NAs }
+
+
+# Perform PCA of prism_reduced_no_NAs
+
+A = as.matrix(prism_reduced_no_NAs)
+
+pca1 = prcomp(t(A), scale = TRUE)
+
+plot(pca1$x[,1], pca1$x[,2])
+
+pca1_var = pca1$sdev^2
+pca1_var_per = round(pca1_var/sum(pca1_var)*100,1)
+barplot(pca1_var_per, main = "Distribution of the variation of the data explained by PCs", xlab = "Principal component", ylab = "Percent variation")
+
+summary(prcomp(A))
+
+# Compute the covariance between the first two columns of A
+cov(A[, 1], A[, 2])
+
+# Plot of PC1 against PC2
+plot(pca1$x[,1], pca1$x[,2], xlab="PC1", ylab = "PC2", main = "PC1 / PC2 - plot")
+
+# To compute a graphic of the PCs additional tools are required
+# library(ggbiplot)
+# ggbiplot(pca1)
+
+
+# Creating a 2D plot 
+# Load the required package
+library("factoextra")
+fviz_pca_ind(pca1, geom.ind = "point", pointshape = 21, 
+             pointsize = 2, 
+             fill.ind = ,
+             col.ind = "black", 
+             palette = "jco", 
+             addEllipses = TRUE,
+             label = "var",
+             col.var = "red",
+             repel = TRUE,
+             legend.title = "Drugs") +
+  ggtitle("2D PCA-plot of prism_reduced_no_NAs") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+# Plot of the resultant PCs
+biplot(pca1, scale = 1)
+```
+
+```{r r2 - Performing PCA of prism_reduced_ovary_no_NAs }
+
+# Error is shown
+# Remove NAs from prism_reduced_ovary_NAs
+
+summary(unlist(prism_reduced_ovary))
+
+prism_reduced_ovary_no_NAs = prism_reduced_ovary ## create a copy of prism_reduced to keep a version that includes the NAs
+
+## creating a dataframe without NAs 
+
+for(i in 1:ncol(prism_reduced_ovary)){
+  prism_reduced_ovary_no_NAs[is.na(prism_reduced_ovary[, i]), i] <- mean(prism_reduced_ovary[, i], na.rm = TRUE)
+}  ## this code replaces the NAs in prism_reduced with the col mean and saves it into a new data frame called prism_reduced_ovary_no_NAs
+
+
+# Perform PCA 
+
+B = as.matrix(prism_reduced_ovary_no_NAs)
+
+pca2 = prcomp(t(B), scale = TRUE)
+
+plot(pca2$x[,1], pca2$x[,2])
+
+pca2_var = pca2$sdev^2
+pca2_var_per = round(pca2_var/sum(pca2_var)*100,1)
+barplot(pca2_var_per, main = "Distribution of the variation of the data explained by PCs", xlab = "Principal component", ylab = "Percent variation")
+
+summary(prcomp(B))
+
+# Compute the covariance between the first two columns of A
+cov(B[, 1], B[, 2])
+
+# Plot of PC1 against PC2
+plot(pca2$x[,1], pca2$x[,2], xlab="PC1", ylab = "PC2", main = "PC1 / PC2 - plot")
+
+# To compute a graphic of the PCs additional tools are required
+# library(ggbiplot)
+# ggbiplot(pca2)
+
+
+# Creating a 2D plot 
+# Load the required package
+library("factoextra")
+fviz_pca_ind(pca1, geom.ind = "point", pointshape = 21, 
+             pointsize = 2, 
+             fill.ind = ,
+             col.ind = "black", 
+             palette = "jco", 
+             addEllipses = TRUE,
+             label = "var",
+             col.var = "red",
+             repel = TRUE,
+             legend.title = "Drugs") +
+  ggtitle("2D PCA-plot of prism_reduced_ovary_no_NAs") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+# Plot of the resultant PCs
+biplot(pca2, scale = 1)
+
+# Count NAs in prism_reduced_ovary_no_NAs
+print(paste(c("Percentage of NAs:", round(sum(apply(prism_reduced_ovary_no_NAs, 2, function(x){sum(is.na(x))})) / (nrow(prism_reduced_ovary_no_NAs)*ncol(prism_reduced_ovary_no_NAs)),2)), collapse = " "))
+
+```
 
