@@ -693,7 +693,7 @@ A = as.matrix(prism_reduced_no_NAs)
 
 pca1 = prcomp(t(A), scale = TRUE)
 
-plot(pca1$x[,1], pca1$x[,2])
+plot(pca1$x[,1], pca1$x[,2], pch=20)
 
 pca1_var = pca1$sdev^2
 pca1_var_per = round(pca1_var/sum(pca1_var)*100,1)
@@ -705,7 +705,7 @@ summary(prcomp(A))
 cov(A[, 1], A[, 2])
 
 # Plot of PC1 against PC2
-plot(pca1$x[,1], pca1$x[,2], xlab="PC1", ylab = "PC2", main = "PC1 / PC2 - plot")
+plot(pca1$x[,1], pca1$x[,2], xlab="PC1", ylab = "PC2", main = "PC1 / PC2 - plot", pch=20)
 
 # To compute a graphic of the PCs additional tools are required
 # library(ggbiplot)
@@ -751,7 +751,7 @@ B = as.matrix(prism_reduced_ovary_no_NAs)
 
 pca2 = prcomp(t(B), scale = TRUE)
 
-plot(pca2$x[,1], pca2$x[,2])
+plot(pca2$x[,1], pca2$x[,2], pch=20)
 
 pca2_var = pca2$sdev^2
 pca2_var_per = round(pca2_var/sum(pca2_var)*100,1)
@@ -763,7 +763,7 @@ summary(prcomp(B))
 cov(B[, 1], B[, 2])
 
 # Plot of PC1 against PC2
-plot(pca2$x[,1], pca2$x[,2], xlab="PC1", ylab = "PC2", main = "PC1 / PC2 - plot")
+plot(pca2$x[,1], pca2$x[,2], xlab="PC1", ylab = "PC2", main = "PC1 / PC2 - plot", pch=20)
 
 # To compute a graphic of the PCs additional tools are required
 # library(ggbiplot)
