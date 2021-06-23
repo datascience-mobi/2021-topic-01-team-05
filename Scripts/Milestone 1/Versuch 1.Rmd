@@ -684,7 +684,7 @@ for (i in 3:14){
 
 ```
 
-```{r - r1 performing PCA of the datasets prism_reduced_no_NAs and prism_reduced_ovary_no_NAs }
+```{r - r1 performing PCA of the datasets prism_reduced_no_NAs  }
 
 
 # Perform PCA of prism_reduced_no_NAs
