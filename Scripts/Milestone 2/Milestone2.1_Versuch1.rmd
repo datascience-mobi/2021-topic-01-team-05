@@ -5,6 +5,15 @@ date: "5/27/2021"
 output: rmdformats::material
 ---
 
+heatmap machen 
+achsen mit besonders vielen Einträgen
+1 dimension hierarchisches clustering
+2 dimension subtypes
+3 dimension celllines
+
+nur relevante PCs in scatterplot plotten
+filtern
+p wert bestimmen - multiples testing
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -110,6 +119,10 @@ summary(prism.treat)
 
 # Data visualization
 
+# bestimmte spalten rausnehmen
+# in prism hauptdatensatz schauen
+lineage plotten
+
 plot(prism.cl, prism.treat, na.rm = TRUE, type = "o", xlim = range(prism.cl), ylim = range(prism.treat), pch = 16, xlab = "Cancer cell lines", ylab = "Applied drugs")
 
 # Visualizing the datasets with ggplot
@@ -154,6 +167,11 @@ as.factor(prism.treat)
 ggplot(prism, aes(x = prism_ovary, fill = prism.treat )) + geom_point()
 
 
+prism.treat
+# data in tidy data format formatieren 
+# spalten - y = drug id, x = cellline id, colour = prism value
+
+prism.treat
 
 ```
 

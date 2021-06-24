@@ -692,40 +692,70 @@ fisher_hdac
 fisher.test(fisher_hdac)
 ```
 
-```{r k means clustering}
+```{r S15 k means clustering by cell lines}
 
-## k means clustering by medications
+## k means clustering 
 kmeans(prism_reduced_no_NAs, centers = 4, nstart = 25) ## the elbow plot isnt very aussagekräftig, so we decided to write a for loop testing which number of centers works best 
 
 ## Elbow plot clustered by cell lines 
-wss = sapply(2:15,function(k) { 
+wss_all = sapply(2:15,function(k) { 
   kmeans(prism_reduced_no_NAs, centers =k)$tot.withinss
 })
-plot(2:15,wss,type='b',pch=19,xlab="Number of clusters K",
+plot(2:15,wss_all,type='b',pch=19,xlab="Number of clusters K",
      ylab="Total within-clusters sum of squares")
 
 ## Silhouette plot 
-## This is for the medications
-D = dist(prism_reduced_no_NAs)
+## This is for the cell lines
+D_all = dist(prism_reduced_no_NAs)
 
 library(cluster)
-km = kmeans(prism_reduced_no_NAs, centers = 4, nstart = 10)
-s = silhouette(km$cluster, D, col="red")
-plot(s, border = NA)
+km_all = kmeans(prism_reduced_no_NAs, centers = 4, nstart = 10)
+s_all = silhouette(km_all$cluster, D_all, col="red")
+plot(s_all, border = NA)
 
 ## For loop checking how many centers are best
 ## this is clustered by cell lines
 par(mfrow = c(2,3))
 for (i in 3:14){
-  km = kmeans(prism_reduced_no_NAs, centers = i, nstart = 20)
-  s = silhouette(km$cluster, D, col="red")
-  plot(s, border = NA)
+  km_all = kmeans(prism_reduced_no_NAs, centers = i, nstart = 20)
+  s_all = silhouette(km_all$cluster, D_all, col="red")
+  plot(s_all, border = NA)
 }
-
 
 ```
 
-```{r - r1 performing PCA of the datasets prism_reduced_no_NAs and prism_reduced_ovary_no_NAs }
+
+```{r k means by medications}
+
+
+## Elbow plot clustered by medications
+wss1_all = sapply(2:15,function(k) { 
+  kmeans(x=t(prism_reduced_no_NAs), centers =k)$tot.withinss
+})
+plot(2:15,wss1_all,type='b',pch=20,xlab="Number of clusters K",
+     ylab="Total within-clusters sum of squares")
+
+## Silhouette plot 
+## This is for the medications
+D1_all = dist(prism_reduced_no_NAs)
+
+library(cluster)
+km1_all = kmeans(prism_reduced_no_NAs, centers = 4, nstart = 10)
+s1_all = silhouette(km1_all$cluster, D_all, col="red")
+plot(s1_all, border = NA)
+
+## For loop checking how many centers are best
+## this is clustered by medications
+par(mfrow = c(2,3))
+for (i in 3:14){
+  km1_all = kmeans(prism_reduced_no_NAs, centers = i, nstart = 20)
+  s1_all = silhouette(km1_all$cluster, D1_all, col="red")
+  plot(s1_all, border = NA)
+}
+
+```
+
+```{r - r1 performing PCA of the datasets prism_reduced_no_NAs  }
 
 
 # Perform PCA of prism_reduced_no_NAs
@@ -772,6 +802,7 @@ fviz_pca_ind(pca1, geom.ind = "point", pointshape = 21,
 # Plot of the resultant PCs
 biplot(pca1, scale = 1)
 ```
+
 
 ```{r r2 - Performing PCA of prism_reduced_ovary_no_NAs }
 
@@ -829,6 +860,28 @@ fviz_pca_ind(pca1, geom.ind = "point", pointshape = 21,
 
 # Plot of the resultant PCs
 biplot(pca2, scale = 1)
+
+```
+```{r S16 PCA Darstellung ohne T}
+
+km1 = kmeans(pca1$x[,1:2],centers=5,nstart = 100)
+col = c('green','blue','red', "orange", "brown")
+col.km_all = col[km_all$cluster]
+plot(pca1$x[,1], pca2$x[,2],
+col= col.km_all, pch=20,
+xlab='PC1',ylab='PC2',
+main = "PC1 vs. PC2 for kmeans clusters")
+
+```
+```{r S17 PCA Darstellung mit T }
+
+km1 = kmeans(pca1$x[,1:2],centers=5,nstart = 100)
+col = c('green','blue','red', "orange", "brown")
+col.km1_all = col[km1_all$cluster]
+plot(pca1$x[,1], pca2$x[,2],
+col= col.km1_all, pch=20,
+xlab='PC1',ylab='PC2',
+main = "PC1 vs. PC2 for kmeans clusters")
 
 ```
 

@@ -114,15 +114,19 @@ hc_ovary = hclust(dist_genes_celllines, method = "complete")
 clusters_k2 = cutree( hc_ovary, k = 2)
 
 k2_complete = mutate(df_ovary_DepMI_prism.exp, cluster = clusters_k2 )
+k2_complete
 
 # Count cluster assignments
 count(k2_complete, cluster)
 
 # Plot the transcripts per milion for ovarian cancer cell lines and corresponding genes
 # Color them using their cluster
-ggplot(k2_complete, aes(x = x, y = y, color = factor(cluster))) = geom_point()
+ggplot(k2_complete, aes(x = x, y = y, color = factor(cluster))) + geom_point()
 
 # not sure where is the error on line 123
+# x mit mutate die spaltennamen benennen
+# eher mit clustering beschäftigen, nicht so viel bei pca machen
+# package tidyr
 
 
 # Create a dendrogram from hclust variable and plot it
