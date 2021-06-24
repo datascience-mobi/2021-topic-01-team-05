@@ -362,18 +362,18 @@ for(i in 1:ncol(prism_reduced_ovary)){
 
 ## performing k-means and finding the optimal number of clusters by using the total within-clusters sum of squares method
 
-km = kmeans(x=t(prism_reduced_ovary_no_NAs),
+km_ovary = kmeans(x=t(prism_reduced_ovary_no_NAs),
             centers = 4, 
             nstart = 10)
-km$cluster
+km_ovary$cluster
 
-str(km)
+str(km_ovary)
 
-km$tot.withinss
+km_ovary$tot.withinss
 
 ## plotting the total within-clusters sum of squares against the number of clusers (elbow method)
 
-wss = sapply(2:15,function(k) { 
+wss_ovary = sapply(2:15,function(k) { 
   kmeans(x=t(prism_reduced_ovary_no_NAs), centers =k)$tot.withinss
 })
 plot(2:15,wss,type='b',pch=19,xlab="Number of clusters K",
@@ -384,45 +384,86 @@ plot(2:15,wss,type='b',pch=19,xlab="Number of clusters K",
 
 ## performing silhouette method to further analyze the optimal number of clusters 
 
-D = dist(t(prism_reduced_ovary_no_NAs))
+D_ovary = dist(t(prism_reduced_ovary_no_NAs))
 
 library(cluster)
 
 par(mfrow = c(2,3))
 for (i in 3:14) {
-  km = kmeans(x=t(prism_reduced_ovary_no_NAs), centers = i, nstart = 20)
-  s = silhouette(km$cluster,D)
-  plot(s, border=NA)
+  km_ovary = kmeans(x=t(prism_reduced_ovary_no_NAs), centers = i, nstart = 20)
+  s_ovary = silhouette(km_ovary$cluster,D_ovary)
+  plot(s_ovary, border=NA)
 }
 
+```
+
+```{r}
 
 ## clustern ohne t
 
 
-km1 = kmeans(prism_reduced_ovary_no_NAs,
+km1_ovary = kmeans(prism_reduced_ovary_no_NAs,
             centers = 4, 
             nstart = 10)
-km1$cluster
+km1_ovary$cluster
 
-wss = sapply(2:15,function(k) { 
+wss1_ovary = sapply(2:15,function(k) { 
   kmeans(prism_reduced_ovary_no_NAs, centers =k)$tot.withinss
 })
-plot(2:15,wss,type='b',pch=19,xlab="Number of clusters K",
+plot(2:15,wss1_ovary,type='b',pch=20,xlab="Number of clusters K",
      ylab="Total within-clusters sum of squares")
 
 
-D = dist(prism_reduced_ovary_no_NAs)
+D1_ovary = dist(prism_reduced_ovary_no_NAs)
 
 library(cluster)
 
 par(mfrow = c(2,3))
-for (i in 3:11) {
-  km1 = kmeans(prism_reduced_ovary_no_NAs, centers = i, nstart = 20)
-  s1 = silhouette(km1$cluster,D)
-  plot(s1, border=NA)
+for (i in 2:11) {
+  km1_ovary = kmeans(prism_reduced_ovary_no_NAs, centers = i, nstart = 20)
+  s1_ovary = silhouette(km1_ovary$cluster,D1_ovary)
+  plot(s1_ovary, border=NA)
 }
 
 ```
+
+```{r - c4.12. visualizing the clustering of ovary cell lines based on their drug response after performin PCA}
+
+## PCA
+
+B = as.matrix(prism_reduced_ovary_no_NAs)
+
+pca2 = prcomp(t(B), scale = TRUE)
+
+plot(pca2$x[,1], pca2$x[,2], pch=20)
+
+pca2_var = pca2$sdev^2
+pca2_var_per = round(pca2_var/sum(pca2_var)*100,1)
+barplot(pca2_var_per, main = "Distribution of the variation of the data explained by PCs", xlab = "Principal component", ylab = "Percent variation")
+
+summary(prcomp(B))
+
+## Running k-means clustering by using PC1 and PC2
+
+wss2 = sapply(2:15,function(k) { 
+  kmeans(x=pca2$x[,1:2], centers = k)$tot.withinss
+})
+plot(2:15,wss,type='b',pch=20,xlab="Number of clusters K",
+     ylab="Total within-clusters sum of squares")
+
+
+## performing a clustering with pca data
+
+km2 = kmeans(pca2$x[,1:2],centers=5,nstart = 100)
+col = c("pink", "lightblue", "purple", "grey", "orange")
+col.km2 = col[km2$cluster]
+plot(pca2$x[,1], pca2$x[,2],
+col= col.km2, pch=20,
+xlab='PC1',ylab='PC2',
+main = "PC1 vs. PC2 for kmeans clusters")
+```
+
+
 
 
 ```{r S2 Cut, summarize and paste together}
