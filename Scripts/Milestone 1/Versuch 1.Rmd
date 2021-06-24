@@ -988,6 +988,9 @@ col= col.km1_moa, pch=20,
 xlab='PC1',ylab='PC2',
 main = "PC1 vs. PC2 for kmeans clusters")
 
+barplot(sort(pca1_moa$rotation[,1]), las=3)
+
+barplot(sort(pca1_moa$rotation[,2]), las=3)
 
 ```
 
