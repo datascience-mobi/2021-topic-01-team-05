@@ -254,6 +254,8 @@ barplot(testdf$n, names.arg = testdf$moa, las = 1, xlab = "Frequency", horiz=TRU
 ```
 
 ```{r - c4.8 - analyzing HDAC inhibitors for ovary cancer cell lines}
+
+
 ## Extracting the data from reduced_prism_treat_ovary_df_2 where the moa is HDAC
 reduced_prism_treat_ovary_df_2[reduced_prism_treat_ovary_df_2$moa == "HDAC inhibitor",]
 
@@ -373,10 +375,10 @@ km_ovary$tot.withinss
 
 ## plotting the total within-clusters sum of squares against the number of clusers (elbow method)
 
-wss_ovary = sapply(2:15,function(k) { 
+wss_ovary = sapply(2:7,function(k) { 
   kmeans(x=t(prism_reduced_ovary_no_NAs), centers =k)$tot.withinss
 })
-plot(2:15,wss,type='b',pch=19,xlab="Number of clusters K",
+plot(2:7,wss_ovary,type='b',pch=19,xlab="Number of clusters K",
      ylab="Total within-clusters sum of squares")
 
 
@@ -397,7 +399,7 @@ for (i in 3:14) {
 
 ```
 
-```{r}
+```{r - irrelevant}
 
 ## clustern ohne t
 
@@ -427,7 +429,7 @@ for (i in 2:11) {
 
 ```
 
-```{r - c4.12. visualizing the clustering of ovary cell lines based on their drug response after performin PCA}
+```{r - c4.12. visualizing the clustering of ovary cell lines based on their drug response after performing PCA}
 
 ## PCA
 
@@ -448,7 +450,7 @@ summary(prcomp(B))
 wss2 = sapply(2:15,function(k) { 
   kmeans(x=pca2$x[,1:2], centers = k)$tot.withinss
 })
-plot(2:15,wss,type='b',pch=20,xlab="Number of clusters K",
+plot(2:15,wss2,type='b',pch=20,xlab="Number of clusters K",
      ylab="Total within-clusters sum of squares")
 
 
@@ -461,6 +463,238 @@ plot(pca2$x[,1], pca2$x[,2],
 col= col.km2, pch=20,
 xlab='PC1',ylab='PC2',
 main = "PC1 vs. PC2 for kmeans clusters")
+```
+
+
+
+```{r c.4.13. - extracting the drug names of the most efficient drugs with regard to their moas}
+
+## hdac
+
+hdac_inhibitors_ovary
+
+## topoisomerase
+
+topoisomerase_inhibitors_ovary
+
+#proteasome inhibitor 
+
+reduced_prism_treat_ovary_df_2[reduced_prism_treat_ovary_df_2$moa == "proteasome inhibitor",]
+
+
+proteasome_inhibitors_ovary <- as.vector(na.omit((reduced_prism_treat_ovary_df_2[reduced_prism_treat_ovary_df_2$moa == "proteasome inhibitor",])$name)) 
+
+proteasome_inhibitors_ovary
+
+## PI3K inhibitor
+
+reduced_prism_treat_ovary_df_2[reduced_prism_treat_ovary_df_2$moa == "PI3K inhibitor",]
+
+
+pi3k_inhibitors_ovary <- as.vector(na.omit((reduced_prism_treat_ovary_df_2[reduced_prism_treat_ovary_df_2$moa == "PI3K inhibitor",])$name)) 
+
+pi3k_inhibitors_ovary
+
+## EGFR inhibitor
+
+reduced_prism_treat_ovary_df_2[reduced_prism_treat_ovary_df_2$moa == "EGFR inhibitor",]
+
+
+egfr_inhibitors_ovary <- as.vector(na.omit((reduced_prism_treat_ovary_df_2[reduced_prism_treat_ovary_df_2$moa == "EGFR inhibitor",])$name)) 
+
+egfr_inhibitors_ovary
+
+
+## CDK inhibitor 
+
+reduced_prism_treat_ovary_df_2[reduced_prism_treat_ovary_df_2$moa == "CDK inhibitor",]
+
+
+cdk_inhibitors_ovary <- as.vector(na.omit((reduced_prism_treat_ovary_df_2[reduced_prism_treat_ovary_df_2$moa == "CDK inhibitor",])$name)) 
+
+cdk_inhibitors_ovary
+
+## BCL inhibitor 
+
+reduced_prism_treat_ovary_df_2[reduced_prism_treat_ovary_df_2$moa == "BCL inhibitor",]
+
+
+bcl_inhibitors_ovary <- as.vector(na.omit((reduced_prism_treat_ovary_df_2[reduced_prism_treat_ovary_df_2$moa == "BCL inhibitor",])$name)) 
+
+bcl_inhibitors_ovary
+
+## ATPase inhibitor
+
+reduced_prism_treat_ovary_df_2[reduced_prism_treat_ovary_df_2$moa == "ATPase inhibitor",]
+
+atpase_inhibitors_ovary <- as.vector(na.omit((reduced_prism_treat_ovary_df_2[reduced_prism_treat_ovary_df_2$moa == "ATPase inhibitor",])$name)) 
+
+atpase_inhibitors_ovary
+
+
+most_effective_ovary_moas_drugs <- c(hdac_inhibitors_ovary, topoisomerase_inhibitors_ovary, proteasome_inhibitors_ovary, pi3k_inhibitors_ovary, egfr_inhibitors_ovary, cdk_inhibitors_ovary, bcl_inhibitors_ovary, atpase_inhibitors_ovary)
+
+most_effective_ovary_moas_drugs
+
+
+## matching the drug names to their corresponding cell lines 
+
+names_use_ovary <- names(prism_reduced_ovary_no_NAs)[names(prism_reduced_ovary_no_NAs) %in% most_effective_ovary_moas_drugs]
+
+names_use_ovary
+
+moa_drugs_ovary <- prism_reduced_ovary_no_NAs[,names_use_ovary]
+
+moa_drugs_ovary
+
+```
+
+
+```{r c4.14. - performing kmeans and clustering on the most efficient drugs with regard to their moas}
+
+## performing k-means and finding the optimal number of clusters by using the total within-clusters sum of squares method
+
+km_ovary_moa = kmeans(x=t(moa_drugs_ovary),
+            centers = 4, 
+            nstart = 10)
+
+km_ovary_moa$cluster
+
+str(km_ovary_moa)
+
+km_ovary_moa$tot.withinss
+
+## plotting the total within-clusters sum of squares against the number of clusters (elbow method)
+
+wss_ovary_moa = sapply(2:7,function(k) { 
+  kmeans(x=t(moa_drugs_ovary), centers =k)$tot.withinss
+})
+plot(2:7,wss_ovary_moa,type='b',pch=20,xlab="Number of clusters K",
+     ylab="Total within-clusters sum of squares")
+
+
+## the optimal number seems to be 3 or 4 with regards to the elbow method
+
+## performing silhouette method to further analyze the optimal number of clusters 
+
+D_ovary_moa = dist(t(moa_drugs_ovary))
+
+library(cluster)
+
+par(mfrow = c(2,3))
+for (i in 2:7) {
+  km_ovary_moa = kmeans(x=t(moa_drugs_ovary), centers = i, nstart = 20)
+  s_ovary_moa = silhouette(km_ovary_moa$cluster,D_ovary_moa)
+  plot(s_ovary_moa, border=NA)
+}
+
+
+
+
+#######
+
+
+
+## clustern ohne t 
+
+
+#km1_ovary_moa = kmeans(moa_drugs_ovary,
+            #centers = 4, 
+            #nstart = 10)
+#km1_ovary_moa$cluster
+
+#wss1_ovary_moa = sapply(2:15,function(k) { 
+  #kmeans(moa_drugs_ovary, centers =k)$tot.withinss
+#})
+#plot(2:15,wss1_ovary_moa,type='b',pch=20,xlab="Number of clusters K",
+    # ylab="Total within-clusters sum of squares")
+
+
+#D1_ovary_moa = dist(moa_drugs_ovary)
+
+#library(cluster)
+
+#par(mfrow = c(2,3))
+#for (i in 2:11) {
+  #km1_ovary_moa = kmeans(moa_drugs_ovary, centers = i, nstart = 20)
+  #s1_ovary_moa = silhouette(km1_ovary_moa$cluster,D1_ovary_moa)
+  #plot(s1_ovary_moa, border=NA)
+#}
+
+
+```
+
+```{r c4.15. - visualizing the clusters}
+
+B_moa = as.matrix(moa_drugs_ovary)
+
+pca2_moa_t = prcomp(t(B_moa), scale = TRUE)
+
+plot(pca2_moa_t$x[,1], pca2_moa_t$x[,2], pch=20)
+
+pca2_var_moa_t = pca2_moa_t$sdev^2
+pca2_var_per_moa_t = round(pca2_var_moa_t/sum(pca2_var_moa_t)*100,1)
+barplot(pca2_var_per_moa_t, main = "Distribution of the variation of the data explained by PCs", xlab = "Principal component", ylab = "Percent variation")
+
+summary(prcomp(B_moa))
+
+## Running k-means clustering by using PC1 and PC2
+
+wss2_moa_t = sapply(2:7,function(k) { 
+  kmeans(x=pca2_moa_t$x[,1:2], centers = k)$tot.withinss
+})
+plot(2:7,wss2_moa_t,type='b',pch=20,xlab="Number of clusters K",
+     ylab="Total within-clusters sum of squares")
+
+
+## performing a clustering with pca data
+
+km2_moa_t = kmeans(pca2_moa_t$x[,1:2],centers=4,nstart = 100)
+col = c("red", "orange", "blue", "green")
+col.km2_moa_t = col[km2_moa_t$cluster]
+plot(pca2_moa_t$x[,1], pca2_moa_t$x[,2],
+col= col.km2_moa_t, pch=20,
+xlab='PC1',ylab='PC2',
+main = "PC1 vs. PC2 for kmeans clusters")
+```
+```{r}
+
+B_moa = as.matrix(moa_drugs_ovary)
+
+pca2_moa = prcomp(B_moa, scale = TRUE)
+
+plot(pca2_moa$x[,1], pca2_moa$x[,2], pch=20)
+
+pca2_var_moa = pca2_moa$sdev^2
+pca2_var_per_moa = round(pca2_var_moa/sum(pca2_var_moa)*100,1)
+barplot(pca2_var_per_moa, main = "Distribution of the variation of the data explained by PCs", xlab = "Principal component", ylab = "Percent variation")
+
+summary(prcomp(B_moa))
+
+## Running k-means clustering by using PC1 and PC2
+
+wss2_moa = sapply(2:7,function(k) { 
+  kmeans(x=pca2_moa$x[,1:2], centers = k)$tot.withinss
+})
+plot(2:7,wss2_moa,type='b',pch=20,xlab="Number of clusters K",
+     ylab="Total within-clusters sum of squares")
+
+
+## performing a clustering with pca data
+
+km2_moa = kmeans(pca2_moa$x[,1:2],centers=4,nstart = 100)
+col = c("red", "orange", "blue", "green")
+col.km2_moa = col[km2_moa$cluster]
+plot(pca2_moa$x[,1], pca2_moa$x[,2],
+col= col.km2_moa, pch=20,
+xlab='PC1',ylab='PC2',
+main = "PC1 vs. PC2 for kmeans clusters")
+
+
+barplot(sort(pca2_moa$rotation[,1]), las=3)
+
+
+barplot(sort(pca2_moa$rotation[,2]), las=3)
 ```
 
 
