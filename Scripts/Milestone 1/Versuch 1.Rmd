@@ -1,6 +1,8 @@
 ---
 title: "Untitled"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -10,6 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r c1 - data exploration and organization - reducing data set to obtain ovary cancer values}
 
 ## creating a data frame df_cl consisting of DepMap_IDs and lineages
+prism.cl
 lineage <- prism.cl$lineage
 DepMap_ID <- prism.cl$DepMap_ID 
 
@@ -700,9 +703,9 @@ barplot(sort(pca2_moa$rotation[,2]), las=3)
 
 
 
-```{r S2 Cut, summarize and paste together}
+```{r S1 Creating a dataframe including only the lowest proliferations values of each drug treatment}
 
-#Reducing prism to the lowest proliferation value of each drug treatment 
+## Reducing prism to include only the lowest proliferation value of each drug treatment on all cell lines
 
 prism_reduced = data.frame(row.names = rownames(prism))
 
@@ -718,100 +721,77 @@ prism_reduced = prism_reduced[-which(rownames(prism_reduced) %in% vector_ovary_D
 prism_reduced = prism_reduced[, !is.na(apply(prism_reduced, 2, mean, na.rm = TRUE))]
 ```
 
-```{r S3 Plotting the data from prism_reduced}
+```{r S2 Plotting the data from prism_reduced}
 
 ## Downlaoding ggplot package
-library(ggplot2)
-
-#Try 1
-qplot(as.matrix(prism_reduced)) ## works, but not sure which values are being shown
+library(ggplot2) ## didnt end up using this here
 
 #Try 2
-hist_prism_reduced <- hist(unlist(prism_reduced), xlab = "Proliferation values", main = "Proliferation values of prism_reduced", breaks = 100) ## THIS IS THE ONE THAT WORKS!! produces similar graph as in try 1
+hist_prism_reduced <- hist(unlist(prism_reduced), xlab = "Proliferation values", main = "Proliferation values of prism_reduced", breaks = 100) 
 
 print(hist_prism_reduced)
 ```
 
-```{r S5 Replacing NAs in prism_reduced with the column means}
+```{r S3 Replacing NAs in prism_reduced with the column means}
 
 summary(unlist(prism_reduced))
 
-prism_reduced_no_NAs = prism_reduced ## create a copy of prism_reduced to keep a version that includes the NAs
+## Creating a copy of prism_reduced to keep a version that includes the NAs
+prism_reduced_no_NAs = prism_reduced 
 
+## For loop that replaces the NAs with the column means
 for(i in 1:ncol(prism_reduced)){
   prism_reduced_no_NAs[is.na(prism_reduced[, i]), i] <- mean(prism_reduced[, i], na.rm = TRUE)
 }  ## this code replaces the NAs in prism_reduced with the col mean and saves it into a new data frame called prism_reduced_no_NAs
 
 summary(unlist(prism_reduced_no_NAs))
 
+## Plotting the proliferation values from prism_reduced_no_NAs
 hist(unlist(prism_reduced_no_NAs), breaks = 100, xlab = "Proliferation values", main = "Proliferation values of prism_reduced_no_NAs")
 ```
 
-```{r S6 K means clustering of prism_reduced_no_NAs}
+```{r S4 Setting a threshhold in order to remove the unimportant medications from prism_reduced}
 
-#kmeans(prism_reduced_no_NAs, 20) ## Fehlermeldung: Error in do_one(nmeth) : NA/NaN/Inf in foreign function call (arg 1)
-
-# Checking for NA/NaN/Inf values:
-
-is.finite(unlist(prism_reduced_no_NAs)) ## returns all TRUE
-
-is.na(unlist(prism_reduced_no_NAs)) ## returns all FALSE
-
-is.nan(unlist(prism_reduced_no_NAs)) ## returns all FALSE
-
-# what is the problem????
-```
-
-
-```{r S7 Schwellenwert festlegen um unsignifikante Medikamente aus prism_reduced zu entfernen}
-
-## creating a vector that contains the drugs and the corresponding strongest anti-proliferating values
+## Creating a vector that contains the drugs and the corresponding strongest anti-proliferating values
 min_values_treat_prism_reduced <- apply(prism_reduced, 2, min, na.rm=TRUE)
 
 min_values_treat_prism_reduced_vector <- as.vector(min_values_treat_prism_reduced)
 
-## vector containing drug names and corresponding min values
+## Vector containing drug names and corresponding min values
 names(min_values_treat_prism_reduced_vector) = colnames(prism_reduced)
 
-min_values_treat_prism_reduced_vector
-
-##trying to remove Inf values 
+## Removing Inf values 
 min_values_treat_prism_reduced_vector[min_values_treat_prism_reduced_vector > 10] = 0
 
-## displaying histogram and summary
+## Displaying histogram 
 hist(min_values_treat_prism_reduced_vector)
 
-summary(min_values_treat_prism_reduced_vector)
-
-## setting threshold at 5% quantile
+## Setting threshold at 5% quantile
 quantile(min_values_treat_prism_reduced_vector, 0.1)
 
+## Creating a histogramm displaying the proliferation values under the treshhold
 hist(min_values_treat_prism_reduced_vector)
 abline(v=quantile(min_values_treat_prism_reduced_vector, 0.1), col="red")
 
 min_values_treat_prism_reduced_vector_no_Inf = min_values_treat_prism_reduced_vector
 
-summary(min_values_treat_prism_reduced_vector)
 ```
 
-```{r S8}
+```{r S5 Creating a vector containing the min proliferation values of prism_reduced under the treshhold}
 
 ## Creating a vector with all of the min values in prism_reduced under the threshold of the 5% quantile
 prism_reduced_under_threshold = data.frame(min_values_treat_prism_reduced[min_values_treat_prism_reduced < quantile(min_values_treat_prism_reduced_vector, 0.1)])
 
-prism_reduced_under_threshold
 ```
 
-```{r S9 Finding the cell lines corresponding to the lowest proliferation value of each drug}
+```{r S6 Finding the cell lines corresponding to the lowest proliferation value of each drug with prism.treat}
 
 ## Reducing prism.treat so that it only includes the data for the proliferation values under the threshold
 prism.treat_reduced <- prism.treat[which(prism.treat$name %in% rownames(prism_reduced_under_threshold)),]
 
-prism.treat_reduced
-
 ```
 
-```{r S10 Finding out if the medications in the 5% quantile are oncological/non-oncological}
+```{r S7 Finding out if the medications in the 5% quantile are oncological/non-oncological}
 
 ## Selecting every 8th row of prism.treat_reduced 
 prism.treat_reduced = prism.treat_reduced[seq(1, nrow(prism.treat_reduced),8),]
@@ -821,10 +801,9 @@ prism.treat_reduced = droplevels(prism.treat_reduced)
 ## Creating a new dataframe that only includes columns that are interesting for us 
 prism.treat_reduced_2 = prism.treat_reduced[,which(colnames(prism.treat_reduced) %in% c("name", "moa", "target", "disease.area", "indication", "broad_id"))]
 
-summary(prism.treat_reduced_2)
 ```
 
-```{r S11 Analysing our data}
+```{r S8 Analysing our data}
 
 ## Plotting the number of medications belonging to a selected amount of disease areas
 plot(table(prism.treat_reduced$disease.area), srt = 90, las = 3)
@@ -1221,10 +1200,11 @@ plot(pca1_moa$x[,1], pca1_moa$x[,2],
 col= col.km1_moa, pch=20,
 xlab='PC1',ylab='PC2',
 main = "PC1 vs. PC2 for kmeans clusters")
+legend("topleft", legend = c("Cluster 1", "Cluster 2", "Cluster 3", "Cluster 4", "Cluster 5"), fill = col)
 
-barplot(sort(pca1_moa$rotation[,1]), las=3)
+barplot(sort(pca1_moa$rotation[,1]), las=3, cex.names=0.4)
 
-barplot(sort(pca1_moa$rotation[,2]), las=3)
+barplot(sort(pca1_moa$rotation[,2]), las=3, cex.names=0.4)
 
 ```
 
@@ -1257,6 +1237,7 @@ plot(pca1_moa_t$x[,1], pca1_moa_t$x[,2],
 col= col.km_moa, pch=20,
 xlab='PC1',ylab='PC2',
 main = "PC1 vs. PC2 for kmeans clusters")
+legend("topleft", legend = c("Cluster 1", "Cluster 2", "Cluster 3", "Cluster 4"), fill = col)
 
 ```
 
