@@ -362,38 +362,7 @@ for(i in 1:ncol(prism_reduced_ovary)){
 
 ## performing k-means and finding the optimal number of clusters by using the total within-clusters sum of squares method
 
-km = kmeans(x=t(prism_reduced_ovary_no_NAs),
-            centers = 4, 
-            nstart = 10)
-km$cluster
 
-str(km)
-
-km$tot.withinss
-
-## plotting the total within-clusters sum of squares against the number of clusers (elbow method)
-
-wss = sapply(2:15,function(k) { 
-  kmeans(x=t(prism_reduced_ovary_no_NAs), centers =k)$tot.withinss
-})
-plot(2:15,wss,type='b',pch=19,xlab="Number of clusters K",
-     ylab="Total within-clusters sum of squares")
-
-
-## the optimal number seems to be 4 or 5 with regards to elbow method
-
-## performing silhouette method to further analyze the optimal number of clusters 
-
-D = dist(t(prism_reduced_ovary_no_NAs))
-
-library(cluster)
-
-par(mfrow = c(2,3))
-for (i in 3:14) {
-  km = kmeans(x=t(prism_reduced_ovary_no_NAs), centers = i, nstart = 20)
-  s = silhouette(km$cluster,D)
-  plot(s, border=NA)
-}
 
 
 ## clustern ohne t
