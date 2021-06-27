@@ -4,21 +4,120 @@ output: html_document
 ---
 
 
-```{r c1}
+```{r c1 - Data Organization}
 
+## vector containing ovary cell line DepMap_IDs
 vector_ovary_DepMI
+
+## subsetting datasets in order to obtain ovary cancer cell line data
 
 ovary_achilles <- prism.achilles[rownames(prism.achilles) %in% vector_ovary_DepMI,]
 
-ovary_achilles
+ovary_achilles ## ovary gene knockdown scores; the smaller the value the higher is the gene's essentiality
 
 ovary_cnv <- prism.cnv[rownames(prism.cnv) %in% vector_ovary_DepMI,]
 
-ovary_cnv
+ovary_cnv ## gene copy number values; normally CN = 2 but in cancer genes might be amplified CN > 2 or deleted CN < 2
 
 ovary_exp <- prism.exp[rownames(prism.exp) %in% vector_ovary_DepMI,]
 
-ovary_exp
+ovary_exp ## gene TPM values (transcripts per million); high values suggest over expression and lower values lower expression
+
+
+
+## missing ovary cell lines in prism.achilles dataset
+vector_ovary_DepMI[!vector_ovary_DepMI %in% rownames(ovary_achilles)]
+
+```
+
+
+```{r c.2. PCA and clustering}
+
+## PCA for ovary_exp dataset
+
+B_exp = as.matrix(ovary_exp)
+
+
+B_exp_new <- B_exp[ , which(apply(B_exp, 2, var) != 0)] ## removing zero variance values
+
+pca_exp = prcomp(B_exp_new, scale = TRUE)
+
+plot(pca_exp$x[,1], pca_exp$x[,2], pch=20)
+
+pca_var_exp = pca_exp$sdev^2
+pca_var_per_exp = round(pca_var_exp/sum(pca_var_exp)*100,1)
+barplot(pca_var_per_exp, main = "Distribution of the variation of the data explained by PCs", xlab = "Principal component", ylab = "Percent variation")
+
+summary(prcomp(B_exp_new))
+
+## Running k-means clustering by using PC1 and PC2
+
+wss_exp = sapply(2:15,function(k) {
+  kmeans(x=pca_exp$x[,1:2], centers = k)$tot.withinss
+})
+plot(2:15,wss_exp,type='b',pch=20,xlab="Number of clusters K",
+     ylab="Total within-clusters sum of squares")
+
+
+## performing a clustering with pca data
+
+km_exp = kmeans(pca_exp$x[,1:2],centers=5,nstart = 100)
+col = c("red", "orange", "blue", "green", "purple")
+col.km_exp = col[km_exp$cluster]
+plot(pca_exp$x[,1], pca_exp$x[,2],
+col= col.km_exp, pch=20,
+xlab='PC1',ylab='PC2',
+main = "PC1 vs. PC2 for kmeans clusters")
+legend("topright", legend = c("Cluster 1", "Cluster 2", "Cluster 3", "Cluster 4", "Cluster 5"), fill = col)
+
+## ACH-000308 outlier
+
+```
+
+
+```{r c.2.1 PCA and clustering}
+
+## PCA for ovary_achilles dataset
+
+B_achilles = as.matrix(ovary_achilles)
+
+
+B_achilles_new <- B_achilles[ , which(apply(B_achilles, 2, var) != 0)] ## removing zero variance values
+
+pca_achilles = prcomp(B_achilles_new, scale = TRUE)
+
+plot(pca_achilles$x[,1], pca_achilles$x[,2], pch=20)
+
+pca_var_achilles = pca_achilles$sdev^2
+pca_var_per_achilles = round(pca_var_achilles/sum(pca_var_achilles)*100,1)
+barplot(pca_var_per_achilles, main = "Distribution of the variation of the data explained by PCs", xlab = "Principal component", ylab = "Percent variation")
+
+summary(prcomp(B_achilles_new))
+
+## Running k-means clustering by using PC1 and PC2
+
+wss_achilles = sapply(2:15,function(k) {
+  kmeans(x=pca_achilles$x[,1:2], centers = k)$tot.withinss
+})
+plot(2:15,wss_achilles,type='b',pch=20,xlab="Number of clusters K",
+     ylab="Total within-clusters sum of squares")
+
+
+## performing a clustering with pca data
+
+km_achilles = kmeans(pca_achilles$x[,1:2],centers=4,nstart = 100)
+col = c("red", "orange", "blue", "green")
+col.km_achilles = col[km_achilles$cluster]
+plot(pca_achilles$x[,1], pca_achilles$x[,2],
+col= col.km_achilles, pch=20,
+xlab='PC1',ylab='PC2',
+main = "PC1 vs. PC2 for kmeans clusters")
+legend("topright", legend = c("Cluster 1", "Cluster 2", "Cluster 3", "Cluster 4"), fill = col)
+
+
+## outlier ACH-000688
+
+
 
 ```
 
@@ -30,13 +129,9 @@ ovary_exp
 
 
 
-
-
-
-
 ```{r S1 clustering ovary.cnv}
 
-## Calculating the mean variance of the expression values 
+## Calculating the mean variance of the expression values
 mean(apply(ovary_cnv, 2, var))
 
 ## barplot
@@ -64,13 +159,13 @@ barplot(pca_var_per_cnv, main = "Distribution of the variation of the data expla
 summary(prcomp(B_cnv))
 
 ## Elbow plot to check how many clusters are best
-wss_all_cnv = sapply(2:15,function(k) { 
+wss_all_cnv = sapply(2:15,function(k) {
   kmeans(x=pca_cnv$x[,1:2], centers =k)$tot.withinss
 })
 plot(2:15,wss_all_cnv,type='b',pch=20,xlab="Number of clusters K",
      ylab="Total within-clusters sum of squares")
 
-## Plotting the PCA 
+## Plotting the PCA
 km_cnv = kmeans(pca_cnv$x[,1:2],centers=5,nstart = 100)
 col = c('green','blue','red', "orange", "brown")
 col.km_cnv = col[km_cnv$cluster]
@@ -98,5 +193,3 @@ km_cnv$cluster ## outlier from cluster 3: cell line ACH-000713
 
 
 ```
-
-
