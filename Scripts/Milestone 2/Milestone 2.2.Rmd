@@ -180,6 +180,14 @@ km_cnv$cluster ## outlier from cluster 3: cell line ACH-000713
 
 ```
 
+```{r S3 linear Regression}
+
+lm(prism_reduced_ovary_no_NAs, ovary_exp, data = prism_reduced_ovary_no_NAs)
+
+
+
+
+```
 
 
 
