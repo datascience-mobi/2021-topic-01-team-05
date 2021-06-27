@@ -23,7 +23,10 @@ output: html_document
 
 
 
-```{r s1}
+```{r s1 Data reduction}
+
+
+
 
 ```
 
