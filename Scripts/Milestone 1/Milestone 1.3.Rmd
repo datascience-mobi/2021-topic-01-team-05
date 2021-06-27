@@ -41,7 +41,7 @@ df_treat_lowdose
 #### wie mache ich das mit dem broadID2?
 
 ##only the high dosages > 2.5μM
-df_treat_highdose<-df_treat[dosage>2.5, c("broadID","dosage")]
+df_treat_highdose<-df_treat[dosage>=2.5, c("broadID","dosage")]
 df_treat_highdose
 
 
@@ -135,19 +135,27 @@ moveme <- function (invec, movecommand) {
   }
   myVec
 }
+##neues package benutzen select um spalten auszuwählen, relocate https://dplyr.tidyverse.org/reference/index.html
+
 ##shifting dose to the first row
 df_ovary_DepMI_dose<-df_ovary_DepMI_dose[moveme(names(df_ovary_DepMI_dose), "dose first")]
 df_ovary_DepMI_dose
+##package thiDr (wie ordentlich) R anschauen um jede observation in eigene Zeile machen. tieDr 
 
+```
+```{r}
+install.packages("tidyr", repos=c("http://rstudio.org/_packages", "http://cran.rstudio.com"))
+
+library(tidyr)
+
+library(dplyr)
 
 ```
 
 ```{r}
 ## removing all missing values
-rmv.rows = apply(df_ovary_DepMI_dose,1,function(x){sum(is.na(x))})
-df_ovary_DepMI_dose_NA = df_ovary_DepMI_dose[- which(rmv.rows > 0),]
-df_ovary_DepMI_dose_NA
-
+df_ovary_DepMI_dose_NA<- drop_na(df_ovary_DepMI_dose)
+  
 ## plotting the decency of single ovary cell proliferation to different doses
 plot(df_ovary_DepMI_dose_NA$dose,
      df_ovary_DepMI_dose_NA$"ACH-000013",
@@ -157,6 +165,7 @@ plot(df_ovary_DepMI_dose_NA$dose,
 ####würde ich gerne mit sapply auf alle Zellen anwenden Wie?
 
 ```
+
 ```{r}
 ##histogram of a single ovary cell proliferation
 summary(df_ovary_DepMI_dose_NA)
