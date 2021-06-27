@@ -18,11 +18,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Creating a data frame df_cl consisting of all DepMap_IDs and the different cell line lineages.
 
-<<<<<<< Updated upstream
 ## creating a data frame df_cl consisting of DepMap_IDs and lineages
-prism.cl
-=======
->>>>>>> Stashed changes
+
 lineage <- prism.cl$lineage
 DepMap_ID <- prism.cl$DepMap_ID 
 
@@ -627,9 +624,6 @@ col= col.km2_moa_t, pch=20,
 xlab='PC1',ylab='PC2',
 main = "PC1 vs. PC2 for kmeans clusters")
 legend("topright", legend = c("Cluster 1", "Cluster 2", "Cluster 3", "Cluster 4"), fill = col)
-
-
-#legend("right", pca2_moa_t$x[,1:2], legend = km2_moa_t$cluster, col = col.km2_moa_t, pch=20, fill = col)
 
 ```
 
