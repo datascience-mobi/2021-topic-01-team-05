@@ -8,7 +8,6 @@ output: html_document
 
 vector_ovary_DepMI
 
-
 ovary_achilles <- prism.achilles[rownames(prism.achilles) %in% vector_ovary_DepMI,]
 
 ovary_achilles
@@ -21,8 +20,6 @@ ovary_exp <- prism.exp[rownames(prism.exp) %in% vector_ovary_DepMI,]
 
 ovary_exp
 
-df_test4 <- prism.snv[rownames(prism.snv) %in% vector_ovary_DepMI,]
-
 ```
 
 
@@ -37,13 +34,56 @@ df_test4 <- prism.snv[rownames(prism.snv) %in% vector_ovary_DepMI,]
 
 
 
-```{r s1 Data reduction}
+```{r S1 clustering ovary.cnv}
 
+## Calculating the mean variance of the expression values 
+mean(apply(ovary_cnv, 2, var))
 
-
+## barplot
+hist(apply(ovary_cnv, 2, var))
 
 ```
 
+```{r S2 PCA auf ovary_cnv}
+
+## checking for NAs
+sum(is.na(ovary_cnv))
+
+
+## PCA on ovary_cnv
+B_cnv = as.matrix(ovary_cnv)
+
+pca_cnv = prcomp(B_cnv, scale = TRUE)
+
+plot(pca_cnv$x[,1], pca_cnv$x[,2], pch=20)
+
+pca_var_cnv = pca_cnv$sdev^2
+pca_var_per_cnv = round(pca_var_cnv/sum(pca_var_cnv)*100,1)
+barplot(pca_var_per_cnv, main = "Distribution of the variation of the data explained by PCs", xlab = "Principal component", ylab = "Percent variation")
+
+summary(prcomp(B_cnv))
+
+## Elbow plot to check how many clusters are best
+wss_all_cnv = sapply(2:15,function(k) { 
+  kmeans(x=pca_cnv$x[,1:2], centers =k)$tot.withinss
+})
+plot(2:15,wss_all_cnv,type='b',pch=20,xlab="Number of clusters K",
+     ylab="Total within-clusters sum of squares")
+
+## Plotting the PCA 
+km_cnv = kmeans(pca_cnv$x[,1:2],centers=5,nstart = 100)
+col = c('green','blue','red', "orange", "brown")
+col.km_cnv = col[km_cnv$cluster]
+plot(pca_cnv$x[,1], pca_cnv$x[,2],
+col= col.km_cnv, pch=20,
+xlab='PC1',ylab='PC2',
+main = "PC1 vs. PC2 for kmeans clusters")
+legend("bottomleft", legend = c("Cluster 1", "Cluster 2", "Cluster 3", "Cluster 4", "Cluster 5"), fill = col)
+
+km_cnv$cluster ## outlier from cluster 3: cell line ACH-000713
+
+
+```
 
 
 
@@ -55,5 +95,8 @@ df_test4 <- prism.snv[rownames(prism.snv) %in% vector_ovary_DepMI,]
 
 ```{r r1}
 
+
+
 ```
+
 
