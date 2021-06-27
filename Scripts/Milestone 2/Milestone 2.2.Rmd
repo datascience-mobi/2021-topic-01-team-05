@@ -1,0 +1,59 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+
+```{r c1}
+
+vector_ovary_DepMI
+
+
+ovary_achilles <- prism.achilles[rownames(prism.achilles) %in% vector_ovary_DepMI,]
+
+ovary_achilles
+
+ovary_cnv <- prism.cnv[rownames(prism.cnv) %in% vector_ovary_DepMI,]
+
+ovary_cnv
+
+ovary_exp <- prism.exp[rownames(prism.exp) %in% vector_ovary_DepMI,]
+
+ovary_exp
+
+df_test4 <- prism.snv[rownames(prism.snv) %in% vector_ovary_DepMI,]
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r s1 Data reduction}
+
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+```{r r1}
+
+```
+
