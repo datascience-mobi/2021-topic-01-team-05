@@ -37,7 +37,10 @@ df_test4 <- prism.snv[rownames(prism.snv) %in% vector_ovary_DepMI,]
 
 
 
-```{r s1}
+```{r s1 Data reduction}
+
+
+
 
 ```
 
