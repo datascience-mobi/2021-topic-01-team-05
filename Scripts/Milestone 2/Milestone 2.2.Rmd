@@ -13,6 +13,7 @@ ovary_achilles <- prism.achilles[rownames(prism.achilles) %in% vector_ovary_DepM
 
 ovary_achilles
 
+
 ovary_cnv <- prism.cnv[rownames(prism.cnv) %in% vector_ovary_DepMI,]
 
 ovary_cnv
@@ -22,6 +23,7 @@ ovary_exp <- prism.exp[rownames(prism.exp) %in% vector_ovary_DepMI,]
 ovary_exp
 
 df_test4 <- prism.snv[rownames(prism.snv) %in% vector_ovary_DepMI,]
+
 
 ```
 
@@ -53,7 +55,88 @@ df_test4 <- prism.snv[rownames(prism.snv) %in% vector_ovary_DepMI,]
 
 
 
-```{r r1}
+```{r r1 Comparison between CRISPR knockdown scores and other data}
+
+# Use the dataset km2_moa$cluster which contains information about the celllines which belong to their corresponding cluster
+# Clustering of the celllines according to their drug response
+
+km2_moa$cluster
+
+# Convert the datasets into vectors in order to perform further analysis
+as.vector(km2_moa$cluster)
+
+
+# Plot the dataset km2_moa$cluster in order to visualize the number of celllines which belong to the different clusters
+# Most of the ovary cell lines belong to cluster 3
+plot(km2_moa$cluster, pch = 20, col = "blue")
+
+summary(km2_moa$cluster)
+
+
+
+
+# Get the ovary cancer cell lines from prism.snv dataframe
+ovary_snv <- prism.snv[rownames(prism.snv) %in% vector_ovary_DepMI,]
+
+ovary_snv
+
+# #Filter ovary_achilles by KRAS and BRCA1/2 gene mutations(CRISPR knockdown rates)
+ovary_achilles_kras <- as.data.frame(ovary_achilles$KRAS) # mostly negative scores
+ovary_achilles_brca1 <- as.data.frame(ovary_achilles$BRCA1) # only negative values
+ovary_achilles_brca2 <- as.data.frame(ovary_achilles$BRCA2) # only negative values
+
+
+## Filter ovary_cnv by KRAS and BRCA1/2 gene mutations(copy number variations)
+ovary_cnv_kras <- as.data.frame(ovary_cnv$KRAS) # only positive values
+ovary_cnv_brca1 <- as.data.frame(ovary_cnv$BRCA1) # only positive values
+ovary_cnv_brca2 <- as.data.frame(ovary_cnv$BRCA2) # only positive values
+
+
+## Filter ovary_exp by KRAS and BRCA1/2 gene mutations(gene expression)
+ovary_exp_kras <- as.data.frame(ovary_exp$KRAS) # only positive values
+ovary_exp_brca1 <- as.data.frame(ovary_exp$BRCA1) # only positive values
+ovary_exp_brca2 <- as.data.frame(ovary_exp$BRCA2) # only posiitve values
+
+
+# Group the celllines according to their KRAS expression
+ovary_cnv_exp_kras <- cbind(ovary_cnv_kras, ovary_exp_kras)
+print(ovary_cnv_exp_kras)
+
+# Group the celllines according to their BRCA1 expression
+ovary_cnv_exp_brca1 <- cbind(ovary_cnv_brca1, ovary_exp_brca1)
+print(ovary_cnv_exp_brca1)
+
+# Group the celllines according to their BRCA2 expression
+ovary_cnv_exp_brca2 <- cbind(ovary_cnv_brca2, ovary_exp_brca2)
+print(ovary_cnv_exp_brca2)
+
+
+library(arsenal)
+
+# Compare the meerged dataframes and the corresponding dataframe from prism.achilles dataset
+comparedf(ovary_cnv_exp_kras, ovary_achilles_kras)
+
+comparedf(ovary_cnv_exp_brca1, ovary_achilles_brca1)
+
+comparedf(ovary_cnv_exp_brca2, ovary_achilles_brca2)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ```
 
