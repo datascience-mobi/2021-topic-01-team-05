@@ -2,11 +2,19 @@
 title: "Milestone 1.3"
 author: "Laura Diekmann"
 date: "2 6 2021"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyr)
+library(readr)
+library(dplyr)
+
+
 ```
 
 ```{r}
@@ -91,17 +99,12 @@ df_ovary_DepMI_prism
 new_df_ovary_DepMI_prism<- as.data.frame(t(df_ovary_DepMI_prism))
 new_df_ovary_DepMI_prism
 
-##oben den Namen von den Spalten ändern
-
-colnames(new_df_treat)<-broadID3
-new_df_treat
-
 
 ##creating a dataframe from the ovary cell lines with DepMApID,ploriferation values, broad ID und dose
 new_df_ovary_DepMI_prism$dose<-df_treat$dosage
 df_ovary_DepMI_dose<-new_df_ovary_DepMI_prism
 
-
+df_ovary_DepMI_dose
 ##command to switch rows (copied out of the internet https://www.it-swarm.com.de/de/r/verschieben-von-spalten-innerhalb-eines-data.frame-ohne-erneutes-eingeben/969073031/)
 moveme <- function (invec, movecommand) {
   movecommand <- lapply(strsplit(strsplit(movecommand, ";")[[1]], 
@@ -140,42 +143,23 @@ moveme <- function (invec, movecommand) {
 ##shifting dose to the first row
 df_ovary_DepMI_dose<-df_ovary_DepMI_dose[moveme(names(df_ovary_DepMI_dose), "dose first")]
 df_ovary_DepMI_dose
-##package thiDr (wie ordentlich) R anschauen um jede observation in eigene Zeile machen. tieDr 
-
-```
-```{r}
-install.packages("tidyr", repos=c("http://rstudio.org/_packages", "http://cran.rstudio.com"))
-
-library(tidyr)
-
-library(dplyr)
 
 ```
 
+
+
+
+
+
 ```{r}
+
+
 ## removing all missing values
 df_ovary_DepMI_dose_NA<- drop_na(df_ovary_DepMI_dose)
-  
-## plotting the decency of single ovary cell proliferation to different doses
-plot(df_ovary_DepMI_dose_NA$dose,
-     df_ovary_DepMI_dose_NA$"ACH-000013",
-     xlab='dosage',
-     ylab='ovary cell proliferation'
-     )
-####würde ich gerne mit sapply auf alle Zellen anwenden Wie?
+df_ovary_DepMI_dose_NA
 
-```
 
-```{r}
-##histogram of a single ovary cell proliferation
-summary(df_ovary_DepMI_dose_NA)
-histMeanMedCol <- function(x, mean.col, median.col){
-  hist(x)
-  abline(v = c(summary(x)[4],summary(x)[3]), col = c(mean.col,median.col))
-}
-  
-histMeanMedCol(df_ovary_DepMI_dose_NA$`ACH-000013`, "pink","green")
-####würde ich gerne mit sapply auf alle Zellen anwenden Wie?
+
 ```
 
 ```{r}
@@ -193,12 +177,7 @@ cor(df_ovary_DepMI_dose_NA$dose,df_ovary_DepMI_dose_NA$"ACH-000013",method='spea
 ##spearman correlation table with all variations
 cor.dose1<-cor(df_ovary_DepMI_dose_NA,method='spearman')
 
-##trying to do it with all ovary cells to the column dose
-sapply(cor(df_ovary_DepMI_dose_NA$dose,df_ovary_DepMI_dose_NA[2,],method = "spearman"))
-```
-```{r}
-library(pheatmap)
-pheatmap(cor.dose1)
+
 ```
 
 
