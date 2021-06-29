@@ -401,9 +401,6 @@ for (i in 3:14) {
 }
 
 
-
-
-
 ## clustern ohne t
 
 
@@ -622,7 +619,7 @@ for (i in 2:11) {
 
 
 
-```{r c.4.15 - visualizing the clusters; clustering by cell lines}
+```{r c.4.15 - visualizing the clusters; clustering by drugs}
 
 B_moa = as.matrix(moa_drugs_ovary)
 
