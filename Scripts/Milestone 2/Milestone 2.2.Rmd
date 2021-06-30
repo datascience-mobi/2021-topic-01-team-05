@@ -69,7 +69,7 @@ col.km_exp = col[km_exp$cluster]
 plot(pca_exp$x[,1], pca_exp$x[,2],
 col= col.km_exp, pch=20,
 xlab='PC1',ylab='PC2',
-main = "PC1 vs. PC2 for kmeans clusters")
+main = "PC1 vs. PC2 for kmeans clusters in prism.exp - clustering by ovary cell lines")
 legend("topright", legend = c("Cluster 1", "Cluster 2", "Cluster 3", "Cluster 4", "Cluster 5"), fill = col)
 
 ## ACH-000308 outlier
@@ -113,7 +113,7 @@ col.km_achilles = col[km_achilles$cluster]
 plot(pca_achilles$x[,1], pca_achilles$x[,2],
 col= col.km_achilles, pch=20,
 xlab='PC1',ylab='PC2',
-main = "PC1 vs. PC2 for kmeans clusters")
+main = "PC1 vs. PC2 for kmeans clusters in prism.achilles - clustering by ovary cell lines")
 legend("topright", legend = c("Cluster 1", "Cluster 2", "Cluster 3", "Cluster 4"), fill = col)
 
 
@@ -160,6 +160,7 @@ lm(unlist(prism_reduced_ovary_no_NAs) ~ unlist(ovary_exp), data = prism_reduced_
 
 ```{r S1 clustering ovary.cnv}
 
+
 ## Calculating the mean variance of the expression values
 mean(apply(ovary_cnv, 2, var))
 
@@ -201,7 +202,8 @@ col.km_cnv = col[km_cnv$cluster]
 plot(pca_cnv$x[,1], pca_cnv$x[,2],
 col= col.km_cnv, pch=20,
 xlab='PC1',ylab='PC2',
-main = "PC1 vs. PC2 for kmeans clusters")
+main = "PC1 vs. PC2 for kmeans clusters
+Clustering ovary_cnv by cell lines")
 legend("bottomleft", legend = c("Cluster 1", "Cluster 2", "Cluster 3", "Cluster 4", "Cluster 5"), fill = col)
 
 km_cnv$cluster ## outlier from cluster 3: cell line ACH-000713
