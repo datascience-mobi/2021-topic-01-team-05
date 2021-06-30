@@ -720,21 +720,18 @@ prism_reduced = prism_reduced[-which(rownames(prism_reduced) %in% vector_ovary_D
 prism_reduced = prism_reduced[, !is.na(apply(prism_reduced, 2, mean, na.rm = TRUE))]
 ```
 
-```{r S3 Plotting the data from prism_reduced}
+```{r S2 Plotting the data from prism_reduced}
 
 ## Downlaoding ggplot package
 library(ggplot2)
 
-#Try 1
-qplot(as.matrix(prism_reduced)) ## works, but not sure which values are being shown
-
-#Try 2
-hist_prism_reduced <- hist(unlist(prism_reduced), xlab = "Proliferation values", main = "Proliferation values of prism_reduced", breaks = 100) ## THIS IS THE ONE THAT WORKS!! produces similar graph as in try 1
+## Histogramm of prism_reduced
+hist_prism_reduced <- hist(unlist(prism_reduced), xlab = "Proliferation values", main = "Proliferation values of prism_reduced for every drug", breaks = 100) 
 
 print(hist_prism_reduced)
 ```
 
-```{r S5 Replacing NAs in prism_reduced with the column means}
+```{r S3 Replacing NAs in prism_reduced with the column means}
 
 summary(unlist(prism_reduced))
 
@@ -746,26 +743,10 @@ for(i in 1:ncol(prism_reduced)){
 
 summary(unlist(prism_reduced_no_NAs))
 
-hist(unlist(prism_reduced_no_NAs), breaks = 100, xlab = "Proliferation values", main = "Proliferation values of prism_reduced_no_NAs")
+hist(unlist(prism_reduced_no_NAs), breaks = 100, xlab = "Proliferation values", main = "Proliferation values of prism_reduced_no_NAs for every drug")
 ```
 
-```{r S6 K means clustering of prism_reduced_no_NAs}
-
-#kmeans(prism_reduced_no_NAs, 20) ## Fehlermeldung: Error in do_one(nmeth) : NA/NaN/Inf in foreign function call (arg 1)
-
-# Checking for NA/NaN/Inf values:
-
-is.finite(unlist(prism_reduced_no_NAs)) ## returns all TRUE
-
-is.na(unlist(prism_reduced_no_NAs)) ## returns all FALSE
-
-is.nan(unlist(prism_reduced_no_NAs)) ## returns all FALSE
-
-# what is the problem????
-```
-
-
-```{r S7 Schwellenwert festlegen um unsignifikante Medikamente aus prism_reduced zu entfernen}
+```{r S4 Schwellenwert festlegen um unsignifikante Medikamente aus prism_reduced zu entfernen}
 
 ## creating a vector that contains the drugs and the corresponding strongest anti-proliferating values
 min_values_treat_prism_reduced <- apply(prism_reduced, 2, min, na.rm=TRUE)
@@ -774,8 +755,6 @@ min_values_treat_prism_reduced_vector <- as.vector(min_values_treat_prism_reduce
 
 ## vector containing drug names and corresponding min values
 names(min_values_treat_prism_reduced_vector) = colnames(prism_reduced)
-
-min_values_treat_prism_reduced_vector
 
 ##trying to remove Inf values 
 min_values_treat_prism_reduced_vector[min_values_treat_prism_reduced_vector > 10] = 0
@@ -788,32 +767,28 @@ summary(min_values_treat_prism_reduced_vector)
 ## setting threshold at 5% quantile
 quantile(min_values_treat_prism_reduced_vector, 0.1)
 
-hist(min_values_treat_prism_reduced_vector)
+hist(min_values_treat_prism_reduced_vector, main = "Most effective proliferation values in all cell lines except ovary", xlab = "Proliferation values")
 abline(v=quantile(min_values_treat_prism_reduced_vector, 0.1), col="red")
 
 min_values_treat_prism_reduced_vector_no_Inf = min_values_treat_prism_reduced_vector
 
-summary(min_values_treat_prism_reduced_vector)
 ```
 
-```{r S8}
+```{r S5}
 
 ## Creating a vector with all of the min values in prism_reduced under the threshold of the 5% quantile
 prism_reduced_under_threshold = data.frame(min_values_treat_prism_reduced[min_values_treat_prism_reduced < quantile(min_values_treat_prism_reduced_vector, 0.1)])
 
-prism_reduced_under_threshold
 ```
 
-```{r S9 Finding the cell lines corresponding to the lowest proliferation value of each drug}
+```{r S6 Finding the cell lines corresponding to the lowest proliferation value of each drug}
 
 ## Reducing prism.treat so that it only includes the data for the proliferation values under the threshold
 prism.treat_reduced <- prism.treat[which(prism.treat$name %in% rownames(prism_reduced_under_threshold)),]
 
-prism.treat_reduced
-
 ```
 
-```{r S10 Finding out if the medications in the 5% quantile are oncological/non-oncological}
+```{r S7 Finding out if the medications in the 5% quantile are oncological/non-oncological}
 
 ## Selecting every 8th row of prism.treat_reduced 
 prism.treat_reduced = prism.treat_reduced[seq(1, nrow(prism.treat_reduced),8),]
@@ -823,20 +798,19 @@ prism.treat_reduced = droplevels(prism.treat_reduced)
 ## Creating a new dataframe that only includes columns that are interesting for us 
 prism.treat_reduced_2 = prism.treat_reduced[,which(colnames(prism.treat_reduced) %in% c("name", "moa", "target", "disease.area", "indication", "broad_id"))]
 
-summary(prism.treat_reduced_2)
 ```
 
-```{r S11 Analysing our data}
+```{r S8 Analysing our data}
 
 ## Plotting the number of medications belonging to a selected amount of disease areas
-plot(table(prism.treat_reduced$disease.area), srt = 90, las = 3)
+plot(table(prism.treat_reduced$disease.area), srt = 90, las = 3, ylab = "Frequency", main = "Frequency of selected medications in prism.treat_reduced")
 
 ## Sorting the moa values in prism.treat_reduced alphabetically
 sort(unique(as.vector(na.omit(prism.treat_reduced$moa))))
 
 ## making a barplot with the moas of the prims.treat_reduced_2 dataframe
 
-barplot(which(as.list(prism.treat_reduced_2$moa)>1))
+barplot(which(as.list(prism.treat_reduced_2$moa)>1)) ## not nexessary??
 
 
 ##Creating dataframe with the frequency of the different moas in prism.treat_reduced_2
@@ -848,8 +822,6 @@ moa_frequencies = prism.treat_reduced_2 %>% count(moa) %>% filter(n >= 3)
 
 moa_frequencies = moa_frequencies[0:9,]
 
-moa_frequencies
-
 
 prism.treat_reduced_2 %>% count(moa) %>% filter(n >= 3) %>% .$x
 
@@ -857,14 +829,13 @@ as.vector((prism.treat_reduced_2 %>% count(moa) %>% filter(n >= 3) %>% .$x)$n)
 
 ##Plotting the frequency of the different moas
 par(mar=c(4, 20, 4, 4))
-barplot(moa_frequencies$n, names.arg = moa_frequencies$moa, las = 1, xlab = "Frequency", horiz = TRUE, xlim = c(0,10)) ## The 3 NAs still have to be removed here, but I don't know how
+barplot(moa_frequencies$n, names.arg = moa_frequencies$moa, las = 1, xlab = "Frequency", horiz = TRUE, xlim = c(0,10), main = "Most frequent moa's amongst the medications under the threshhold") ## The 3 NAs still have to be removed here, but I don't know how
 ## This still needs to be organized by frequency but the values and names are not connected
 
-summary(prism.treat_reduced_2)
 
 ```
 
-```{r S12 Finding out in which celllines the HDAC inhibitor shows up}
+```{r S9 Finding out in which celllines the HDAC inhibitor shows up}
 
 ## Extracting the data from prism.treat_reduced_2 where the moa is HDAC
 prism.treat_reduced_2[prism.treat_reduced_2$moa == "HDAC inhibitor",]
@@ -883,7 +854,7 @@ prism.cl[prism.cl$DepMap_ID %in% cl_hdac,]
 
 ```
 
-```{r S 13 Chunk 12 for topoisomerase inhibitor}
+```{r S 10 Chunk 12 for topoisomerase inhibitor}
 
 ## Extracting the data from prism.treat_reduced_2 where the moa is topoisomerase inhibitor
 prism.treat_reduced_2[prism.treat_reduced_2$moa == "topoisomerase inhibitor",]
@@ -902,8 +873,48 @@ prism.cl[prism.cl$DepMap_ID %in% cl_topoisomerase_inhibitor,]
 
 ```
 
+```{r S11 Finding the names of the medications from the barplot in chunk r S11 Analysing our data}
 
-```{r S14 Fisher's exact test for the Topoisomerase Inhibitor}
+## Extracting the medication names of topoisomerase moas
+topoisomerase_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "topoisomerase inhibitor",])$name)) 
+
+## Extracting the medication names of proteasome moas
+proteasome_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "proteasome inhibitor",])$name)) 
+
+## Extracting the medication names of PI3K moas
+PI3K_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "PI3K inhibitor",])$name)) 
+
+## Extracting the medication names of NFkB_pathway moas
+NFkB_pathway_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "NFkB_pathway inhibitor",])$name)) 
+
+## Extracting the medication names of HDAC moas
+hdac_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "HDAC inhibitor",])$name)) 
+
+## Extracting the medication names of EGFR moas
+EGFR_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "EGFR inhibitor",])$name)) 
+
+## Extracting the medication names of CDK moas
+CDK_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "CDK inhibitor",])$name)) 
+
+## Extracting the medication names of BCL moas
+BCL_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "BCL inhibitor",])$name)) 
+
+## Extracting the medication names of ATPase moas
+ATPase_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "ATPase inhibitor",])$name)) 
+
+## Combining all the medication names into one vector 
+
+most_effective_moas_drugs = c(topoisomerase_inhibitors, proteasome_inhibitors, PI3K_inhibitors, NFkB_pathway_inhibitors, hdac_inhibitors, EGFR_inhibitors, CDK_inhibitors, BCL_inhibitors, ATPase_inhibitors)
+
+## Extracting the cell lines that these selected drugs worked best on and adding the proliferation values
+
+names_use <- names(prism_reduced_no_NAs)[names(prism_reduced_no_NAs) %in% most_effective_moas_drugs]
+
+moa_drugs <- prism_reduced_no_NAs[,names_use]
+
+```
+
+```{r S12 Fisher's exact test}
 
 ## fisher test topoisomerase inhibitors 
 
@@ -928,143 +939,148 @@ fisher_hdac
 fisher.test(fisher_hdac)
 ```
 
-```{r k means clustering}
 
-## k means clustering by medications
-kmeans(prism_reduced_no_NAs, centers = 4, nstart = 25) ## the elbow plot isnt very aussagekräftig, so we decided to write a for loop testing which number of centers works best 
+```{r S13 Clustering moa_drugs by cell lines}
 
-## Elbow plot clustered by cell lines 
-wss = sapply(2:15,function(k) { 
-  kmeans(prism_reduced_no_NAs, centers =k)$tot.withinss
+## Elbow plot
+wss1_all_moa = sapply(2:15,function(k) { 
+  kmeans(moa_drugs, centers =k)$tot.withinss
 })
-plot(2:15,wss,type='b',pch=19,xlab="Number of clusters K",
+plot(2:15,wss1_all_moa,type='b',pch=20,xlab="Number of clusters K",
      ylab="Total within-clusters sum of squares")
 
 ## Silhouette plot 
-## This is for the medications
-D = dist(prism_reduced_no_NAs)
+D1_all_moa = dist(moa_drugs)
 
 library(cluster)
-km = kmeans(prism_reduced_no_NAs, centers = 4, nstart = 10)
-s = silhouette(km$cluster, D, col="red")
-plot(s, border = NA)
+km1_all_moa = kmeans(moa_drugs, centers = 4, nstart = 10)
+s1_all_moa= silhouette(km1_all_moa$cluster, D1_all_moa, col="red")
+plot(s1_all_moa, border = NA)
 
 ## For loop checking how many centers are best
-## this is clustered by cell lines
 par(mfrow = c(2,3))
 for (i in 3:14){
-  km = kmeans(prism_reduced_no_NAs, centers = i, nstart = 20)
-  s = silhouette(km$cluster, D, col="red")
-  plot(s, border = NA)
+  km1_all_moa = kmeans(moa_drugs, centers = i, nstart = 20)
+  s1_all_moa= silhouette(km1_all_moa$cluster, D1_all_moa, col="red")
+  plot(s1_all_moa, border = NA)
+}
+
+```
+
+```{r S14 Clustering moa_drugs by medications}
+
+## Elbow plot
+wss_all_moa = sapply(2:7,function(k) { 
+  kmeans(x=t(moa_drugs), centers =k)$tot.withinss
+})
+plot(2:7,wss_all_moa,type='b',pch=20,xlab="Number of clusters K",
+     ylab="Total within-clusters sum of squares")
+
+## Silhouette plot 
+D_all_moa = dist(x=t(moa_drugs))
+
+library(cluster)
+km_all_moa = kmeans(x=t(moa_drugs), centers = 4, nstart = 10)
+s_all_moa = silhouette(km_all_moa$cluster, D_all_moa, col="red")
+plot(s_all_moa, border = NA)
+
+## For loop checking how many centers are best
+par(mfrow = c(2,3))
+for (i in 3:14){
+  km_all_moa = kmeans(x=t(moa_drugs), centers = i, nstart = 20)
+  s_all_moa = silhouette(km_all_moa$cluster, D_all_moa, col="red")
+  plot(s_all_moa, border = NA)
 }
 
 
 ```
 
-```{r - r1 performing PCA of the datasets prism_reduced_no_NAs  }
+```{r S15 PCA by cell lines}
+
+A_moa = as.matrix(moa_drugs)
+
+pca1_moa = prcomp(A_moa, scale = TRUE)
+
+plot(pca1_moa$x[,1], pca1_moa$x[,2], pch=20)
+
+pca1_var_moa = pca1_moa$sdev^2
+pca1_var_per_moa = round(pca1_var_moa/sum(pca1_var_moa)*100,1)
+barplot(pca1_var_per_moa, main = "Distribution of the variation of the data explained by PCs", xlab = "Principal component", ylab = "Percent variation")
+
+summary(prcomp(A_moa))
 
 
-# Perform PCA of prism_reduced_no_NAs
+wss_all_moa = sapply(2:15,function(k) { 
+  kmeans(x=pca1_moa$x[,1:2], centers =k)$tot.withinss
+})
+plot(2:15,wss_all_moa,type='b',pch=20,xlab="Number of clusters K",
+     ylab="Total within-clusters sum of squares")
 
-A = as.matrix(prism_reduced_no_NAs)
+km1_moa = kmeans(pca1_moa$x[,1:2],centers=5,nstart = 100)
+col = c('green','blue','red', "orange", "brown")
+col.km1_moa = col[km1_moa$cluster]
+plot(pca1_moa$x[,1], pca1_moa$x[,2],
+col= col.km1_moa, pch=20,
+xlab='PC1',ylab='PC2',
+main = "PC1 vs. PC2 for kmeans clusters
+Clustering moa_drugs by cell lines")
+legend("topleft", legend = c("Cluster 1", "Cluster 2", "Cluster 3", "Cluster 4", "Cluster 5"), fill = col)
 
-pca1 = prcomp(t(A), scale = TRUE)
+barplot(sort(pca1_moa$rotation[,1]), las=3, cex.names=0.4)
 
-plot(pca1$x[,1], pca1$x[,2], pch=20)
-
-pca1_var = pca1$sdev^2
-pca1_var_per = round(pca1_var/sum(pca1_var)*100,1)
-barplot(pca1_var_per, main = "Distribution of the variation of the data explained by PCs", xlab = "Principal component", ylab = "Percent variation")
-
-summary(prcomp(A))
-
-# Compute the covariance between the first two columns of A
-cov(A[, 1], A[, 2])
-
-# Plot of PC1 against PC2
-plot(pca1$x[,1], pca1$x[,2], xlab="PC1", ylab = "PC2", main = "PC1 / PC2 - plot", pch=20)
-
-# To compute a graphic of the PCs additional tools are required
-# library(ggbiplot)
-# ggbiplot(pca1)
-
-
-# Creating a 2D plot 
-# Load the required package
-library("factoextra")
-fviz_pca_ind(pca1, geom.ind = "point", pointshape = 21, 
-             pointsize = 2, 
-             fill.ind = ,
-             col.ind = "black", 
-             palette = "jco", 
-             addEllipses = TRUE,
-             label = "var",
-             col.var = "red",
-             repel = TRUE,
-             legend.title = "Drugs") +
-  ggtitle("2D PCA-plot of prism_reduced_no_NAs") +
-  theme(plot.title = element_text(hjust = 0.5))
-
-# Plot of the resultant PCs
-biplot(pca1, scale = 1)
-```
-
-```{r r2 - Performing PCA of prism_reduced_ovary_no_NAs }
-
-summary(unlist(prism_reduced_ovary))
-
-prism_reduced_ovary_no_NAs = prism_reduced_ovary ## create a copy of prism_reduced to keep a version that includes the NAs
-
-## creating a dataframe without NAs 
-
-for(i in 1:ncol(prism_reduced_ovary)){
-  prism_reduced_ovary_no_NAs[is.na(prism_reduced_ovary[, i]), i] <- mean(prism_reduced_ovary[, i], na.rm = TRUE)
-}  ## this code replaces the NAs in prism_reduced with the col mean and saves it into a new data frame called prism_reduced_ovary_no_NAs
-
-
-# Perform PCA 
-
-B = as.matrix(prism_reduced_ovary_no_NAs)
-
-pca2 = prcomp(t(B), scale = TRUE)
-
-plot(pca2$x[,1], pca2$x[,2], pch=20)
-
-pca2_var = pca2$sdev^2
-pca2_var_per = round(pca2_var/sum(pca2_var)*100,1)
-barplot(pca2_var_per, main = "Distribution of the variation of the data explained by PCs", xlab = "Principal component", ylab = "Percent variation")
-
-summary(prcomp(B))
-
-# Compute the covariance between the first two columns of A
-cov(B[, 1], B[, 2])
-
-# Plot of PC1 against PC2
-plot(pca2$x[,1], pca2$x[,2], xlab="PC1", ylab = "PC2", main = "PC1 / PC2 - plot", pch=20)
-
-# To compute a graphic of the PCs additional tools are required
-# library(ggbiplot)
-# ggbiplot(pca2)
-
-
-# Creating a 2D plot 
-# Load the required package
-library("factoextra")
-fviz_pca_ind(pca1, geom.ind = "point", pointshape = 21, 
-             pointsize = 2, 
-             fill.ind = ,
-             col.ind = "black", 
-             palette = "jco", 
-             addEllipses = TRUE,
-             label = "var",
-             col.var = "red",
-             repel = TRUE,
-             legend.title = "Drugs") +
-  ggtitle("2D PCA-plot of prism_reduced_ovary_no_NAs") +
-  theme(plot.title = element_text(hjust = 0.5))
-
-# Plot of the resultant PCs
-biplot(pca2, scale = 1)
+barplot(sort(pca1_moa$rotation[,2]), las=3, cex.names=0.4)
 
 ```
+
+```{r S16 PCA by medications}
+
+A_moa = as.matrix(moa_drugs)
+
+pca1_moa_t = prcomp(t(A_moa), scale = TRUE)
+
+plot(pca1_moa_t$x[,1], pca1_moa_t$x[,2], pch=20)
+
+pca1_var_moa_t = pca1_moa_t$sdev^2
+pca1_var_per_moa_t = round(pca1_var_moa_t/sum(pca1_var_moa_t)*100,1)
+barplot(pca1_var_per_moa_t, main = "Distribution of the variation of the data explained by PCs", xlab = "Principal component", ylab = "Percent variation")
+
+summary(prcomp(A_moa))
+
+
+wss_all_moa_t = sapply(2:15,function(k) { 
+  kmeans(x=pca1_moa_t$x[,1:2], centers =k)$tot.withinss
+})
+plot(2:15,wss_all_moa_t,type='b',pch=20,xlab="Number of clusters K",
+     ylab="Total within-clusters sum of squares")
+
+
+km_moa = kmeans(pca1_moa_t$x[,1:2],centers=4,nstart = 100)
+col = c('green','blue','red', "orange", "brown", "pink", "black", "gray")
+col.km_moa = col[km_moa$cluster]
+plot(pca1_moa_t$x[,1], pca1_moa_t$x[,2],
+col= col.km_moa, pch=20,
+xlab='PC1',ylab='PC2',
+main = "PC1 vs. PC2 for kmeans clusters
+Clustering moa_drugs by medications")
+legend("topleft", legend = c("Cluster 1", "Cluster 2", "Cluster 3", "Cluster 4"), fill = col)
+
+```
+
+```{r}
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
 
