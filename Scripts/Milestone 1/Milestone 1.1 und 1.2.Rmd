@@ -730,7 +730,7 @@ prism_reduced = prism_reduced[, !is.na(apply(prism_reduced, 2, mean, na.rm = TRU
 library(ggplot2)
 
 ## Histogramm of prism_reduced
-hist_prism_reduced <- hist(unlist(prism_reduced), xlab = "Proliferation values", main = "Proliferation values of prism_reduced", breaks = 100) ## THIS IS THE ONE THAT WORKS!! produces similar graph as in try 1
+hist_prism_reduced <- hist(unlist(prism_reduced), xlab = "Proliferation values", main = "Proliferation values of prism_reduced for every drug", breaks = 100) 
 
 print(hist_prism_reduced)
 ```
@@ -747,7 +747,7 @@ for(i in 1:ncol(prism_reduced)){
 
 summary(unlist(prism_reduced_no_NAs))
 
-hist(unlist(prism_reduced_no_NAs), breaks = 100, xlab = "Proliferation values", main = "Proliferation values of prism_reduced_no_NAs")
+hist(unlist(prism_reduced_no_NAs), breaks = 100, xlab = "Proliferation values", main = "Proliferation values of prism_reduced_no_NAs for every drug")
 ```
 
 ```{r S4 Schwellenwert festlegen um unsignifikante Medikamente aus prism_reduced zu entfernen}
@@ -771,7 +771,7 @@ summary(min_values_treat_prism_reduced_vector)
 ## setting threshold at 5% quantile
 quantile(min_values_treat_prism_reduced_vector, 0.1)
 
-hist(min_values_treat_prism_reduced_vector, main = "Histogramm of the lowest proliferation values in prism_reduced")
+hist(min_values_treat_prism_reduced_vector, main = "Most effective proliferation values in all cell lines except ovary", xlab = "Proliferation values")
 abline(v=quantile(min_values_treat_prism_reduced_vector, 0.1), col="red")
 
 min_values_treat_prism_reduced_vector_no_Inf = min_values_treat_prism_reduced_vector
@@ -1026,7 +1026,8 @@ col.km1_moa = col[km1_moa$cluster]
 plot(pca1_moa$x[,1], pca1_moa$x[,2],
 col= col.km1_moa, pch=20,
 xlab='PC1',ylab='PC2',
-main = "PC1 vs. PC2 for kmeans clusters")
+main = "PC1 vs. PC2 for kmeans clusters
+Clustering moa_drugs by cell lines")
 legend("topleft", legend = c("Cluster 1", "Cluster 2", "Cluster 3", "Cluster 4", "Cluster 5"), fill = col)
 
 barplot(sort(pca1_moa$rotation[,1]), las=3, cex.names=0.4)
@@ -1063,7 +1064,8 @@ col.km_moa = col[km_moa$cluster]
 plot(pca1_moa_t$x[,1], pca1_moa_t$x[,2],
 col= col.km_moa, pch=20,
 xlab='PC1',ylab='PC2',
-main = "PC1 vs. PC2 for kmeans clusters")
+main = "PC1 vs. PC2 for kmeans clusters
+Clustering moa_drugs by medications")
 legend("topleft", legend = c("Cluster 1", "Cluster 2", "Cluster 3", "Cluster 4"), fill = col)
 
 ```
