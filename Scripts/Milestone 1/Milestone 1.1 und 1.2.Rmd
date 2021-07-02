@@ -1,11 +1,20 @@
 ---
 title: "Untitled"
-output: html_document
+output:
+  html_document: default
+  word_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+
+```{r}
+load("/Users/caro/Desktop/Uni_Heidelberg/SoSe21/Data_Project/original_data_environment.RData")
+```
+
 
 ```{r c1 - data exploration and organization - reducing data set to obtain ovary cancer values}
 
@@ -912,31 +921,6 @@ names_use <- names(prism_reduced_no_NAs)[names(prism_reduced_no_NAs) %in% most_e
 
 moa_drugs <- prism_reduced_no_NAs[,names_use]
 
-```
-
-```{r S12 Fisher's exact test}
-
-## fisher test topoisomerase inhibitors 
-
-fisher_topoisomerase <- data.frame(c(9,9), c(131,131), row.names = c("Ovary Cell Lines", "Non-Ovary Cell Lines"))
-
-
-colnames(fisher_topoisomerase) <- c("Topoisomerase Inhibitor", "Other")
-
-fisher_topoisomerase
-
-fisher.test(fisher_topoisomerase)
-
-## fisher test hdac inhibitors 
-
-fisher_hdac <- data.frame(c(10,9), c(130, 131), row.names = c("Ovary Cell Lines", "Non-Ovary Cell Lines"))
-
-
-colnames(fisher_hdac) <- c("HDAC Inhibitor", "Other")
-
-fisher_hdac
-
-fisher.test(fisher_hdac)
 ```
 
 
