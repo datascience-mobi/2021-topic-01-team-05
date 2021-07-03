@@ -1,11 +1,19 @@
 ---
 title: "Untitled"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+```{r}
+load(file.path("/Users/sassac2000/Desktop/Uni/SS21/Data_Projekt/2021-topic-01-team-05/original_data_environment.RData"))
+
+```
+
 
 ```{r c1 - data exploration and organization - reducing data set to obtain ovary cancer values}
 
@@ -703,9 +711,6 @@ barplot(sort(pca2_moa$rotation[,2]), las=3, cex.names = 0.4)
 
 ## Reducing prism to include only the lowest proliferation value of each drug treatment on all cell lines
 
-#Reducing prism to the lowest proliferation value of each drug treatment 
-
-
 prism_reduced = data.frame(row.names = rownames(prism))
 
 for (i in 1:(ncol(prism)/8)){
@@ -715,6 +720,7 @@ for (i in 1:(ncol(prism)/8)){
   prism_reduced[drug] = max_effect
 }
 
+## Extracting the lowest proliferation values of each drug for all cell lines except the ovary cell lines
 prism_reduced = prism_reduced[-which(rownames(prism_reduced) %in% vector_ovary_DepMI),]
 
 prism_reduced = prism_reduced[, !is.na(apply(prism_reduced, 2, mean, na.rm = TRUE))]
@@ -722,64 +728,53 @@ prism_reduced = prism_reduced[, !is.na(apply(prism_reduced, 2, mean, na.rm = TRU
 
 ```{r S2 Plotting the data from prism_reduced}
 
-## Downlaoding ggplot package
-library(ggplot2)
-
-## Histogramm of prism_reduced
+## Plotting a histogramm of prism_reduced visualizing the lowest proliferation values for all cell lines except ovary
 hist_prism_reduced <- hist(unlist(prism_reduced), xlab = "Proliferation values", main = "Proliferation values of prism_reduced for every drug", breaks = 100) 
 
-print(hist_prism_reduced)
 ```
 
 ```{r S3 Replacing NAs in prism_reduced with the column means}
 
-summary(unlist(prism_reduced))
+## Creating a copy of prism_reduced to keep a version that includes the NAs
+prism_reduced_no_NAs = prism_reduced 
 
-prism_reduced_no_NAs = prism_reduced ## create a copy of prism_reduced to keep a version that includes the NAs
+## Replacing the NAs in prism_reduced with the col mean and saving it into a new data frame called prism_reduced_no_NAs
 
 for(i in 1:ncol(prism_reduced)){
   prism_reduced_no_NAs[is.na(prism_reduced[, i]), i] <- mean(prism_reduced[, i], na.rm = TRUE)
-}  ## this code replaces the NAs in prism_reduced with the col mean and saves it into a new data frame called prism_reduced_no_NAs
+}  
 
-summary(unlist(prism_reduced_no_NAs))
-
+## Plotting a histogram of the lowest proliferation values without NAs for all cell lines except ovary 
 hist(unlist(prism_reduced_no_NAs), breaks = 100, xlab = "Proliferation values", main = "Proliferation values of prism_reduced_no_NAs for every drug")
 ```
 
-```{r S4 Schwellenwert festlegen um unsignifikante Medikamente aus prism_reduced zu entfernen}
+```{r S4 Defining a threshhold in order to remove insignificant drugs from prism_reduced}
 
-## creating a vector that contains the drugs and the corresponding strongest anti-proliferating values
+## Creating a vector that contains the drugs and the corresponding strongest anti-proliferating values
 min_values_treat_prism_reduced <- apply(prism_reduced, 2, min, na.rm=TRUE)
 
 min_values_treat_prism_reduced_vector <- as.vector(min_values_treat_prism_reduced)
 
-## vector containing drug names and corresponding min values
+## Vector containing drug names and corresponding min values
 names(min_values_treat_prism_reduced_vector) = colnames(prism_reduced)
 
-##trying to remove Inf values 
+## Removing Inf values 
 min_values_treat_prism_reduced_vector[min_values_treat_prism_reduced_vector > 10] = 0
 
-## displaying histogram and summary
-hist(min_values_treat_prism_reduced_vector)
-
-summary(min_values_treat_prism_reduced_vector)
-
-## setting threshold at 5% quantile
+## Setting threshold at 5% quantile
 quantile(min_values_treat_prism_reduced_vector, 0.1)
 
+## Plotting a histogram of the most effective proliferation values in all cell lines except ovary with a red line marking the 5% threshhold
 hist(min_values_treat_prism_reduced_vector, main = "Most effective proliferation values in all cell lines except ovary", xlab = "Proliferation values")
 abline(v=quantile(min_values_treat_prism_reduced_vector, 0.1), col="red")
 
 min_values_treat_prism_reduced_vector_no_Inf = min_values_treat_prism_reduced_vector
 
-```
-
-```{r S5}
-
 ## Creating a vector with all of the min values in prism_reduced under the threshold of the 5% quantile
 prism_reduced_under_threshold = data.frame(min_values_treat_prism_reduced[min_values_treat_prism_reduced < quantile(min_values_treat_prism_reduced_vector, 0.1)])
 
 ```
+
 
 ```{r S6 Finding the cell lines corresponding to the lowest proliferation value of each drug}
 
@@ -802,18 +797,16 @@ prism.treat_reduced_2 = prism.treat_reduced[,which(colnames(prism.treat_reduced)
 
 ```{r S8 Analysing our data}
 
-## Plotting the number of medications belonging to a selected amount of disease areas
+## Plotting the number of medications belonging to the disease areas included in prism.treat_reduced
 plot(table(prism.treat_reduced$disease.area), srt = 90, las = 3, ylab = "Frequency", main = "Frequency of selected medications in prism.treat_reduced")
 
 ## Sorting the moa values in prism.treat_reduced alphabetically
 sort(unique(as.vector(na.omit(prism.treat_reduced$moa))))
 
-## making a barplot with the moas of the prims.treat_reduced_2 dataframe
-
+## Creating a barplot with the moas of the prims.treat_reduced_2 dataframe
 barplot(which(as.list(prism.treat_reduced_2$moa)>1)) ## not nexessary??
 
-
-##Creating dataframe with the frequency of the different moas in prism.treat_reduced_2
+##Creating dataframe which includes the frequency of the different moas in prism.treat_reduced_2
 library(dplyr)
 
 prism.treat_reduced_2 %>% count(moa)
@@ -829,13 +822,11 @@ as.vector((prism.treat_reduced_2 %>% count(moa) %>% filter(n >= 3) %>% .$x)$n)
 
 ##Plotting the frequency of the different moas
 par(mar=c(4, 20, 4, 4))
-barplot(moa_frequencies$n, names.arg = moa_frequencies$moa, las = 1, xlab = "Frequency", horiz = TRUE, xlim = c(0,10), main = "Most frequent moa's amongst the medications under the threshhold") ## The 3 NAs still have to be removed here, but I don't know how
-## This still needs to be organized by frequency but the values and names are not connected
-
+barplot(moa_frequencies$n, names.arg = moa_frequencies$moa, las = 1, xlab = "Frequency", horiz = TRUE, xlim = c(0,10), main = "Most frequent moa's amongst the medications under the threshhold") 
 
 ```
 
-```{r S9 Finding out in which celllines the HDAC inhibitor shows up}
+```{r S9 Finding the cell lines, in which HDAC was the mechanism of action}
 
 ## Extracting the data from prism.treat_reduced_2 where the moa is HDAC
 prism.treat_reduced_2[prism.treat_reduced_2$moa == "HDAC inhibitor",]
@@ -854,7 +845,7 @@ prism.cl[prism.cl$DepMap_ID %in% cl_hdac,]
 
 ```
 
-```{r S 10 Chunk 12 for topoisomerase inhibitor}
+```{r S 10 Finding the cell lines, in which the topoisomerase inhibitor was the mechanism of action}
 
 ## Extracting the data from prism.treat_reduced_2 where the moa is topoisomerase inhibitor
 prism.treat_reduced_2[prism.treat_reduced_2$moa == "topoisomerase inhibitor",]
@@ -873,7 +864,7 @@ prism.cl[prism.cl$DepMap_ID %in% cl_topoisomerase_inhibitor,]
 
 ```
 
-```{r S11 Finding the names of the medications from the barplot in chunk r S11 Analysing our data}
+```{r S11 Finding the names of the medications used in the cell lines in which the following moas were active: topoisomerase inhibitor, proteasome inhibitor, PI3K inhibitor, NFkB pathway inhibitor, HDAC, EGFR, CDK, BCL, and ATPase}
 
 ## Extracting the medication names of topoisomerase moas
 topoisomerase_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "topoisomerase inhibitor",])$name)) 
@@ -914,33 +905,8 @@ moa_drugs <- prism_reduced_no_NAs[,names_use]
 
 ```
 
-```{r S12 Fisher's exact test}
 
-## fisher test topoisomerase inhibitors 
-
-fisher_topoisomerase <- data.frame(c(9,9), c(131,131), row.names = c("Ovary Cell Lines", "Non-Ovary Cell Lines"))
-
-
-colnames(fisher_topoisomerase) <- c("Topoisomerase Inhibitor", "Other")
-
-fisher_topoisomerase
-
-fisher.test(fisher_topoisomerase)
-
-## fisher test hdac inhibitors 
-
-fisher_hdac <- data.frame(c(10,9), c(130, 131), row.names = c("Ovary Cell Lines", "Non-Ovary Cell Lines"))
-
-
-colnames(fisher_hdac) <- c("HDAC Inhibitor", "Other")
-
-fisher_hdac
-
-fisher.test(fisher_hdac)
-```
-
-
-```{r S13 Clustering moa_drugs by cell lines}
+```{r S12 Clustering moa_drugs by cell lines}
 
 ## Elbow plot
 wss1_all_moa = sapply(2:15,function(k) { 
@@ -952,6 +918,7 @@ plot(2:15,wss1_all_moa,type='b',pch=20,xlab="Number of clusters K",
 ## Silhouette plot 
 D1_all_moa = dist(moa_drugs)
 
+## kmeans clustering
 library(cluster)
 km1_all_moa = kmeans(moa_drugs, centers = 4, nstart = 10)
 s1_all_moa= silhouette(km1_all_moa$cluster, D1_all_moa, col="red")
@@ -967,7 +934,7 @@ for (i in 3:14){
 
 ```
 
-```{r S14 Clustering moa_drugs by medications}
+```{r S13 Clustering moa_drugs by medications}
 
 ## Elbow plot
 wss_all_moa = sapply(2:7,function(k) { 
@@ -995,7 +962,7 @@ for (i in 3:14){
 
 ```
 
-```{r S15 PCA by cell lines}
+```{r S14 PCA by cell lines}
 
 A_moa = as.matrix(moa_drugs)
 
@@ -1032,7 +999,7 @@ barplot(sort(pca1_moa$rotation[,2]), las=3, cex.names=0.4)
 
 ```
 
-```{r S16 PCA by medications}
+```{r S15 PCA by medications}
 
 A_moa = as.matrix(moa_drugs)
 
