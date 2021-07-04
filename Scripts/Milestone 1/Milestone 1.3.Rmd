@@ -108,26 +108,36 @@ df_ovary_DepMI_prism_treat
 ##deleting all other columns 
 df_ovary_DepMI_prism_treat[,c('screen_id','compound_plate','name','moa','target','disease.area','indication','smiles','phase')]<-list(NULL)
 
-##changing the name of row.names
-df_ovary_DepMI_prism_treat <-df_ovary_DepMI_prism_treat%>% rename(drugs=Row.names)
-df_ovary_DepMI_prism_treat
+##deleting NAs
 df_ovary_DepMI_prism_treat_NAs<-drop_na(df_ovary_DepMI_prism_treat)
+df_ovary_DepMI_prism_treat_NAs
+##changing the name of row.names
 
-##schleife herstellen, filtern (group_by, summarize, pearson, spearman)
+rename(df_ovary_DepMI_prism_treat, drugs=Row.names)### Hat funktioniert funktioniet jetzt nicht mehr Wieso?
+df_ovary_DepMI_prism_treat
+
+
+```
+```{r}
+##creating a dataframe wit only low dosages 
+df_lowdose<- df_ovary_DepMI_prism_treat[-which(df_ovary_DepMI_prism_treat$dose>2,5),]
+df_lowdose
+##without NAs
+df_lowdose_NAs<-df_ovary_DepMI_prism_treat_NAs[-which(df_ovary_DepMI_prism_treat_NAs$dose>2,5),]
+df_lowdose_NAs
+
+##creating a dataframe wit only high dosages 
+df_highdose<- df_ovary_DepMI_prism_treat[-which(df_ovary_DepMI_prism_treat$dose<=2,5),]
+df_highdose
+##without NAs
+df_highdose_NAs<-df_ovary_DepMI_prism_treat_NAs[-which(df_ovary_DepMI_prism_treat_NAs$dose<=2,5),]
+df_highdose_NAs
 ```
 
 ```{r}
 
-
-df_ovary_DepMI_prism_treat%>%
-  group_by(df_ovary_DepMI_prism_treat,broad_id)%>%
-  dplyr::summarize(cor(df_ovary_DepMI_prism_treat$dose,df_ovary_DepMI_prism_treat[,4:33],use="na.or.complete",method='pearson'))
-
-xx <- df_ovary_DepMI_prism_treat%>%
-  group_by(broad_id) %>%
-  summarize(cor(df_ovary_DepMI_prism_treat$dose,df_ovary_DepMI_prism_treat[,4:33],use="na.or.complete",method='pearson'))
-xx
-
+test_grouped<-group_by(df_ovary_DepMI_prism_treat,broad_id)
+test_pearson<-data.frame(summarise(test_grouped, cor(df_ovary_DepMI_prism_treat$dose,df_ovary_DepMI_prism_treat[,4:33], use="na.or.complete", method='pearson')))
 
 
 cor(df_ovary_DepMI_prism_treat$dose,df_ovary_DepMI_prism_treat[,4:33],use="na.or.complete",method='pearson')
@@ -139,8 +149,7 @@ cor(df_ovary_DepMI_prism_treat$dose,df_ovary_DepMI_prism_treat[,4:33],use="na.or
 
 ```{r}
 
-dplyr::summarize(gp,cor(df_ovary_DepMI_prism_treat$dose,df_ovary_DepMI_prism_treat[,4:33],use="na.or.complete",method='pearson') )
-xx
+
 
 
 
