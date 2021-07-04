@@ -1,7 +1,11 @@
 ---
 title: "Untitled"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
+
+
 
 
 ```{r c1 - Data Organization}
@@ -247,7 +251,6 @@ summary(km2_moa$cluster)
 
 
 
-
 # Get the ovary cancer cell lines from prism.snv dataframe
 ovary_snv <- prism.snv[rownames(prism.snv) %in% vector_ovary_DepMI,]
 
@@ -271,17 +274,86 @@ ovary_exp_brca1 <- as.data.frame(ovary_exp$BRCA1) # only positive values
 ovary_exp_brca2 <- as.data.frame(ovary_exp$BRCA2) # only posiitve values
 
 
-# Group the celllines according to their KRAS expression
-ovary_cnv_exp_kras <- cbind(ovary_cnv_kras, ovary_exp_kras)
-print(ovary_cnv_exp_kras)
+# Creating groups of gene expression patterns of KRAS and BRCA1 from prism.achilles
+ovary_achilles_kras_brca1 <- cbind(ovary_achilles_kras, ovary_achilles_brca1) 
+print(ovary_achilles_kras_brca1)
 
-# Group the celllines according to their BRCA1 expression
-ovary_cnv_exp_brca1 <- cbind(ovary_cnv_brca1, ovary_exp_brca1)
-print(ovary_cnv_exp_brca1)
+# Creating groups of gene expression patterns of KRAS,BRCA1 and BRCA2
+ovary_achilles_kras_brca1_brca2 <- cbind(ovary_achilles_kras_brca1, ovary_achilles_brca2)
+print(ovary_achilles_kras_brca1_brca2)
 
-# Group the celllines according to their BRCA2 expression
-ovary_cnv_exp_brca2 <- cbind(ovary_cnv_brca2, ovary_exp_brca2)
-print(ovary_cnv_exp_brca2)
+
+# Creating groups of gene expression patterns of KRAS and BRCA1 from prism.cnv
+ovary_cnv_kras_brca1 <- cbind(ovary_cnv_kras, ovary_cnv_brca1) 
+print(ovary_cnv_kras_brca1)
+
+# Creating groups of gene expression patterns of KRAS,BRCA1 and BRCA2
+ovary_cnv_kras_brca1_brca2 <- cbind(ovary_cnv_kras_brca1, ovary_cnv_brca2)
+print(ovary_cnv_kras_brca1_brca2)
+
+
+
+# Creating groups of gene expression patterns of KRAS and BRCA1 from prism.exp
+ovary_exp_kras_brca1 <- cbind(ovary_exp_kras, ovary_exp_brca1) 
+print(ovary_exp_kras_brca1)
+
+# Creating groups of gene expression patterns of KRAS,BRCA1 and BRCA2 
+ovary_exp_kras_brca1_brca2 <- cbind(ovary_exp_kras_brca1, ovary_exp_brca2)
+print(ovary_exp_kras_brca1_brca2)
+
+
+# t-test of the best medicaments and the filtered datasets - only on prism.exp and prism.cnv because the number of the celllines is equal to the number of medicaments
+
+
+# Question: Does the drug response depend on specific gene expression patterns in ovary cancer cell lines?
+# H0 hypothesis - the difference in means in the two datasets is equal to zero// There is no dependence of the drug response on gene expression patterns
+# H1 hypothesis(alternative hypothesis) - true difference in means is less than zero// There is a dependenc eof the drug response on gene expression patterns
+# p0 > alpha -> H0 is valid
+# Performing t.tests on different gene expression datasets and the most effective drugs
+
+t_test_ovary_cnv = t.test(prism_reduced_ovary, ovary_cnv_kras_brca1_brca2,alternative = 'greater', var.equal=TRUE)
+t_test_ovary_cnv
+
+# Visualize the null distribution
+df = 59
+x = seq(-5,5,by=0.01)
+y = dt(x,df=df)
+plot(x,y,type='l',lwd=3);abline(v=t_test_ovary_cnv$statistic,lwd=2,col='blue',lty=3)
+
+# t.test 2
+t_test_ovary_exp = t.test(prism_reduced_ovary,ovary_exp_kras_brca1_brca2 ,alternative = 'greater', var.equal=TRUE)
+t_test_ovary_exp
+
+# t.test 3
+t_test_ovary_achilles = t.test(prism_reduced_ovary,ovary_achilles_kras_brca1_brca2 ,alternative = 'greater', var.equal=TRUE)
+t_test_ovary_achilles
+
+# t.test on ovary_exp_kras_brca1_brca2 with alternative = "less"
+t_test_ovary_exp = t.test(prism_reduced_ovary,ovary_exp_kras_brca1_brca2 ,alternative = 'less', var.equal=TRUE)
+t_test_ovary_exp
+
+# two sided t.test on ovary_exp_kras_brca1_brca2
+t_test_ovary_exp = t.test(prism_reduced_ovary,ovary_exp_kras_brca1_brca2 ,alternative = 'two.sided', var.equal=TRUE)
+t_test_ovary_exp
+
+# Chi square test in order to see whether there are significant changes in resistency/ drug response to crispr knockouts/knockdown
+# Test whether there is an independence between the drug response and the gene expression
+
+table1_ovary_cnv = data.frame(ovary_cnv_kras_brca1_brca2[1], ovary_cnv_kras_brca1_brca2[2]>0,ovary_cnv_kras_brca1_brca2[3])
+
+chisq.test(table1_ovary_cnv)
+
+table2_ovary_exp = data.frame(ovary_exp_kras_brca1_brca2[1], ovary_exp_kras_brca1_brca2[2]>0,ovary_exp_kras_brca1_brca2[3])
+
+chisq.test(table2_ovary_exp)
+
+
+
+
+
+
+
+
 
 
 library(arsenal)
