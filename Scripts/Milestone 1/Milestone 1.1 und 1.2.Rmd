@@ -1,17 +1,17 @@
 ---
 title: "Untitled"
 output:
-  html_document: default
-  word_document: default
   pdf_document: default
+  word_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
 ```
 
 
-```{r}
+```{r, include=FALSE}
 load("/Users/caro/Desktop/Uni_Heidelberg/SoSe21/Data_Project/original_data_environment.RData")
 ```
 
@@ -261,6 +261,9 @@ testdf <- testdf[0:8,]
 
 par(mar=c(4,20,4,4))
 barplot(testdf$n, names.arg = testdf$moa, las = 1, xlab = "Frequency", horiz=TRUE)
+
+
+summary(reduced_prism_treat_ovary_df_2)
 ```
 
 ```{r - c4.8 - analyzing HDAC inhibitors for ovary cancer cell lines}

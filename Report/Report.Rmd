@@ -11,11 +11,29 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r - Introduction}
 
-## Drug repurposing describes the strategy of reusing drugs that have already been approved for other medical applications. This approach offers several advantages compared to the development and research of novel drugs. First of all, by using already approved treatments, researchers face less obstacles regarding the side effects and approval of these drugs. This is due to the fact that the safety of the drugs has already been tested and validated in prior researches. Thus, costs and legal requirements(?) can be reduced which results in a quicker development of new treatment options. (https://www-nature-com.ubproxy.ub.uni-heidelberg.de/articles/nrd.2018.168)
+## Drug repurposing describes the strategy of reusing drugs that have already been approved for other medical applications. These drugs can obtain a new purpose by using them in a different therapeutic indication. This approach offers several advantages compared to the development and research of novel drugs. Drug repurposing allows researchers to use already approved pharmaceuticals, which helps them face less obstacles regarding potential side effects and the general approval of these drugs. This is due to the fact that the safety of the drugs has already been tested and validated in prior researches. Therefore, costs and legal requirements(?) can be reduced which results in a quicker development of new treatment options. (https://www-nature-com.ubproxy.ub.uni-heidelberg.de/articles/nrd.2018.168)
 
-## According to the American Cancer Society, cancer is the second leading cause of death in the United States and a major global health problem. In addition, the progress of diagnosing and treating this disease was set back due to the coronavirus disease 2019 (COVID-19) pandemic which resulted in reduced health care capacities (https://acsjournals.onlinelibrary.wiley.com/doi/full/10.3322/caac.21654). Therefore, finding new treatment options by repurposing drugs in order to safe resources and time seems to be essential for our society. 
+## According to the American Cancer Society, cancer is the second leading cause of death in the United States and a major global health problem. In addition, the progress of diagnosing and treating this disease was set back due to the coronavirus disease 2019 (COVID-19) pandemic which resulted in reduced health care capacities (https://acsjournals.onlinelibrary.wiley.com/doi/full/10.3322/caac.21654). Hence, finding new treatment options by repurposing drugs in order to safe resources and time seems to be essential for our society. 
 
-# ovary cancer stats https://www.cancer.org/cancer/ovarian-cancer/about/key-statistics.html
+## For our project, we used data obtained from a large screening of 1396 oncological and non-oncological drugs that were tested on 481 different cancer cell lines. (QUELLE?!) While also working with the whole data consisting of several different cancer cell lines, in our analysis we particularly focused on the included 30 ovarian cancer cell lines. The American Cancer Society states that ovarian cancer causes more deaths than any other form of cancer being related to the female reproductive system (https://www.cancer.org/cancer/ovarian-cancer/about/key-statistics.html).
+
+## We aimed to answer two main questions: 
+
+## 1. How do different drugs influence ovary cancer cell lines and which are particularly noticeable? How do these drugs affect the other cell lines?
+
+## 2. Is the sensitivity of different drugs on ovary cancer cell lines connected to specific cancer-related genes or gene knock-outs? 
+
+## We subdivided our project into 6 milestones in order to find answers to these questions.
+
+## In milestone 1.1 and 1.2, we analyzed the drugs and their influence on the proliferation of cancer cell lines and we were able to identify the most promising drugs based on their mechanism of action. 
+
+## In milestone 1.3, we analyzed to what extent the used drug dosage had an effect on the proliferation values of the cancer cell lines and found out that... .
+
+## Milestone 2.1 ...
+
+## In milestone 2.2, we investigated the drug response of the ovarian cancer cell lines based on certain gene expression patterns and knockdown scores. This showed...  
+
+## Finally, in milestone 2.3 we used our results to perform a linear regression model in order to predict drug efficiency from certain gene mutations or expressions. 
 
 
 
