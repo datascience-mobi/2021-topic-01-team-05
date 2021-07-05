@@ -14,6 +14,8 @@ library(tidyr)
 library(readr)
 library(dplyr)
 library(plyr)
+library(ggplot2)
+library(ggcorrplot)
 
 ```
 
@@ -106,66 +108,113 @@ df_ovary_DepMI_prism_treat <-merge(prism.treat,new_df_ovary_DepMI_prism , by="ro
 df_ovary_DepMI_prism_treat
 
 ##deleting all other columns 
-df_ovary_DepMI_prism_treat[,c('screen_id','compound_plate','name','moa','target','disease.area','indication','smiles','phase')]<-list(NULL)
+df_ovary_DepMI_prism_treat[,c('screen_id','compound_plate','moa','target','disease.area','indication','smiles','phase')]<-list(NULL)
 
-##changing the name of row.names
-df_ovary_DepMI_prism_treat <-df_ovary_DepMI_prism_treat%>% rename(drugs=Row.names)
-df_ovary_DepMI_prism_treat
+##deleting NAs
 df_ovary_DepMI_prism_treat_NAs<-drop_na(df_ovary_DepMI_prism_treat)
-
-##schleife herstellen, filtern (group_by, summarize, pearson, spearman)
-```
-
-```{r}
+df_ovary_DepMI_prism_treat_NAs
 
 
-df_ovary_DepMI_prism_treat%>%
-  group_by(df_ovary_DepMI_prism_treat,broad_id)%>%
-  dplyr::summarize(cor(df_ovary_DepMI_prism_treat$dose,df_ovary_DepMI_prism_treat[,4:33],use="na.or.complete",method='pearson'))
-
-xx <- df_ovary_DepMI_prism_treat%>%
-  group_by(broad_id) %>%
-  summarize(cor(df_ovary_DepMI_prism_treat$dose,df_ovary_DepMI_prism_treat[,4:33],use="na.or.complete",method='pearson'))
-xx
-
-
-
-cor(df_ovary_DepMI_prism_treat$dose,df_ovary_DepMI_prism_treat[,4:33],use="na.or.complete",method='pearson')
-```
-
-
-
-
-
-```{r}
-
-dplyr::summarize(gp,cor(df_ovary_DepMI_prism_treat$dose,df_ovary_DepMI_prism_treat[,4:33],use="na.or.complete",method='pearson') )
-xx
-
-
+df_ovary_DepMI_prism_treat
 
 
 ```
 ```{r}
+##df_ovary_DepMI-prism_treat reduced to only the effective drugs out of Milestone 1.1, 1.2
+df_ovary_prism_treat_effective <- df_ovary_DepMI_prism_treat[df_ovary_DepMI_prism_treat$name %in% most_effective_moas_drugs,]
 
+df_ovary_prism_treat_effective
+## the most effective drugs in a vector
+most_effective_moas_drugs
 ```
 
 ```{r}
+##creating a dataframe wit only low dosages 
+df_lowdose<- df_ovary_DepMI_prism_treat[-which(df_ovary_DepMI_prism_treat$dose>2,5),]
+df_lowdose
+##without NAs
+df_lowdose_NAs<-df_ovary_DepMI_prism_treat_NAs[-which(df_ovary_DepMI_prism_treat_NAs$dose>2,5),]
+df_lowdose_NAs
 
-##We now can compute the correlation of the two variables; remember that we can compute the **Pearson correlation** or the **Spearman correlation**
+##creating a dataframe wit only high dosages 
+df_highdose<- df_ovary_DepMI_prism_treat[-which(df_ovary_DepMI_prism_treat$dose<=2,5),]
+df_highdose
+##without NAs
+df_highdose_NAs<-df_ovary_DepMI_prism_treat_NAs[-which(df_ovary_DepMI_prism_treat_NAs$dose<=2,5),]
+df_highdose_NAs
 
-##Pearson correlations
-cor(df_ovary_DepMI_dose_NA$dose,df_ovary_DepMI_dose_NA$"ACH-000013",method='pearson')
+##repeating this with the most effective dataframe df_ovary_prism_treat_effective
 
-##Spearman correlation
-cor(df_ovary_DepMI_dose_NA$dose,df_ovary_DepMI_dose_NA$"ACH-000013",method='spearman')
+##creating a dataframe wit only low dosages 
+df_lowdose_effectivedrugs<- df_ovary_prism_treat_effective[-which(df_ovary_prism_treat_effective$dose>2,5),]
+df_lowdose_effectivedrugs
 
-####alle 8 Zeilen verschiedene Wirkstoffe
 
-##spearman correlation table with all variations
-cor.dose1<-cor(df_ovary_DepMI_dose_NA,method='spearman')
+##creating a dataframe wit only high dosages 
+df_highdose_effectivedrugs<- df_ovary_prism_treat_effective[-which(df_ovary_prism_treat_effective$dose<=2,5),]
+df_highdose_effectivedrugs
 
+```
+```{r}
+## pearson correlation between the proliferation value and dose, to test the independence of the proliferation value from the dosis
+
+cordf_effective= data.frame(row.names=rownames(prism))
+
+for (drug in unique(df_ovary_prism_treat_effective$name)){
+  dose = prism.treat[prism.treat$name==drug,]$dose
+  response = prism[,rownames(prism.treat)[prism.treat$name == drug]]
+  
+  cordf_effective[drug]=apply(response,1,function(x){cor(x,dose)})
+}
+cordf_effective<-cordf_effective[rownames(cordf_effective) %in% vector_ovary_DepMI,]
+cordf_effective
+####Der Korrelationskoeffizient nach Person liegt stets zwischen eins und minus eins, wobei eins einen perfekt positiven und minus eins eine perfekt negative Korrelation impliziert. Man schreibt also:
+
+####r\ \in\left[-1;+1\right]
+
+####Es gibt also verschiedene Szenarien, auf die wir hier eingehen.
+
+####r\approx0 : Erhältst du ein Ergebnis von ungefähr null sind die Variablen unkorreliert.
+####Das heißt, zwischen ihnen besteht kein linearer Zusammenhang. Ein Beispiel hierfür wäre wenn man versucht einen Zusammenhang zwischen und Autokennzeichen und Körpergröße zu finden.
+ 
+
+####r\ >\ 0 : Ist der Wert von r größer als 0, dann nennt man das eine positive Korrelation. Das bedeutet, dass größere Werte von X auch mit größeren Werten von Y einher gehen. Hier könnte man den Zusammenhang zwischen der Körpergröße eines Menschen und der Schuhgröße dieser Person hernehmen.
+ 
+
+####r\ <\ 0 :  Zuletzt betrachten wir noch den Fall, dass der Wert von r kleiner als Null ist, es sich also um einen negativen Zusammenhang handelt. Anders als bei der positiven Korrelation fallen hier die Werte von Y mit steigenden X-Werten. Hier könnte man sagen, dass je mehr Kilometer man mit dem Auto zurücklegt, desto weniger Benzin ist im Tank.
+
+```
+```{r}
+cormatrix_effective<- data.matrix(cordf_effective)
+cormatrix_effective
+dim(cormatrix_effective)
+
+##visualization the correlation using ggplot2
+ggplot2_dose_proliferation<-ggcorrplot(cormatrix_effective)
+ggplot2_dose_proliferation
+
+
+```
+```{r}
+pairs(cormatrix_effective[,1:42],labels= )
 
 ```
 
 
+```{r}
+prism_reduced_ovarycells<-prism[rownames(prism) %in% vector_ovary_DepMI,]
+prism_reduced_ovarycells
+
+##creating a histogramm to show that the sd values are really small and it shows that the dose therefore has little influence on the effect
+corVec = vector()
+
+for (drug in unique(df_ovary_prism_treat_effective$name)){
+  dose = prism.treat[prism.treat$name == drug,]$dose
+  response = prism_reduced_ovarycells[,rownames(prism.treat)[prism.treat$name == drug]]
+  
+  corVec= c(corVec, apply(response,1,sd))
+}
+hist(corVec)
+
+
+```
