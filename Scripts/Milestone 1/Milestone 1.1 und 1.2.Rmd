@@ -63,6 +63,10 @@ hist_cell_growth_drugs <- hist(apply(df_ovary_DepMI_prism, 2,function(x){mean(x,
 
 hist_cell_growth_cl
 hist_cell_growth_drugs
+
+sum(which(unlist(hist_cell_growth_drugs) < 0)) # number of values below zero in hist_cell_growth_drugs
+
+
 ```
 
 ```{r c4 - data exploration and organization - changing our dataframe in order to be able to find the most effective drugs}
@@ -1037,35 +1041,7 @@ legend("topleft", legend = c("Cluster 1", "Cluster 2", "Cluster 3", "Cluster 4")
 
 ```
 
-```{r Researching the main use of the top 45 drugs}
+```{r}
 
-## Source number always added at the end of the information extracted form that source. If a sentence doesnt have a number behind it, that means that information is extracted from the next mentioned source number. The following is also copied from the websites and must be rephrased. 
-
-## Topoisomerase inhibitors
-### DNA topoisomaerases I and II are established molecular targets of anticancer drugs (1). Topoisomerase activity is particularly increased in rapidly dividing and in cancer cells. It presents an appropriate, but nonselective target for anticancer therapy (2). Irinotecan and topotecan are two camptothecin derivatives currently in use in the US and are used as adjunctive therapies for advanced colorectal, ovarian and small cell lung cancer (2).
-
-## Proteasome inhibitors
-### Proteasome inhibitors are an important class of drugs for the treatment of multiple myeloma and mantle cell lymphoma, and are being investigated for other diseases (3).
-
-## PI3K pathway inhibitor
-### Although PI3K pathway inhibitors are still in relatively early stages of clinical development, they are showing promising initial results as anti cancer agents (4). 
-
-##  NFkB pathway inhibitor 
-### NFkB transcription factors play a key role in the survival and proliferation of many kinds of B-cell tumors, including multiple myeloma.Inhibition by a combination of targeting extrinsic signaling plus both NFkB pathways appears to be an attractive therapeutic approach in MM tumors (5).
-
-## HDAC inhibitors
-### HDACs may be essential for the maintenance of a set of key genes required for survival and growth of cancer cells but not of normal ones. Mechanisms of anticancer effects of HDAC inhibitors are not uniform; they may be different and depend on a type of cancer, on the individual HDAC inhibitor and its dose as well as on some other factors (6). 
-
-## EGFR inhibitors
-### Activation of the EGFR stimulates tumor growth and progression, including the promotion of proliferation, angiogenesis, invasion, metastasis and inhibition of apoptosis. Studies have also reported EGFR overexpression in the following cancers: bladder, brain, breast, cervical, uterine, colon, esophageal, glioma, non-small-cell lung cancer (NSCLC), ovarian, pancreatic and renal cell.It appears likely that EGFR inhibitors (and other rationally designed molecular growth inhibitors) will play a meaningful role in cancer therapy in the years to come (7).
-
-## Sources 
-### 1: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2707511/ 
-### 2: https://www.ncbi.nlm.nih.gov/books/NBK548372/ 
-### 3: https://www.annualreviews.org/doi/full/10.1146/annurev-pharmtox-010919-023603 
-### 4: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3132554/ 
-### 5: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2947827/ 
-### 6: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5535906/ 
-### 7: https://erc.bioscientifica.com/view/journals/erc/11/4/0110689.xml 
 
 ```
