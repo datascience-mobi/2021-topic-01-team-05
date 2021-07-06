@@ -16,6 +16,8 @@ library(dplyr)
 library(plyr)
 library(ggplot2)
 library(ggcorrplot)
+library(devtools)
+
 
 ```
 
@@ -120,13 +122,16 @@ df_ovary_DepMI_prism_treat
 
 ```
 ```{r}
+
+## the most effective drugs in a vector
+most_effective_moas_drugs2<-c("TAS-103","nemorubicin","idarubicin","10-hydroxycamptothecin", "amsacrine","SN-38","doxorubicin","exatecan-mesylate","genz-644282","ixazomib-citrate","carfilzomib","delanzomib","ixazomib","BGT226","buparlisib","CUDC-907","PCI-24781","AR-42", "givinostat","scriptaid","M-344","romidepsin","trichostatin-a","vorinostat","JNJ-26481585","pelitinib","PD-168393","dacomitinib","afatinib","AT-7519","dinaciclib","CR8-(R)","P276-00" ,"R547","oridonin","obatoclax","HA14-1","TW-37","digoxin","thonzonium","digitoxigenin","NMS-873")
+
 ##df_ovary_DepMI-prism_treat reduced to only the effective drugs out of Milestone 1.1, 1.2
-df_ovary_prism_treat_effective <- df_ovary_DepMI_prism_treat[df_ovary_DepMI_prism_treat$name %in% most_effective_moas_drugs,]
+df_ovary_prism_treat_effective <- df_ovary_DepMI_prism_treat[df_ovary_DepMI_prism_treat$name %in% most_effective_moas_drugs2,]
 
 df_ovary_prism_treat_effective
-## the most effective drugs in a vector
-most_effective_moas_drugs
 ```
+
 
 ```{r}
 ##creating a dataframe wit only low dosages 
@@ -153,8 +158,28 @@ df_lowdose_effectivedrugs
 ##creating a dataframe wit only high dosages 
 df_highdose_effectivedrugs<- df_ovary_prism_treat_effective[-which(df_ovary_prism_treat_effective$dose<=2,5),]
 df_highdose_effectivedrugs
-
 ```
+
+
+```{r}
+##using pivot_longer to do a long dataframe
+df_ovary_prism_treat_effective_long<-pivot_longer(df_ovary_prism_treat_effective,cols = starts_with("ACH"),names_to= "DepMap_ID", values_to="proliferationvalues", values_drop_na=TRUE)
+## making a ggplot out of the long dataframe
+ggplot_dose_proliferationvalues<-ggplot(df_ovary_prism_treat_effective_long, aes(x=dose, y=proliferationvalues)) +
+  geom_point()
+ggplot_dose_proliferationvalues
+
+factor_high_low<- as.factor(c("high","low"))
+df_ovary_prism_treat_effective_long[df_ovary_prism_treat_effective_long$dose>2,5]= factor_high_low[1]
+df_ovary_prism_treat_effective_long[df_ovary_prism_treat_effective_long$dose<=2,5]= factor_high_low[2]
+df_ovary_prism_treat_effective_long
+
+ggplot_dose_proliferationvalues2<-ggplot(df_ovary_prism_treat_effective_long, aes(x=dose, y=proliferationvalues, group= DepMap_ID)) +
+  geom_boxplot()
+ggplot_dose_proliferationvalues2
+```
+
+
 ```{r}
 ## pearson correlation between the proliferation value and dose, to test the independence of the proliferation value from the dosis
 
@@ -193,28 +218,25 @@ dim(cormatrix_effective)
 ggplot2_dose_proliferation<-ggcorrplot(cormatrix_effective)
 ggplot2_dose_proliferation
 
+hist(cormatrix_effective, xlab="Pearson Correlationvalues",main= paste("Pearson Correlation Histogram"))
 
 ```
 ```{r}
-pairs(cormatrix_effective[,1:42],labels= )
+##scatter plot of Ovary cell line proliferation value on the y-achsis and dosis of the different drugs on the x-achsis
 
-```
+scatter_plot_dose_proliferation<-plot(df_ovary_prism_treat_effective$dose,df_ovary_prism_treat_effective$`ACH-000013`,col="blue",xlab="Dosis of the different drugs", ylab="Ovary cellline proliferation value")
 
-
-```{r}
-prism_reduced_ovarycells<-prism[rownames(prism) %in% vector_ovary_DepMI,]
-prism_reduced_ovarycells
-
-##creating a histogramm to show that the sd values are really small and it shows that the dose therefore has little influence on the effect
-corVec = vector()
-
-for (drug in unique(df_ovary_prism_treat_effective$name)){
-  dose = prism.treat[prism.treat$name == drug,]$dose
-  response = prism_reduced_ovarycells[,rownames(prism.treat)[prism.treat$name == drug]]
-  
-  corVec= c(corVec, apply(response,1,sd))
+for (i in 6:34){
+  i
+  points(x=df_ovary_prism_treat_effective$dose,df_ovary_prism_treat_effective[,i], col="blue")
+  for(i in 5:34){
+    i
+    abline(lm(df_ovary_prism_treat_effective$dose~df_ovary_prism_treat_effective[,i]))
+  }
 }
-hist(corVec)
-
 
 ```
+```{r}
+
+```
+
