@@ -166,16 +166,21 @@ df_highdose_effectivedrugs
 df_ovary_prism_treat_effective_long<-pivot_longer(df_ovary_prism_treat_effective,cols = starts_with("ACH"),names_to= "DepMap_ID", values_to="proliferationvalues", values_drop_na=TRUE)
 ## making a ggplot out of the long dataframe
 ggplot_dose_proliferationvalues<-ggplot(df_ovary_prism_treat_effective_long, aes(x=dose, y=proliferationvalues)) +
-  geom_point()
+  geom_point()+
+  labs(title="Plot of proliferation value per dose",x="Dose (µm)", y = "proliferation value")
 ggplot_dose_proliferationvalues
 
-factor_high_low<- as.factor(c("high","low"))
+factor_high_low<- as.factor(c("2,5<10","2,5","0<2,5"))
 df_ovary_prism_treat_effective_long[df_ovary_prism_treat_effective_long$dose>2,5]= factor_high_low[1]
-df_ovary_prism_treat_effective_long[df_ovary_prism_treat_effective_long$dose<=2,5]= factor_high_low[2]
+df_ovary_prism_treat_effective_long[df_ovary_prism_treat_effective_long$dose==2,5]= factor_high_low[2]
+df_ovary_prism_treat_effective_long[df_ovary_prism_treat_effective_long$dose<2,5]= factor_high_low[3]
+
 df_ovary_prism_treat_effective_long
 
 ggplot_dose_proliferationvalues2<-ggplot(df_ovary_prism_treat_effective_long, aes(x=dose, y=proliferationvalues, group= DepMap_ID)) +
-  geom_boxplot()
+  geom_boxplot(aes(fill=DepMap_ID))+
+  labs(title="Plot of proliferation value per dose",x="Dose (µm)", y = "proliferation value")
+
 ggplot_dose_proliferationvalues2
 ```
 
@@ -236,7 +241,5 @@ for (i in 6:34){
 }
 
 ```
-```{r}
 
-```
 
