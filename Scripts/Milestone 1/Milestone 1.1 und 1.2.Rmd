@@ -259,12 +259,12 @@ plot(table(reduced_prism_treat_ovary_df_2$disease.area),  las = 3)
 library(dplyr)
 reduced_prism_treat_ovary_df_2 %>% count(moa)
 
-testdf <- reduced_prism_treat_ovary_df_2 %>% count(moa) %>% filter(n >= 3)
+most_common_moas_ovary <- reduced_prism_treat_ovary_df_2 %>% count(moa) %>% filter(n >= 3)
 
-testdf <- testdf[0:8,]
+most_common_moas_ovary <- most_common_moas_ovary[0:8,]
 
 par(mar=c(4,20,4,4))
-barplot(testdf$n, names.arg = testdf$moa, las = 1, xlab = "Frequency", horiz=TRUE)
+barplot(most_common_moas_ovary$n, names.arg = most_common_moas_ovary$moa, las = 1, xlab = "Frequency", horiz=TRUE)
 
 
 summary(reduced_prism_treat_ovary_df_2)
