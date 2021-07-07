@@ -374,33 +374,33 @@ comparedf(ovary_cnv_exp_brca2, ovary_achilles_brca2)
 
 # Extract celllines from prism.achilles which belong to cluster 1
 achilles_vector_cluster1 = as.vector(na.omit(names(which(km2_moa$cluster == 1))))
-vector_cluster1
+achilles_vector_cluster1
 
 # Extract celllines from prism.achilles which belong to cluster 2
 achilles_vector_cluster2 = as.vector(na.omit(names(which(km2_moa$cluster == 2))))
-vector_cluster2
+achilles_vector_cluster2
 
 # Extract celllines from prism.achilles which belong to cluster 3
 achilles_vector_cluster3 = as.vector(na.omit(names(which(km2_moa$cluster == 3))))
-vector_cluster3
+achilles_vector_cluster3
 
 
 # Extract celllines from prism.achilles which belong to cluster 4
 achilles_vector_cluster4 = as.vector(na.omit(names(which(km2_moa$cluster == 4))))
-vector_cluster4
+achilles_vector_cluster4
 
 
 # Reduce prism.achilles dataset to the selected celllines from the clusters
-ovary_achilles_cluster1 <- prism.achilles[rownames(prism.achilles) %in% vector_cluster1,]
+ovary_achilles_cluster1 <- prism.achilles[,achilles_vector_cluster1 %in% rownames(prism.achilles)]
 ovary_achilles_cluster1
 
-ovary_achilles_cluster2 <- prism.achilles[rownames(prism.achilles) %in% vector_cluster2,]
+ovary_achilles_cluster2 <- prism.achilles[rownames(prism.achilles) %in% achilles_vector_cluster2,]
 ovary_achilles_cluster2
 
-ovary_achilles_cluster3 <- prism.achilles[rownames(prism.achilles) %in% vector_cluster3,]
+ovary_achilles_cluster3 <- prism.achilles[rownames(prism.achilles) %in% achilles_vector_cluster3,]
 ovary_achilles_cluster3
 
-ovary_achilles_cluster4 <- prism.achilles[rownames(prism.achilles) %in% vector_cluster4,]
+ovary_achilles_cluster4 <- prism.achilles[rownames(prism.achilles) %in% achilles_vector_cluster4,]
 ovary_achilles_cluster4
 
 
@@ -422,6 +422,7 @@ ovary_achilles_var4
 # Genes with the highest variance are most similar to each other
 # returns logical(0)???
 highest_var = as.vector(na.omit(which(ovary_achilles_var1 > 0.14) && which( ovary_achilles_var2 > 0.14) && which(ovary_achilles_var3 > 0.14) && which(ovary_achilles_var4 > 0.14)))
+max(ovary_achilles_var1, na.rm = TRUE)
 
 
 # Doing the same but with prism.cnv
@@ -475,16 +476,16 @@ ovary_cnv_var4
 # prism.exp
 
 exp_vector_cluster1 = as.vector(na.omit(names(which(km2_moa$cluster == 1))))
-vector_cluster1
+exp_vector_cluster1
 
 exp_vector_cluster2 = as.vector(na.omit(names(which(km2_moa$cluster == 2))))
-vector_cluster2
+exp_vector_cluster2
 
 exp_vector_cluster3 = as.vector(na.omit(names(which(km2_moa$cluster == 3))))
 vector_cluster3
 
 exp_vector_cluster4 = as.vector(na.omit(names(which(km2_moa$cluster == 4))))
-vector_cluster4
+exp_vector_cluster4
 
 # Reduce prism.achilles dataset to the selected celllines from the clusters
 ovary_exp_cluster1 <- prism.exp[rownames(prism.exp) %in% vector_cluster1,]
@@ -520,7 +521,8 @@ ovary_exp_var4
 
 
 
-
+t_test_ovary_drugs1 = t.test(achilles_vector_cluster1, moa_drugs_ovary ,alternative = 'greater', var.equal=TRUE, na.rm = TRUE)
+t_test_ovary_drugs1
 
 
 
