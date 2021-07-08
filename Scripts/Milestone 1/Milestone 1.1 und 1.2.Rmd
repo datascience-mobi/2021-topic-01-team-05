@@ -319,6 +319,8 @@ prism.cl[prism.cl$DepMap_ID %in% ovary_cl_topoisomerase_inhibitor,]
 
 ```{r - c4.10 - fisher exact test}
 
+## belongs to milestone 1.2!!!!
+
 ## fisher test topoisomerase inhibitors
 
 fisher_topoisomerase <- data.frame(c(9,9), c(131,131), row.names = c("Ovary Cell Lines", "Non-Ovary Cell Lines"))
@@ -665,6 +667,9 @@ xlab='PC1',ylab='PC2',
 main = "PC1 vs. PC2 for kmeans clusters - clustering by drugs")
 legend("topright", legend = c("Cluster 1", "Cluster 2", "Cluster 3", "Cluster 4"), fill = col)
 
+
+barplot(sort(pca2_moa_t$rotation[,1]), las=3, cex.names = 0.4)
+
 ```
 
 
@@ -709,7 +714,23 @@ legend("topright", legend = c("Cluster 1", "Cluster 2", "Cluster 3", "Cluster 4"
 barplot(sort(pca2_moa$rotation[,1]), las=3, cex.names = 0.4)
 
 
+
+
+
+# 2nd pc
 barplot(sort(pca2_moa$rotation[,2]), las=3, cex.names = 0.4)
+
+
+which(sort(pca2_moa$rotation[,2]) < 0)
+
+which(sort(pca2_moa$rotation[,2]) > 0)
+
+
+
+as.list(sort(pca2_moa$rotation[,2]) < 0)
+
+
+
 ```
 
 

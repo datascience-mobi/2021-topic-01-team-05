@@ -5,6 +5,7 @@ output: rmdformats::material
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
 ```
 
 
@@ -47,6 +48,8 @@ https://www-nature-com.ubproxy.ub.uni-heidelberg.de/articles/nrd.2018.92
 
 # Milestone 1.1
 
+## General overview
+
 Using the provided prism data frame, we extracted the ovarian DepMap_IDs with their proliferation values after drug treatment. 
 In order to get a general overview of our data, we computed two histograms showing the distribution of the mean sensitivity across all ovarian cell lines and all drugs.
 
@@ -72,6 +75,8 @@ abline(v = 0, col = "red", lwd = 2.5)
 
 All values below zero indicate negative proliferation values. In total, 8652 drugs lie below zero. This means that these drugs generally - with regard to their mean values - caused a reduction in cell growth when they were administered to the ovarian cell lines. 
 
+## Setting a threshold
+
 In our next step, we further analyzed the prism data set. Our aim was to determine the strongest effect each drug had on the ovarian cancer cell lines in terms of proliferation values - independent of the dosage that was used. This is why for each drug, we chose its minimum value which reflects the strongest negative effect on proliferation of the ovarian cell lines. 
 In order to be able to work with a manageable amount of drugs, we decided to set a threshold at the 10 % quantile. By doing so, we could focus on the 140 most effective drugs which caused the most negative proliferation values.
 
@@ -84,6 +89,8 @@ abline(v=quantile(min_values_treat_prism_reduced_ovary_vector, 0.1), col = "red"
 text(-10, 175, "10 % quantile", col = "red", lwd = 2.5)
 ```
 
+## Mechanism of Action
+
 While further analyzing the drugs that lie below the 10 % quantile, we focused on categorizing them after their mechanism of action which we found in the data set prism.treat. Unfortunately, the data regarding the usual disease areas and indications of the drugs was very incomplete, which is why we decided to further investigate the moas - these showed the lowest number of NA values and can also help determining whether these drugs are normally used for treating cancer or not. 
 
 Our results are shown below. These are the 45 most common moas regarding the drugs that had the most promising effects on the ovarian cancer cell lines. 
@@ -91,14 +98,15 @@ Our results are shown below. These are the 45 most common moas regarding the dru
 ```{r}
 most_common_moas_ovary <- reduced_prism_treat_ovary_df_2 %>% count(moa) %>% filter(n >= 3)
 most_common_moas_ovary <- most_common_moas_ovary[0:8,]
+
 par(mar=c(4,20,4,4))
 barplot(most_common_moas_ovary$n, 
         names.arg = most_common_moas_ovary$moa, 
         las = 1, 
         xlab = "Frequency", 
         horiz = TRUE,
-        col = "Lightblue")
-# noch einen graph daneben einfügen der zeigt wieviele davon sind drug mechanism and not 
+        col = "Lightblue",
+        main = "Most frequent moas amongst the most effective drugs")
 ```
 -> Cancer Drugs:
 - Topoisomerase (https://www.ncbi.nlm.nih.gov/books/NBK548372/)
@@ -108,11 +116,71 @@ barplot(most_common_moas_ovary$n,
 - EGFR (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2701650/)
 - CDK (https://www.nature.com/articles/s41467-020-16559-0)
 - BCL inhibitor (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5729538/)
+- ATPase inhibitor (https://www.future-science.com/doi/abs/10.4155/ppa.12.3)
+
+
+All of the selected moas are common in cancer therapy which is why these results were not surprising. We hoped to find non-cancer related drugs with strong effects on the proliferation of ovarian cancer cell lines. However, we are also aware of the fact that these chances are much smaller compared to finding the results we did. 
+
+
+## Dimension Reduction
+
+Our next step included performing kmeans and finding the optimal number of clusters in order to compute a principal component analysis (PCA).   
+```{r}
+B_moa = as.matrix(moa_drugs_ovary)
+pca2_moa = prcomp(B_moa, scale = TRUE)
+pca2_var_moa = pca2_moa$sdev^2
+pca2_var_per_moa = round(pca2_var_moa/sum(pca2_var_moa)*100,1)
+
+
+barplot(pca2_var_per_moa, main = "Variance explained by mechanism of action PCs", xlab = "Principal component", ylab = "Percent variation")
+```
+
+As a result, the majority of the variance is explained by using the first two principal components. 
+
+```{r}
+# 1st pc
+barplot(sort(pca2_moa$rotation[,1]), las=3, cex.names = 0.4, )
+
+
+# 2nd pc
+barplot(sort(pca2_moa$rotation[,2]), las=3, cex.names = 0.4, main = "Contribution to PC2")
+
+
+which(sort(pca2_moa$rotation[,2]) < 0)
+
+which(sort(pca2_moa$rotation[,2]) > 0)
+```
 
 
 
--> Non-Cancer Drugs:
 
+```{r}
+## Running k-means clustering by using PC1 and PC2
+
+wss2_moa = sapply(2:7,function(k) {
+  kmeans(x=pca2_moa$x[,1:2], centers = k)$tot.withinss
+})
+plot(2:7,wss2_moa,type='b',pch=20,xlab="Number of clusters K",
+     ylab="Total within-clusters sum of squares")
+
+
+## performing a clustering with pca data
+
+km2_moa = kmeans(pca2_moa$x[,1:2],centers=4,nstart = 100)
+col = c("red", "orange", "blue", "green")
+col.km2_moa = col[km2_moa$cluster]
+plot(pca2_moa$x[,1], pca2_moa$x[,2],
+col= col.km2_moa, pch=20,
+xlab='PC1',ylab='PC2',
+main = "PC1 vs. PC2 for kmeans clusters - clustering by cell lines")
+legend("topright", legend = c("Cluster 1", "Cluster 2", "Cluster 3", "Cluster 4"), fill = col)
+
+
+barplot(sort(pca2_moa$rotation[,1]), las=3, cex.names = 0.4)
+
+
+barplot(sort(pca2_moa$rotation[,2]), las=3, cex.names = 0.4)
+```
 
 
 
