@@ -1,0 +1,48 @@
+---
+title: "Milestone 2.2 Versuch 1"
+author: "Laura Diekmann"
+date: "8 7 2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+
+## cluster out of Milestone 1.1 1.2 the most effective ovarycelllines
+km2_moa$cluster
+
+# Extract celllines from prism.achilles which belong to cluster 1
+
+achilles_vector_cluster1 = as.vector(na.omit(names(which(km2_moa$cluster == 1))))
+achilles_vector_cluster1
+
+# Extract celllines from prism.achilles which belong to cluster 2
+achilles_vector_cluster2 = as.vector(na.omit(names(which(km2_moa$cluster == 2))))
+achilles_vector_cluster2
+
+# Extract celllines from prism.achilles which belong to cluster 3
+achilles_vector_cluster3 = as.vector(na.omit(names(which(km2_moa$cluster == 3))))
+achilles_vector_cluster3
+
+
+# Extract celllines from prism.achilles which belong to cluster 4
+achilles_vector_cluster4 = as.vector(na.omit(names(which(km2_moa$cluster == 4))))
+achilles_vector_cluster4
+
+# Reduce prism.achilles dataset to the selected celllines from the clusters
+ovary_achilles_cluster1 <- prism.achilles[rownames(prism.achilles) %in% achilles_vector_cluster1,]
+ovary_achilles_cluster1
+
+ovary_achilles_cluster2 <- prism.achilles[rownames(prism.achilles) %in% achilles_vector_cluster2,]
+ovary_achilles_cluster2
+
+ovary_achilles_cluster3 <- prism.achilles[rownames(prism.achilles) %in% achilles_vector_cluster3,]
+ovary_achilles_cluster3
+
+ovary_achilles_cluster4 <- prism.achilles[rownames(prism.achilles) %in% achilles_vector_cluster4,]
+ovary_achilles_cluster4
+```
+
