@@ -244,6 +244,15 @@ hist(cormatrix_effective, xlab="Pearson Correlationvalues",main= paste("Pearson 
 
 ```
 ```{r}
+df_ovary_prism_treat_effective_reduced<- df_ovary_prism_treat_effective[which(df_ovary_prism_treat_effective$name=="exatecan-mesylate"),]
+df_ovary_prism_treat_effective_reduced
+ggplot_dose_proliferationvalues<-ggplot(df_ovary_prism_treat_effective_reduced, aes(x=dose, y=df_ovary_prism_treat_effective_reduced$`ACH-000713`)) +
+  geom_point()+
+  labs(title="Plot of proliferation value per dose",x="Dose (µm)", y = "proliferation value")
+ggplot_dose_proliferationvalues
+```
+
+```{r}
 ##scatter plot of Ovary cell line proliferation value on the y-achsis and dosis of the different drugs on the x-achsis
 
 scatter_plot_dose_proliferation<-plot(df_ovary_prism_treat_effective$dose,df_ovary_prism_treat_effective$`ACH-000013`,col="blue",xlab="Dosis of the different drugs", ylab="Ovary cellline proliferation value")
