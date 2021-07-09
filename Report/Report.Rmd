@@ -1,6 +1,8 @@
 ---
 title: "Report"
-output: rmdformats::material
+output:
+  pdf_document: default
+  rmdformats::material: default
 ---
 
 ```{r setup, include=FALSE}
@@ -179,9 +181,7 @@ barplot(sort(pca2_moa$rotation[,2]), las=3, cex.names = 0.4, main = "Contributio
 ```
 
 
-
-
-
+# Milestone 1.2
 
 
 ```{r Milestone 1.2}
