@@ -1,6 +1,8 @@
 ---
 title: "Report"
-output: rmdformats::material
+output:
+  pdf_document: default
+  rmdformats::material: default
 ---
 
 ```{r setup, include=FALSE}
@@ -115,8 +117,23 @@ barplot(most_common_moas_ovary$n,
 
 
 
+# Milestone 1.2
 
-```{r Milestone 1.2}
+After finding the drugs with the most effective response in regards to the ovary cancer cell lines, we now continued our analysis by testing if the efficiency of these drugs is dependent on the cancer cell line type or not. In order to test this we repeated many of the same steps as in milestone 1.1 but on all cell lines except the ovary cell lines. We extracted the most negative proliferation value for each drug in each cell line (except ovary), set the threshhold to the 10% quantile, and then further reduced our number of drugs by extracting those with the most common moas. The results of this are shown below:
+
+
+```{r}
+
+moa_frequencies = prism.treat_reduced_2 %>% count(moa) %>% filter(n >= 3)
+moa_frequencies = moa_frequencies[0:9,]
+par(mar=c(4, 20, 4, 4))
+barplot(moa_frequencies$n, names.arg = moa_frequencies$moa, 
+        las = 1, 
+        xlab = "Frequency", 
+        horiz = TRUE, 
+        xlim = c(0,10),
+        col = "Lightblue",
+        main = "Most frequent moa's amongst the most effective drugs") 
 
 ```
 
