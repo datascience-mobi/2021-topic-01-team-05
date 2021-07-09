@@ -187,6 +187,8 @@ barplot(sort(pca2_moa$rotation[,2]), las=3, cex.names = 0.4)
 
 # Milestone 1.2
 
+## Mechanism of action
+
 After finding the drugs with the most effective response in regards to the ovary cancer cell lines, we now continued our analysis by testing if the efficiency of these drugs is dependent on the cancer cell line type or not. In order to test this we repeated many of the same steps as in milestone 1.1 but on all cell lines except the ovary cell lines. We extracted the most negative proliferation value for each drug in each cell line (except ovary), set the threshhold to the 10% quantile, and then extracted the most common moas. The results of this are shown below:
 
 
@@ -204,9 +206,41 @@ barplot(moa_frequencies$n, names.arg = moa_frequencies$moa,
         main = "Most frequent moa's amongst the most effective drugs") 
 
 ```
+-> Cancer drugs:
+- Topoisomerase inhibitors (https://www.ncbi.nlm.nih.gov/books/NBK548372/)
+- Proteasome inhibitors (https://www.nature.com/articles/nrclinonc.2016.206)
+- PI3K inhibitors (https://www.nature.com/articles/s41573-021-00209-1)
+- NFkB pathway inhibitors (https://www.nature.com/articles/1209982)
+- HDAC inhibitors (https://www.nature.com/articles/1210620)
+- EGFR inhibitors (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2701650/)
+- CDK inhibitors (https://www.nature.com/articles/s41467-020-16559-0) 
+- BCL inhibitors (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5729538/)
+- ATPase inhibitors (https://www.future-science.com/doi/abs/10.4155/ppa.12.3)
+
+As was the case with the selected moas amongst the ovary cell lines, all selected moas amongst the other cell lines are also commonly used in cancer therapy. Although the likelihood of finding non-oncological drugs with a strong negative effect on cell proliferation is very low, these results are nonetheless disappointing. 
+
+## T-Tests
+
+After finding the most common moas amongst the ovary and all other cell lines, respectively, the next step in our analysis was to find out if any of these moas showed a statistically significant efficiency in ovary cancer specifically. In order to test this, we decided to perform a t-test on all of our selected most common moas fo both ovary cancer and all other cell lines. The results are as follow: 
+
+```{r}
+
+fisher.test(fisher_topoisomerase)
+fisher.test(fisher_proteasome)
+fisher.test(fisher_PI3K)
+fisher.test(fisher_NFkB)
+fisher.test(fisher_hdac)
+fisher.test(fisher_EGFR)
+fisher.test(fisher_cdk)
+fisher.test(fisher_BCL)
+fisher.test(fisher_ATPase)
+
+
+```
 
 
 ```{r Milestone 1.3}
+
 
 ```
 
