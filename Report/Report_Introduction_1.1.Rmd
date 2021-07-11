@@ -115,13 +115,9 @@ barplot(most_common_moas_ovary$n,
         main = NULL)
 ```
 
-We found out that Topoisomerase- [], Proteasome- [@Manasanch2017], PI3K- [@Vanhaesebroeck2021], HDAC- [@Xu2007], EGFR- [], CDK- [], BCL- [] and ATPase-Inhibitors [] are all cancer related moas.
+We found out that Topoisomerase- [@Parchment1998], Proteasome- [@Manasanch2017], PI3K- [@Vanhaesebroeck2021], HDAC- [@Xu2007], EGFR- [@https://doi.org/10.1002/ddr.20268], CDK- [@Wells2020], BCL- [@Montero2018] and ATPase-Inhibitors [@doi:10.4155/ppa.12.3] are all cancer related moas.
 
-- Topoisomerase (https://www.ncbi.nlm.nih.gov/books/NBK548372/)
-- EGFR (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2701650/)
-- CDK (https://www.nature.com/articles/s41467-020-16559-0)
-- BCL inhibitor (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5729538/)
-- ATPase inhibitor (https://www.future-science.com/doi/abs/10.4155/ppa.12.3)
+
 
 
 All of the selected moas are common in cancer therapy which is why these results were not surprising. We hoped to find non-cancer related drugs with strong effects on the proliferation of ovarian cancer cell lines. However, we are also aware of the fact that these chances are much smaller compared to finding the results we did.
