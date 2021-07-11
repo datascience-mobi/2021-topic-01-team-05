@@ -11,12 +11,11 @@ library(dplyr)
 
 
 ```{r, include=FALSE}
-load("/Users/caro/Desktop/Uni_Heidelberg/SoSe21/Data_Project/Untitled.RData")
+load("../Original_Environment/Original.RData")
 ```
 
 
 # Introduction
-
 
 Drug repurposing describes the strategy [@alberts2017molecular] of reusing drugs that have already been approved for other medical applications. These drugs can obtain a new purpose by using them in a different therapeutic indication. This approach offers several advantages compared to the development and research of novel drugs. 
 Drug repurposing allows researchers to use already approved pharmaceuticals, which helps them face less obstacles regarding potential side effects and the general approval of these drugs. This is due to the fact that the safety of the drugs has already been tested and validated in prior researches. Therefore, costs and legal requirements(?) can be reduced which results in a quicker development of new treatment options [@Pushpakom2019].
@@ -181,44 +180,6 @@ barplot(sort(pca2_moa$rotation[,2]), las=3, cex.names = 0.4, main = "Contributio
 ```
 
 
-# Milestone 1.2
-
-
-```{r Milestone 1.2}
-
-```
--> Cancer drugs:
-- Topoisomerase inhibitors (https://www.ncbi.nlm.nih.gov/books/NBK548372/)
-- Proteasome inhibitors (https://www.nature.com/articles/nrclinonc.2016.206)
-- PI3K inhibitors (https://www.nature.com/articles/s41573-021-00209-1)
-- NFkB pathway inhibitors (https://www.nature.com/articles/1209982)
-- HDAC inhibitors (https://www.nature.com/articles/1210620)
-- EGFR inhibitors (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2701650/)
-- CDK inhibitors (https://www.nature.com/articles/s41467-020-16559-0)
-- BCL inhibitors (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5729538/)
-- ATPase inhibitors (https://www.future-science.com/doi/abs/10.4155/ppa.12.3)
-
-As was the case with the selected moas amongst the ovary cell lines, all selected moas amongst the other cell lines are also commonly used in cancer therapy. Although the likelihood of finding non-oncological drugs with a strong negative effect on cell proliferation is very low, these results are nonetheless disappointing.
-
-## T-Tests
-
-After finding the most common moas amongst the ovary and all other cell lines, respectively, the next step in our analysis was to find out if any of these moas showed a statistically significant efficiency in ovary cancer specifically. In order to test this, we decided to perform a t-test on all of our selected most common moas fo both ovary cancer and all other cell lines. The results are as follow:
-
-```{r}
-
-fisher.test(fisher_topoisomerase)
-fisher.test(fisher_proteasome)
-fisher.test(fisher_PI3K)
-fisher.test(fisher_NFkB)
-fisher.test(fisher_hdac)
-fisher.test(fisher_EGFR)
-fisher.test(fisher_cdk)
-fisher.test(fisher_BCL)
-fisher.test(fisher_ATPase)
-
-
-```
-
 
 ```{r Milestone 1.3}
 
@@ -240,6 +201,6 @@ fisher.test(fisher_ATPase)
 ```
 
 
-```{r - Quellen}
 
-```
+# References
+
