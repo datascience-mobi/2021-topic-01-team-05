@@ -1,0 +1,86 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+
+regression_data <- prism_reduced_ovary_no_NAs["zardaverine"]
+
+regression_data$pca_achilles1 = pca_achilles$x[match(rownames(regression_data), names(pca_achilles$x[,1])),1]
+regression_data$pca_achilles2 = pca_achilles$x[match(rownames(regression_data), names(pca_achilles$x[,2])),2]
+regression_data$pca_achilles3 = pca_achilles$x[match(rownames(regression_data), names(pca_achilles$x[,3])),3]
+regression_data$pca_exp1 = pca_exp$x[match(rownames(regression_data), names(pca_exp$x[,1])),1]
+regression_data$pca_exp2 = pca_exp$x[match(rownames(regression_data), names(pca_exp$x[,2])),2]
+regression_data$pca_cnv1 = pca_cnv$x[match(rownames(regression_data), names(pca_cnv$x[,1])),1]
+regression_data$pca_cnv2 = pca_cnv$x[match(rownames(regression_data), names(pca_cnv$x[,2])),2]
+
+
+regression_data_no_nas <- na.omit(regression_data)
+
+pairs(regression_data_no_nas[,-1], pch=20, col="Lightblue3")
+
+```
+
+
+```{r}
+learning_celllines = sample(1:nrow(regression_data_no_nas), 13, replace = F)
+learning_regression <- regression_data_no_nas[learning_celllines,]
+check_regression <- regression_data_no_nas[-learning_celllines,]
+
+
+```
+
+
+```{r}
+regression_model <- lm(formula = zardaverine ~  .,data=learning_regression)
+summary(regression_model)
+```
+
+
+```{r}
+mean(regression_model$residuals)
+
+qqnorm(regression_model$residuals, ylab = "Residuals", main = "Q-Q Plot residuals" );qqline(regression_model$residuals)
+```
+
+```{r}
+
+
+cor(learning_regression$zardaverine, regression_model$residuals)
+
+
+
+
+
+plot(learning_regression$zardaverine, regression_model$fitted.values,pch=20, col="light blue", xlab = "Control", ylab = "Residuals");abline(0,1,col="red")
+```
+
+
+```{r}
+proliferation_pred <- predict(regression_model, newdata = check_regression)
+
+plot(check_regression$zardaverine, proliferation_pred,pch=20, col="lightblue3", xlab = "Real values", ylab = "Predicted values");abline(0,1,col="red" )
+title("Predicted values from the regression to real values")
+```
+
+
+```{r}
+#RMSE of our residuals
+n = nrow(learning_regression)
+rmse.learning = sqrt(1/n*sum(regression_model$residuals^2))
+
+#RMSE of predicted model
+n=nrow(check_regression)
+# the residuals of the predicted model are: 
+residuals = check_regression$zardaverine - proliferation_pred
+rmse.check = sqrt(1/n*sum(residuals^2))
+
+rmse.learning
+rmse.check
+```
+
