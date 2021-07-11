@@ -1,8 +1,7 @@
 ---
 title: "Report"
-output:
-  pdf_document: default
-  rmdformats::material: default
+output: rmdformats::material
+bibliography: ../Bibliography/References.bibtex
 ---
 
 ```{r setup, include=FALSE}
@@ -18,8 +17,8 @@ load("/Users/caro/Desktop/Uni_Heidelberg/SoSe21/Data_Project/Untitled.RData")
 
 # Introduction
 
-Drug repurposing describes the strategy of reusing drugs that have already been approved for other medical applications. These drugs can obtain a new purpose by using them in a different therapeutic indication. This approach offers several advantages compared to the development and research of novel drugs. 
-Drug repurposing allows researchers to use already approved pharmaceuticals, which helps them face less obstacles regarding potential side effects and the general approval of these drugs. This is due to the fact that the safety of the drugs has already been tested and validated in prior researches. Therefore, costs and legal requirements(?) can be reduced which results in a quicker development of new treatment options. (https://www-nature-com.ubproxy.ub.uni-heidelberg.de/articles/nrd.2018.168)
+Drug repurposing describes the strategy [@alberts2017molecular] of reusing drugs that have already been approved for other medical applications. These drugs can obtain a new purpose by using them in a different therapeutic indication. This approach offers several advantages compared to the development and research of novel drugs. 
+Drug repurposing allows researchers to use already approved pharmaceuticals, which helps them face less obstacles regarding potential side effects and the general approval of these drugs. This is due to the fact that the safety of the drugs has already been tested and validated in prior researches. Therefore, costs and legal requirements(?) can be reduced which results in a quicker development of new treatment options [@Pushpakom2019].
 
 According to the American Cancer Society, cancer is the second leading cause of death in the United States and a major global health problem. In addition, the progress of diagnosing and treating this disease was set back due to the coronavirus disease 2019 (COVID-19) pandemic which resulted in reduced health care capacities (https://acsjournals.onlinelibrary.wiley.com/doi/full/10.3322/caac.21654). Hence, finding new treatment options by repurposing drugs in order to safe resources and time seems to be essential for our society. 
 
