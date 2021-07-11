@@ -7,6 +7,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
 ```
 
 ```{r}
@@ -44,5 +45,521 @@ ovary_achilles_cluster3
 
 ovary_achilles_cluster4 <- prism.achilles[rownames(prism.achilles) %in% achilles_vector_cluster4,]
 ovary_achilles_cluster4
+```
+```{r}
+df_ovary_prism_treat_effective_long
+## only the celllines out of cluster 1,2,3,4 in dataframe df_ovary_prism_treat_effective_long to select the drugs that work the best
+
+##cluster 1
+df_ovary_prism_treat_effective_long_c1<- df_ovary_prism_treat_effective_long[df_ovary_prism_treat_effective_long$DepMap_ID %in%achilles_vector_cluster1 ,]
+df_ovary_prism_treat_effective_long_c1
+
+##cluster 2
+df_ovary_prism_treat_effective_long_c2<- df_ovary_prism_treat_effective_long[df_ovary_prism_treat_effective_long$DepMap_ID %in%achilles_vector_cluster2,]
+df_ovary_prism_treat_effective_long_c2
+
+##cluster 3
+df_ovary_prism_treat_effective_long_c3<- df_ovary_prism_treat_effective_long[df_ovary_prism_treat_effective_long$DepMap_ID %in%achilles_vector_cluster3,]
+df_ovary_prism_treat_effective_long_c3
+
+##cluster 4
+df_ovary_prism_treat_effective_long_c4<- df_ovary_prism_treat_effective_long[df_ovary_prism_treat_effective_long$DepMap_ID %in%achilles_vector_cluster4,]
+df_ovary_prism_treat_effective_long_c4
+
+```
+
+```{r}
+## only the ovary celllines out of cluster 1,2,3,4 in dataframe  to select the drugs that work the best
+prism_reduced_noovary = prism[-which(rownames(prism)%in% vector_ovary_DepMI),]
+prism_reduced_noovary
+
+##as.vector names of only cellines without ovary
+
+vector_all_DepMI<-as.vector(rownames(prism_reduced_noovary))
+
+##flipping x and y achsis
+new_prism_reduced_noovary<- as.data.frame(t(prism_reduced_noovary))
+new_prism_reduced_noovary
+
+##creating a dataframe from the ovary cell lines with DepMApID,ploriferation values, broad ID und dose
+df_noovary_DepMI_prism_treat <-merge(prism.treat,new_prism_reduced_noovary, by="row.names")
+df_noovary_DepMI_prism_treat
+
+##deleting all other columns 
+df_noovary_DepMI_prism_treat[,c('screen_id','compound_plate','moa','target','disease.area','indication','smiles','phase')]<-list(NULL)
+
+df_noovary_DepMI_prism_treat
+
+## the most effective drugs in a vector
+most_effective_moas_drugs2<-c("TAS-103","nemorubicin","idarubicin","10-hydroxycamptothecin", "amsacrine","SN-38","doxorubicin","exatecan-mesylate","genz-644282","ixazomib-citrate","carfilzomib","delanzomib","ixazomib","BGT226","buparlisib","CUDC-907","PCI-24781","AR-42", "givinostat","scriptaid","M-344","romidepsin","trichostatin-a","vorinostat","JNJ-26481585","pelitinib","PD-168393","dacomitinib","afatinib","AT-7519","dinaciclib","CR8-(R)","P276-00" ,"R547","oridonin","obatoclax","HA14-1","TW-37","digoxin","thonzonium","digitoxigenin","NMS-873")
+
+##reducing to only the effective moa drugs out of Milestone 1.1 , 1.2 
+df_noovary_prism_treat_effective <- df_noovary_DepMI_prism_treat[df_noovary_DepMI_prism_treat$name %in% most_effective_moas_drugs2,]
+df_noovary_prism_treat_effective 
+
+```
+
+```{r}
+##making a long dataframe
+library(tidyr)
+df_noovary_prism_treat_effective_long<-pivot_longer(df_noovary_prism_treat_effective,cols = starts_with("ACH"),names_to= "DepMap_ID", values_to="proliferationvalues", values_drop_na=TRUE)
+df_noovary_prism_treat_effective_long
+```
+```{r}
+## cluster out of Milestone 1.1 1.2 the most effective ovarycelllines
+km1_moa$cluster
+
+# Extract celllines from prism.achilles which belong to cluster 1
+
+achilles_noovary_vector_cluster1 = as.vector(na.omit(names(which(km1_moa$cluster == 1))))
+achilles_noovary_vector_cluster1
+
+# Extract celllines from prism.achilles which belong to cluster 2
+achilles_noovary_vector_cluster2 = as.vector(na.omit(names(which(km1_moa$cluster == 2))))
+achilles_noovary_vector_cluster2
+
+# Extract celllines from prism.achilles which belong to cluster 3
+achilles_noovary_vector_cluster3 = as.vector(na.omit(names(which(km1_moa$cluster == 3))))
+achilles_noovary_vector_cluster3
+
+
+# Extract celllines from prism.achilles which belong to cluster 4
+achilles_noovary_vector_cluster4 = as.vector(na.omit(names(which(km1_moa$cluster == 4))))
+achilles_noovary_vector_cluster4
+
+
+achilles_noovary_vector_cluster5 = as.vector(na.omit(names(which(km1_moa$cluster == 5))))
+achilles_noovary_vector_cluster5
+
+# Reduce prism.achilles dataset to the selected celllines from the clusters
+noovary_achilles_cluster1 <- prism.achilles[rownames(prism.achilles) %in% achilles_noovary_vector_cluster1,]
+noovary_achilles_cluster1
+
+noovary_achilles_cluster2 <- prism.achilles[rownames(prism.achilles) %in% achilles_noovary_vector_cluster2,]
+noovary_achilles_cluster2
+
+noovary_achilles_cluster3 <- prism.achilles[rownames(prism.achilles) %in% achilles_noovary_vector_cluster3,]
+noovary_achilles_cluster3
+
+noovary_achilles_cluster4 <- prism.achilles[rownames(prism.achilles) %in% achilles_noovary_vector_cluster4,]
+noovary_achilles_cluster4
+
+noovary_achilles_cluster5 <- prism.achilles[rownames(prism.achilles) %in% achilles_noovary_vector_cluster5,]
+noovary_achilles_cluster5
+```
+
+
+```{r}
+## only the celllines out of cluster 1,2,3,4 in dataframe df_ovary_prism_treat_effective_long to select the drugs that work the best
+
+##cluster 1
+df_noovary_prism_treat_effective_long_c1<- df_noovary_prism_treat_effective_long[df_noovary_prism_treat_effective_long$DepMap_ID %in%achilles_noovary_vector_cluster1 ,]
+df_noovary_prism_treat_effective_long_c1
+
+##cluster 2
+df_noovary_prism_treat_effective_long_c2<- df_noovary_prism_treat_effective_long[df_noovary_prism_treat_effective_long$DepMap_ID %in%achilles_noovary_vector_cluster2,]
+df_noovary_prism_treat_effective_long_c2
+
+##cluster 3
+df_noovary_prism_treat_effective_long_c3<- df_noovary_prism_treat_effective_long[df_noovary_prism_treat_effective_long$DepMap_ID %in%achilles_noovary_vector_cluster3,]
+df_noovary_prism_treat_effective_long_c3
+
+##cluster 4
+df_noovary_prism_treat_effective_long_c4<- df_noovary_prism_treat_effective_long[df_noovary_prism_treat_effective_long$DepMap_ID %in%achilles_noovary_vector_cluster4,]
+df_noovary_prism_treat_effective_long_c4
+
+##cluster 5
+df_noovary_prism_treat_effective_long_c5<- df_noovary_prism_treat_effective_long[df_noovary_prism_treat_effective_long$DepMap_ID %in%achilles_noovary_vector_cluster5,]
+df_noovary_prism_treat_effective_long_c5
+```
+```{r}
+##for interest correlation matrix for nonovary cell lines
+cordf_effective_noovary= data.frame(row.names=rownames(prism))
+
+for (drug in unique(df_noovary_prism_treat_effective$name)){
+  dose = prism.treat[prism.treat$name==drug,]$dose
+  response = prism[,rownames(prism.treat)[prism.treat$name == drug]]
+  
+  cordf_effective_noovary[drug]=apply(response,1,function(x){cor(x,dose)})
+}
+cordf_effective_noovary<-cordf_effective_noovary[rownames(cordf_effective_noovary) %in% vector_all_DepMI,]
+cordf_effective_noovary
+```
+
+```{r}
+##vizualising the correlation from the non ovary cell lines
+
+cormatrix_effective_noovary<- data.matrix(cordf_effective_noovary)
+cormatrix_effective_noovary
+dim(cormatrix_effective_noovary)
+
+##visualization the correlation using ggplot2
+ggplot2_dose_proliferation_noovary<-ggcorrplot(cormatrix_effective_noovary)
+ggplot2_dose_proliferation_noovary
+
+hist(cormatrix_effective_noovary, xlab="Pearson Correlationvalues",main= paste("Pearson Correlation Histogram"))
+```
+
+```{r}
+## doing a boxplot with noovary cellines to compare to ovary celllines
+ggplot_dose_proliferationvalues_noovary<-ggplot(df_noovary_prism_treat_effective_long, aes(x=dose, y=proliferationvalues)) +
+  geom_point()+
+  labs(title="Plot of proliferation value per dose",x="Dose (µm)", y = "proliferation value")
+ggplot_dose_proliferationvalues_noovary
+
+df_noovary_prism_treat_effective_long$dose_high_low <- df_noovary_prism_treat_effective_long$dose
+for(i in 1:nrow(df_noovary_prism_treat_effective_long)){
+  if(df_noovary_prism_treat_effective_long$dose[i] < 2){
+    df_noovary_prism_treat_effective_long$dose_high_low[i]="0<=2"
+  } else if(df_noovary_prism_treat_effective_long$dose[i] >= 2 & df_noovary_prism_treat_effective_long$dose[i] <= 7.5){
+    df_noovary_prism_treat_effective_long$dose_high_low[i]="2<7.5"
+  } else if(df_noovary_prism_treat_effective_long$dose[i] > 7.5){
+    df_noovary_prism_treat_effective_long$dose_high_low[i]="7.5<11"
+  }
+}
+
+df_noovary_prism_treat_effective_long
+
+#ggplot_dose_proliferationvalues2<-ggplot(df_ovary_prism_treat_effective_long, aes(x=dose_high_low, y=proliferationvalues, group= DepMap_ID)) +
+#  geom_boxplot()
+
+
+
+ggplot_plot_boxplot_dose_proliferation_noovary <- ggplot(df_noovary_prism_treat_effective_long, aes(x=dose_high_low, y=proliferationvalues)) + geom_boxplot(outlier.shape=8, aes(fill=dose_high_low))+labs(title="Plot of proliferation value per dose",x="Dose (µm)", y = "Proliferation value")
+ggplot_plot_boxplot_dose_proliferation_noovary
+
+```
+
+```{r}
+##for c1 cluster ovary
+##comparing the mean values of both non ovary and ovary celllines
+##creating a dataframe with mean values of proliferationrates orderd after ovary celllines  
+mean_effective_ovary1= data.frame(row.names=rownames(prism))
+
+for (drug in unique(df_ovary_prism_treat_effective_long$name)){
+  dose = prism.treat[prism.treat$name==drug,]$dose
+  response = prism[,rownames(prism.treat)[prism.treat$name == drug]]
+  
+  mean_effective_ovary1[drug]=apply(response,1,function(x){mean(x,na.rm=TRUE)})
+}
+mean_effective_ovary1<-mean_effective_ovary1[rownames(mean_effective_ovary1) %in% achilles_vector_cluster1,]
+mean_effective_ovary1
+
+
+
+##minimal mean value
+mean_effective_ovary_mean1<-data.frame(apply(mean_effective_ovary1,2,mean, na.rm=TRUE))
+mean_effective_ovary_mean1
+
+##where is the minimal value
+which(mean_effective_ovary_mean1==min(mean_effective_ovary_mean1), arr.ind =TRUE)
+
+##for cluster 1 non ovary
+##creating a dataframe with mean values of proliferationrates orderd after non ovary celllines
+mean_effective_noovary1= data.frame(row.names=rownames(prism))
+
+for (drug in unique(df_noovary_prism_treat_effective_long$name)){
+  dose = prism.treat[prism.treat$name==drug,]$dose
+  response = prism[,rownames(prism.treat)[prism.treat$name == drug]]
+  
+  mean_effective_noovary1[drug]=apply(response,1,function(x){mean(x, na.rm=TRUE)})
+}
+mean_effective_noovary1<-mean_effective_noovary1[rownames(mean_effective_noovary1) %in% achilles_noovary_vector_cluster1,]
+mean_effective_noovary1
+
+
+##minimal mean value
+mean_effective_noovary_mean1<-data.frame(apply(mean_effective_noovary1,2,mean, na.rm=TRUE))
+mean_effective_noovary_mean1
+##where is the minimal value
+which(mean_effective_noovary_mean1==min(mean_effective_noovary_mean1), arr.ind =TRUE)
+```
+
+
+
+
+```{r}
+##cluster 2 ovary
+mean_effective_ovary2= data.frame(row.names=rownames(prism))
+
+for (drug in unique(df_ovary_prism_treat_effective_long$name)){
+  dose = prism.treat[prism.treat$name==drug,]$dose
+  response = prism[,rownames(prism.treat)[prism.treat$name == drug]]
+  
+  mean_effective_ovary2[drug]=apply(response,1,function(x){mean(x,na.rm=TRUE)})
+}
+mean_effective_ovary2<-mean_effective_ovary2[rownames(mean_effective_ovary2) %in% achilles_vector_cluster2,]
+mean_effective_ovary2
+
+
+
+##minimal mean value
+mean_effective_ovary_mean2<-data.frame(apply(mean_effective_ovary2,2,mean, na.rm=TRUE))
+mean_effective_ovary_mean2
+
+##where is the minimal value
+which(mean_effective_ovary_mean2==min(mean_effective_ovary_mean2), arr.ind =TRUE)
+
+##non ovary cluster 2
+##creating a dataframe with mean values of proliferationrates orderd after non ovary celllines
+mean_effective_noovary2= data.frame(row.names=rownames(prism))
+
+for (drug in unique(df_noovary_prism_treat_effective_long$name)){
+  dose = prism.treat[prism.treat$name==drug,]$dose
+  response = prism[,rownames(prism.treat)[prism.treat$name == drug]]
+  
+  mean_effective_noovary2[drug]=apply(response,1,function(x){mean(x, na.rm=TRUE)})
+}
+mean_effective_noovary2<-mean_effective_noovary2[rownames(mean_effective_noovary2) %in% achilles_noovary_vector_cluster2,]
+mean_effective_noovary2
+
+
+##minimal mean value
+mean_effective_noovary_mean2<-data.frame(apply(mean_effective_noovary2,2,mean, na.rm=TRUE))
+mean_effective_noovary_mean2
+##where is the minimal value
+which(mean_effective_noovary_mean2==min(mean_effective_noovary_mean2), arr.ind =TRUE)
+```
+
+
+
+```{r}
+##cluster 3 ovary
+mean_effective_ovary3= data.frame(row.names=rownames(prism))
+
+for (drug in unique(df_ovary_prism_treat_effective_long$name)){
+  dose = prism.treat[prism.treat$name==drug,]$dose
+  response = prism[,rownames(prism.treat)[prism.treat$name == drug]]
+  
+  mean_effective_ovary3[drug]=apply(response,1,function(x){mean(x,na.rm=TRUE)})
+}
+mean_effective_ovary3<-mean_effective_ovary3[rownames(mean_effective_ovary3) %in% achilles_vector_cluster3,]
+mean_effective_ovary3
+
+
+
+##minimal mean value
+mean_effective_ovary_mean3<-data.frame(apply(mean_effective_ovary3,2,mean, na.rm=TRUE))
+mean_effective_ovary_mean3
+
+##where is the minimal value
+which(mean_effective_ovary_mean3==min(mean_effective_ovary_mean3), arr.ind =TRUE)
+
+##non ovary cluster 3
+##creating a dataframe with mean values of proliferationrates orderd after non ovary celllines
+mean_effective_noovary3= data.frame(row.names=rownames(prism))
+
+for (drug in unique(df_noovary_prism_treat_effective_long$name)){
+  dose = prism.treat[prism.treat$name==drug,]$dose
+  response = prism[,rownames(prism.treat)[prism.treat$name == drug]]
+  
+  mean_effective_noovary3[drug]=apply(response,1,function(x){mean(x, na.rm=TRUE)})
+}
+mean_effective_noovary3<-mean_effective_noovary3[rownames(mean_effective_noovary3) %in% achilles_noovary_vector_cluster3,]
+mean_effective_noovary3
+
+
+##minimal mean value
+mean_effective_noovary_mean3<-data.frame(apply(mean_effective_noovary3,2,mean, na.rm=TRUE))
+mean_effective_noovary_mean3
+##where is the minimal value
+which(mean_effective_noovary_mean3==min(mean_effective_noovary_mean3), arr.ind =TRUE)
+```
+```{r}
+##cluster 4 ovary
+mean_effective_ovary4= data.frame(row.names=rownames(prism))
+
+for (drug in unique(df_ovary_prism_treat_effective_long$name)){
+  dose = prism.treat[prism.treat$name==drug,]$dose
+  response = prism[,rownames(prism.treat)[prism.treat$name == drug]]
+  
+  mean_effective_ovary4[drug]=apply(response,1,function(x){mean(x,na.rm=TRUE)})
+}
+mean_effective_ovary4<-mean_effective_ovary4[rownames(mean_effective_ovary4) %in% achilles_vector_cluster4,]
+mean_effective_ovary4
+
+
+
+##minimal mean value
+mean_effective_ovary_mean4<-data.frame(apply(mean_effective_ovary4,2,mean, na.rm=TRUE))
+mean_effective_ovary_mean4
+
+##where is the minimal value
+which(mean_effective_ovary_mean4==min(mean_effective_ovary_mean4), arr.ind =TRUE)
+
+##non ovary cluster 4
+##creating a dataframe with mean values of proliferationrates orderd after non ovary celllines
+mean_effective_noovary4= data.frame(row.names=rownames(prism))
+
+for (drug in unique(df_noovary_prism_treat_effective_long$name)){
+  dose = prism.treat[prism.treat$name==drug,]$dose
+  response = prism[,rownames(prism.treat)[prism.treat$name == drug]]
+  
+  mean_effective_noovary4[drug]=apply(response,1,function(x){mean(x, na.rm=TRUE)})
+}
+mean_effective_noovary4<-mean_effective_noovary4[rownames(mean_effective_noovary4) %in% achilles_noovary_vector_cluster4,]
+mean_effective_noovary4
+
+
+##minimal mean value
+mean_effective_noovary_mean4<-data.frame(apply(mean_effective_noovary4,2,mean, na.rm=TRUE))
+mean_effective_noovary_mean4
+##where is the minimal value
+which(mean_effective_noovary_mean4==min(mean_effective_noovary_mean4), arr.ind =TRUE)
+```
+```{r}
+
+##non ovary cluster 5
+##creating a dataframe with mean values of proliferationrates orderd after non ovary celllines
+mean_effective_noovary5= data.frame(row.names=rownames(prism))
+
+for (drug in unique(df_noovary_prism_treat_effective_long$name)){
+  dose = prism.treat[prism.treat$name==drug,]$dose
+  response = prism[,rownames(prism.treat)[prism.treat$name == drug]]
+  
+  mean_effective_noovary5[drug]=apply(response,1,function(x){mean(x, na.rm=TRUE)})
+}
+mean_effective_noovary5<-mean_effective_noovary3[rownames(mean_effective_noovary5) %in% achilles_noovary_vector_cluster5,]
+mean_effective_noovary5
+
+
+##minimal mean value
+mean_effective_noovary_mean5<-data.frame(apply(mean_effective_noovary5,2,mean, na.rm=TRUE))
+mean_effective_noovary_mean5
+##where is the minimal value
+which(mean_effective_noovary_mean5==min(mean_effective_noovary_mean5), arr.ind =TRUE)
+```
+
+```{r}
+#'creating a dataframe from non ovary celllines out of cluster 1 and 3
+
+##vector from cluster 1 and 3
+achilles_vector_cluster13<- as.vector(c(achilles_vector_cluster1, achilles_vector_cluster3))
+
+df_ovary_prism_treat_effective_longc1c3 <- df_ovary_prism_treat_effective_long [df_ovary_prism_treat_effective_long$DepMap_ID%in%achilles_vector_cluster13,]
+
+
+##deleting every drug except for exatecan-mesylate, romidepsin and carfilzomib
+##for ovary
+df_ovary_prism_treat_effective_longc1c3 <- df_ovary_prism_treat_effective_longc1c3 [df_ovary_prism_treat_effective_longc1c3$name%in%c("exatecan-mesylate","romidepsin","carfilzomib"),]
+df_ovary_prism_treat_effective_longc1c3
+
+##using pivot wider
+pivot_wider(df_ovary_prism_treat_effective_longc1c3, names_from = DepMap_ID,values_from= proliferationvalues)
+##creating a dataframe from non ovary celllines out of cluster 1 and 3
+
+##creating a vector from cluster 1 and 3
+achilles_noovary_vector_cluster13<- as.vector(c(achilles_noovary_vector_cluster1, achilles_noovary_vector_cluster3))
+
+df_noovary_prism_treat_effective_longc1c3 <- df_noovary_prism_treat_effective_long [df_noovary_prism_treat_effective_long$DepMap_ID%in%achilles_noovary_vector_cluster13,]
+df_noovary_prism_treat_effective_longc1c3
+
+##deleting every drug except for exatecan-mesylate, romidepsin and carfilzomib
+##for non ovary
+df_noovary_prism_treat_effective_longc1c3 <- df_noovary_prism_treat_effective_longc1c3 [df_noovary_prism_treat_effective_longc1c3$name%in%c("exatecan-mesylate","romidepsin","carfilzomib"),]
+df_noovary_prism_treat_effective_longc1c3
+
+##using pivot wider
+pivot_wider(df_noovary_prism_treat_effective_longc1c3, names_from = DepMap_ID,values_from= proliferationvalues)
+
+```
+
+```{r}
+##creating a dataframe from the cellines out of cluster 1 and 3
+##ovary
+ovary_achilles_cluster13 <- prism.achilles[rownames(prism.achilles) %in% achilles_vector_cluster13,]
+ovary_achilles_cluster13
+
+##nonovary
+noovary_achilles_cluster13 <- prism.achilles[rownames(prism.achilles) %in% achilles_noovary_vector_cluster13,]
+noovary_achilles_cluster13
+
+
+
+##show only the negative values
+##ovary
+ovary_achilles_cluster13mean<-data.frame(apply(ovary_achilles_cluster13,2,mean, na.rm=TRUE))
+ovary_achilles_cluster13mean
+ovary_achilles_cluster13[ovary_achilles_cluster13$RAN]
+
+which(ovary_achilles_cluster13mean==min(ovary_achilles_cluster13mean), arr.ind =TRUE)
+select(ovary_achilles_cluster13, RAN)
+
+##non ovary
+noovary_achilles_cluster13mean<-data.frame(apply(noovary_achilles_cluster13,2,mean, na.rm=TRUE))
+noovary_achilles_cluster13mean
+
+which(noovary_achilles_cluster13mean==min(noovary_achilles_cluster13mean), arr.ind =TRUE)
+select(noovary_achilles_cluster13, RAN)
+
+##creating a dataframe with the delta between the ovary and non ovary proliferationvalues
+delta_ovary_nonovary<-data.frame(ovary_achilles_cluster13mean-noovary_achilles_cluster13mean)
+##looking at the 10 Genes with the delta 
+df_highest_delta<-delta_ovary_nonovary %>% top_n(10)
+df_lowest_delta<-delta_ovary_nonovary  %>% top_n(-10) 
+library(tibble)
+df_highest_delta<-rownames_to_column(df_highest_delta, var = "genes")
+df_lowest_delta<-rownames_to_column(df_lowest_delta, var = "genes")
+
+##creating a vector with the gene names
+vector_delta<- as.vector(c(df_highest_delta$genes,df_lowest_delta$genes))
+##looking at those 20 genes
+
+reduced_ovary_achilles<-select(ovary_achilles_cluster13,vector_delta)
+reduced_ovary_achilles
+reduced_noovary_achilles<-select(noovary_achilles_cluster13,vector_delta)
+reduced_noovary_achilles
+
+##histogram for the two with the highest delta
+delta_ovary_nonovary %>% top_n(1)
+delta_ovary_nonovary  %>% top_n(-1)
+
+hist(reduced_ovary_achilles$SCAP)
+hist(reduced_noovary_achilles$SCAP)
+
+hist(reduced_ovary_achilles$GPX4)
+hist(reduced_noovary_achilles$GPX4)
+
+reduced_ovary_achilles<-rownames_to_column(reduced_ovary_achilles, var = "DepMap_ID")
+
+reduced_ovary_achilleslong<-pivot_longer(reduced_ovary_achilles,cols = 2:21,names_to= "knockout_genes", values_to="gene_proliferation", values_drop_na=TRUE)
+reduced_ovary_achilleslong
+
+## merged prism achilles with prism treat
+
+df_achilles_treat<-merge(reduced_ovary_achilleslong,df_ovary_prism_treat_effective_longc1c3, by="DepMap_ID")
+df_achilles_treat
+
+```
+
+
+```{r}
+##starting with prism exp
+##reducing prism.exp to the cluster 13 and the 20 genes
+##ovary
+reduced_prism_exp_ovary<- prism.exp[rownames(prism.exp) %in% achilles_vector_cluster13,]
+reduced_prism_exp_ovary<-select(reduced_prism_exp_ovary,vector_delta)
+reduced_prism_exp_ovary
+
+##noovary
+reduced_prism_exp_noovary<- prism.exp[rownames(prism.exp) %in% achilles_noovary_vector_cluster13,]
+reduced_prism_exp_noovary<-select(reduced_prism_exp_noovary,vector_delta)
+reduced_prism_exp_noovary
+##higher values say over expression lesser values means lower expression
+
+```
+
+```{r}
+##prism.cnv copy number from the genes
+#ovary
+reduced_prism_cnv_ovary<- prism.cnv[rownames(prism.cnv) %in% achilles_vector_cluster13,]
+reduced_prism_cnv_ovary<-select(reduced_prism_cnv_ovary,vector_delta)
+reduced_prism_cnv_ovary
+
+#noovary
+reduced_prism_cnv_noovary<- prism.cnv[rownames(prism.cnv) %in% achilles_noovary_vector_cluster13,]
+reduced_prism_cnv_noovary<-select(reduced_prism_cnv_noovary,vector_delta)
+reduced_prism_cnv_noovary
+
 ```
 
