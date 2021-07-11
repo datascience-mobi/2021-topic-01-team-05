@@ -530,6 +530,10 @@ reduced_ovary_achilleslong
 df_achilles_treat<-merge(reduced_ovary_achilleslong,df_ovary_prism_treat_effective_longc1c3, by="DepMap_ID")
 df_achilles_treat
 
+reduced_ovary_achilles_BBK<-select(ovary_achilles_cluster13,c(BRCA1,BRCA2,KRAS))
+reduced_ovary_achilles_BBK
+reduced_noovary_achilles_BBK<-select(noovary_achilles_cluster13,c(BRCA1,BRCA2,KRAS))
+reduced_noovary_achilles_BBK
 ```
 
 
@@ -537,14 +541,20 @@ df_achilles_treat
 ##starting with prism exp
 ##reducing prism.exp to the cluster 13 and the 20 genes
 ##ovary
-reduced_prism_exp_ovary<- prism.exp[rownames(prism.exp) %in% achilles_vector_cluster13,]
-reduced_prism_exp_ovary<-select(reduced_prism_exp_ovary,vector_delta)
+reduced_prism_exp_ovarycell<- prism.exp[rownames(prism.exp) %in% achilles_vector_cluster13,]
+reduced_prism_exp_ovary<-select(reduced_prism_exp_ovarycell,vector_delta)
 reduced_prism_exp_ovary
 
+prism_cnv_BCRA1_KRAS_BCRA2<-select(reduced_prism_exp_ovarycell,c(BRCA1,BRCA2,KRAS))
+prism_cnv_BCRA1_KRAS_BCRA2
+
 ##noovary
-reduced_prism_exp_noovary<- prism.exp[rownames(prism.exp) %in% achilles_noovary_vector_cluster13,]
-reduced_prism_exp_noovary<-select(reduced_prism_exp_noovary,vector_delta)
+reduced_prism_exp_noovarycell<- prism.exp[rownames(prism.exp) %in% achilles_noovary_vector_cluster13,]
+reduced_prism_exp_noovary<-select(reduced_prism_exp_noovarycell,vector_delta)
 reduced_prism_exp_noovary
+
+prism_cnv_BCRA1_KRAS_BCRA2<-select(reduced_prism_exp_noovarycell,c(BRCA1,BRCA2,KRAS))
+prism_cnv_BCRA1_KRAS_BCRA2
 ##higher values say over expression lesser values means lower expression
 
 ```
@@ -552,14 +562,24 @@ reduced_prism_exp_noovary
 ```{r}
 ##prism.cnv copy number from the genes
 #ovary
-reduced_prism_cnv_ovary<- prism.cnv[rownames(prism.cnv) %in% achilles_vector_cluster13,]
-reduced_prism_cnv_ovary<-select(reduced_prism_cnv_ovary,vector_delta)
+reduced_prism_cnv_ovarycell<- prism.cnv[rownames(prism.cnv) %in% achilles_vector_cluster13,]
+reduced_prism_cnv_ovary<-select(reduced_prism_cnv_ovarycell,vector_delta)
 reduced_prism_cnv_ovary
 
+prism_cnv_BCRA1_KRAS_BCRA2<-select(reduced_prism_cnv_ovarycell,c(BRCA1,BRCA2,KRAS))
+prism_cnv_BCRA1_KRAS_BCRA2
+                                   
 #noovary
-reduced_prism_cnv_noovary<- prism.cnv[rownames(prism.cnv) %in% achilles_noovary_vector_cluster13,]
-reduced_prism_cnv_noovary<-select(reduced_prism_cnv_noovary,vector_delta)
+reduced_prism_cnv_noovarycell<- prism.cnv[rownames(prism.cnv) %in% achilles_noovary_vector_cluster13,]
+reduced_prism_cnv_noovary<-select(reduced_prism_cnv_noovarycell,vector_delta)
 reduced_prism_cnv_noovary
+
+prism_cnv_BCRA1_KRAS_BCRA2<-select(reduced_prism_cnv_noovarycell,c(BRCA1,BRCA2,KRAS))
+prism_cnv_BCRA1_KRAS_BCRA2
+
+```
+```{r}
+
 
 ```
 
