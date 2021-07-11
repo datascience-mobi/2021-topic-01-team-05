@@ -1,6 +1,8 @@
 ---
 title: "Untitled"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -45,7 +47,7 @@ library(dplyr)
 After finding the drugs with the most effective response in regards to the ovary cancer cell lines, we now continued our analysis by testing if the efficiency of these drugs is dependent on the cancer cell line type or not. In order to test this we repeated many of the same steps as in milestone 1.1 but on all cell lines except the ovary cell lines. We extracted the most negative proliferation value for each drug in each cell line (except ovary), set the threshold to the 10% quantile, and then extracted the most common moas. The results of this are shown below:
 
 
-```{r}
+```{r, echo=FALSE, fig.cap="Most frequent moa's amongst the most effective drugs"}
 
 moa_frequencies = prism.treat_reduced_2 %>% count(moa) %>% filter(n >= 3)
 moa_frequencies = moa_frequencies[0:9,]
@@ -56,7 +58,7 @@ barplot(moa_frequencies$n, names.arg = moa_frequencies$moa,
         horiz = TRUE, 
         xlim = c(0,10),
         col = "Lightblue3",
-        main = "Most frequent moa's amongst the most effective drugs") 
+        main = NULL) 
 
 ```
 -> Cancer drugs:
@@ -91,4 +93,24 @@ fisher.test(fisher_ATPase)
 
 ```
 
+## PC1 vs. PC2 for All Cell Line Clusters
+
+As a next step we decided to perform a PCA on all cell lines. We clustered by cell lines in order to test if the ovary cell lines would form their own distinctive cluster regarding the drug response. As can be seen in Fig. X, this was not the case. The fact that the ovary cell lines did not form their own cluster shows that there seems to be no combining trait among them that would trigger a similar drug response. 
+
+```{r, echo = TRUE, fig.cap = "PC1 vs. PC2 for All Cell Line Clusters"}
+
+A_moa_all = as.matrix(moa_drugs_all)
+
+pca1_moa_all = prcomp(A_moa_all[,-42], scale = TRUE)
+
+colVec = vector(length = nrow(A_moa_all))
+colVec[which(rownames(A_moa_all) %in% df_ovary_cl$DepMap_ID)] = "red"
+colVec[-which(rownames(A_moa_all) %in% df_ovary_cl$DepMap_ID)] = "gray"
+
+plot(pca1_moa_all$x[,1], pca1_moa_all$x[,2], pch=20, col = colVec, 
+     xlab='PC1',ylab='PC2',
+      main = "PC1 vs. PC2 for All Cell Line Clusters")
+      legend("topleft", legend = c("Ovary cell lines", "Other cell lines"), fill = c("Red", "Gray"))
+
+```
 

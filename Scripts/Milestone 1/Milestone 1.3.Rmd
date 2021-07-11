@@ -246,10 +246,10 @@ hist(cormatrix_effective, xlab="Pearson Correlationvalues",main= paste("Pearson 
 ```{r}
 df_ovary_prism_treat_effective_reduced<- df_ovary_prism_treat_effective[which(df_ovary_prism_treat_effective$name=="exatecan-mesylate"),]
 df_ovary_prism_treat_effective_reduced
-ggplot_dose_proliferationvalues<-ggplot(df_ovary_prism_treat_effective_reduced, aes(x=dose, y=df_ovary_prism_treat_effective_reduced$`ACH-000713`)) +
+ggplot_dose_proliferationvalues_red<-ggplot(df_ovary_prism_treat_effective_reduced, aes(x=dose, y=df_ovary_prism_treat_effective_reduced$`ACH-000713`)) +
   geom_point()+
   labs(title="Plot of proliferation value per dose",x="Dose (µm)", y = "proliferation value")
-ggplot_dose_proliferationvalues
+ggplot_dose_proliferationvalues_red
 ```
 
 ```{r}
@@ -268,4 +268,10 @@ for (i in 6:34){
 
 ```
 
+```{r}
+##how well can i predict the efficiency from the drug by its dose
+##regression analysis
+
+
+```
 
