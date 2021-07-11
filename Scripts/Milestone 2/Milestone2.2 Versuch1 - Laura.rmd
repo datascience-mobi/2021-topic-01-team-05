@@ -431,69 +431,69 @@ which(mean_effective_noovary_mean5==min(mean_effective_noovary_mean5), arr.ind =
 ```
 
 ```{r}
-#'creating a dataframe from non ovary celllines out of cluster 1 and 3
+#'creating a dataframe from non ovary celllines out of cluster 2 and 4
 
-##vector from cluster 1 and 3
-achilles_vector_cluster13<- as.vector(c(achilles_vector_cluster1, achilles_vector_cluster3))
+##vector from cluster 2,4
+achilles_vector_cluster24<- as.vector(c(achilles_vector_cluster2,achilles_vector_cluster4))
 
-df_ovary_prism_treat_effective_longc1c3 <- df_ovary_prism_treat_effective_long [df_ovary_prism_treat_effective_long$DepMap_ID%in%achilles_vector_cluster13,]
+df_ovary_prism_treat_effective_longc2c4 <- df_ovary_prism_treat_effective_long [df_ovary_prism_treat_effective_long$DepMap_ID%in%achilles_vector_cluster24,]
 
 
 ##deleting every drug except for exatecan-mesylate, romidepsin and carfilzomib
 ##for ovary
-df_ovary_prism_treat_effective_longc1c3 <- df_ovary_prism_treat_effective_longc1c3 [df_ovary_prism_treat_effective_longc1c3$name%in%c("exatecan-mesylate","romidepsin","carfilzomib"),]
-df_ovary_prism_treat_effective_longc1c3
+df_ovary_prism_treat_effective_longc2c4 <- df_ovary_prism_treat_effective_longc2c4 [df_ovary_prism_treat_effective_longc2c4$name%in%c("exatecan-mesylate","romidepsin","carfilzomib"),]
+df_ovary_prism_treat_effective_longc2c4
 
 ##using pivot wider
-pivot_wider(df_ovary_prism_treat_effective_longc1c3, names_from = DepMap_ID,values_from= proliferationvalues)
+pivot_wider(df_ovary_prism_treat_effective_longc2c4, names_from = DepMap_ID,values_from= proliferationvalues)
 ##creating a dataframe from non ovary celllines out of cluster 1 and 3
 
-##creating a vector from cluster 1 and 3
-achilles_noovary_vector_cluster13<- as.vector(c(achilles_noovary_vector_cluster1, achilles_noovary_vector_cluster3))
+##creating a vector from cluster 2 and 4
+achilles_noovary_vector_cluster24<- as.vector(c(achilles_noovary_vector_cluster2, achilles_noovary_vector_cluster4))
 
-df_noovary_prism_treat_effective_longc1c3 <- df_noovary_prism_treat_effective_long [df_noovary_prism_treat_effective_long$DepMap_ID%in%achilles_noovary_vector_cluster13,]
-df_noovary_prism_treat_effective_longc1c3
+df_noovary_prism_treat_effective_longc2c4 <- df_noovary_prism_treat_effective_long [df_noovary_prism_treat_effective_long$DepMap_ID%in%achilles_noovary_vector_cluster24,]
+df_noovary_prism_treat_effective_longc2c4
 
 ##deleting every drug except for exatecan-mesylate, romidepsin and carfilzomib
 ##for non ovary
-df_noovary_prism_treat_effective_longc1c3 <- df_noovary_prism_treat_effective_longc1c3 [df_noovary_prism_treat_effective_longc1c3$name%in%c("exatecan-mesylate","romidepsin","carfilzomib"),]
-df_noovary_prism_treat_effective_longc1c3
+df_noovary_prism_treat_effective_longc2c4 <- df_noovary_prism_treat_effective_longc2c4 [df_noovary_prism_treat_effective_longc2c4$name%in%c("exatecan-mesylate","romidepsin","carfilzomib"),]
+df_noovary_prism_treat_effective_longc2c4
 
 ##using pivot wider
-pivot_wider(df_noovary_prism_treat_effective_longc1c3, names_from = DepMap_ID,values_from= proliferationvalues)
+pivot_wider(df_noovary_prism_treat_effective_longc2c4, names_from = DepMap_ID,values_from= proliferationvalues)
 
 ```
 
 ```{r}
 ##creating a dataframe from the cellines out of cluster 1 and 3
 ##ovary
-ovary_achilles_cluster13 <- prism.achilles[rownames(prism.achilles) %in% achilles_vector_cluster13,]
-ovary_achilles_cluster13
+ovary_achilles_cluster24 <- prism.achilles[rownames(prism.achilles) %in% achilles_vector_cluster24,]
+ovary_achilles_cluster24
 
 ##nonovary
-noovary_achilles_cluster13 <- prism.achilles[rownames(prism.achilles) %in% achilles_noovary_vector_cluster13,]
-noovary_achilles_cluster13
+noovary_achilles_cluster24 <- prism.achilles[rownames(prism.achilles) %in% achilles_noovary_vector_cluster24,]
+noovary_achilles_cluster24
 
 
 
 ##show only the negative values
 ##ovary
-ovary_achilles_cluster13mean<-data.frame(apply(ovary_achilles_cluster13,2,mean, na.rm=TRUE))
-ovary_achilles_cluster13mean
-ovary_achilles_cluster13[ovary_achilles_cluster13$RAN]
+ovary_achilles_cluster24mean<-data.frame(apply(ovary_achilles_cluster24,2,mean, na.rm=TRUE))
+ovary_achilles_cluster24mean
 
-which(ovary_achilles_cluster13mean==min(ovary_achilles_cluster13mean), arr.ind =TRUE)
-select(ovary_achilles_cluster13, RAN)
+
+which(ovary_achilles_cluster24mean==min(ovary_achilles_cluster24mean), arr.ind =TRUE)
+select(ovary_achilles_cluster24, RAN)
 
 ##non ovary
-noovary_achilles_cluster13mean<-data.frame(apply(noovary_achilles_cluster13,2,mean, na.rm=TRUE))
-noovary_achilles_cluster13mean
+noovary_achilles_cluster24mean<-data.frame(apply(noovary_achilles_cluster24,2,mean, na.rm=TRUE))
+noovary_achilles_cluster24mean
 
-which(noovary_achilles_cluster13mean==min(noovary_achilles_cluster13mean), arr.ind =TRUE)
-select(noovary_achilles_cluster13, RAN)
+which(noovary_achilles_cluster24mean==min(noovary_achilles_cluster24mean), arr.ind =TRUE)
+select(noovary_achilles_cluster24, RAN)
 
 ##creating a dataframe with the delta between the ovary and non ovary proliferationvalues
-delta_ovary_nonovary<-data.frame(ovary_achilles_cluster13mean-noovary_achilles_cluster13mean)
+delta_ovary_nonovary<-data.frame(ovary_achilles_cluster24mean-noovary_achilles_cluster24mean)
 ##looking at the 10 Genes with the delta 
 df_highest_delta<-delta_ovary_nonovary %>% top_n(10)
 df_lowest_delta<-delta_ovary_nonovary  %>% top_n(-10) 
@@ -505,43 +505,44 @@ df_lowest_delta<-rownames_to_column(df_lowest_delta, var = "genes")
 vector_delta<- as.vector(c(df_highest_delta$genes,df_lowest_delta$genes))
 ##looking at those 20 genes
 
-reduced_ovary_achilles<-select(ovary_achilles_cluster13,vector_delta)
+reduced_ovary_achilles<-select(ovary_achilles_cluster24,vector_delta)
 reduced_ovary_achilles
-reduced_noovary_achilles<-select(noovary_achilles_cluster13,vector_delta)
+reduced_noovary_achilles<-select(noovary_achilles_cluster24,vector_delta)
 reduced_noovary_achilles
 
 ##histogram for the two with the highest delta
 delta_ovary_nonovary %>% top_n(1)
 delta_ovary_nonovary  %>% top_n(-1)
 
-hist(reduced_ovary_achilles$SCAP)
-hist(reduced_noovary_achilles$SCAP)
+hist(reduced_ovary_achilles$WNK1)
+hist(reduced_noovary_achilles$WNK1)
 
-hist(reduced_ovary_achilles$GPX4)
-hist(reduced_noovary_achilles$GPX4)
+hist(reduced_ovary_achilles$PAX8)
+hist(reduced_noovary_achilles$PAX8)
 
-reduced_ovary_achilles<-rownames_to_column(reduced_ovary_achilles, var = "DepMap_ID")
+reduced_ovary_achilles_r<-rownames_to_column(reduced_ovary_achilles, var = "DepMap_ID")
 
-reduced_ovary_achilleslong<-pivot_longer(reduced_ovary_achilles,cols = 2:21,names_to= "knockout_genes", values_to="gene_proliferation", values_drop_na=TRUE)
+reduced_ovary_achilleslong<-pivot_longer(reduced_ovary_achilles_r,cols = 2:21,names_to= "knockout_genes", values_to="gene_proliferation", values_drop_na=TRUE)
 reduced_ovary_achilleslong
 
 ## merged prism achilles with prism treat
 
-df_achilles_treat<-merge(reduced_ovary_achilleslong,df_ovary_prism_treat_effective_longc1c3, by="DepMap_ID")
+df_achilles_treat<-merge(reduced_ovary_achilleslong,df_ovary_prism_treat_effective_longc2c4, by="DepMap_ID")
 df_achilles_treat
 
-reduced_ovary_achilles_BBK<-select(ovary_achilles_cluster13,c(BRCA1,BRCA2,KRAS))
+reduced_ovary_achilles_BBK<-select(ovary_achilles_cluster24,c(BRCA1,BRCA2,KRAS))
 reduced_ovary_achilles_BBK
-reduced_noovary_achilles_BBK<-select(noovary_achilles_cluster13,c(BRCA1,BRCA2,KRAS))
+reduced_noovary_achilles_BBK<-select(noovary_achilles_cluster24,c(BRCA1,BRCA2,KRAS))
 reduced_noovary_achilles_BBK
 ```
 
 
 ```{r}
+
 ##starting with prism exp
 ##reducing prism.exp to the cluster 13 and the 20 genes
 ##ovary
-reduced_prism_exp_ovarycell<- prism.exp[rownames(prism.exp) %in% achilles_vector_cluster13,]
+reduced_prism_exp_ovarycell<- prism.exp[rownames(prism.exp) %in% achilles_vector_cluster24,]
 reduced_prism_exp_ovary<-select(reduced_prism_exp_ovarycell,vector_delta)
 reduced_prism_exp_ovary
 
@@ -549,7 +550,7 @@ prism_cnv_BCRA1_KRAS_BCRA2<-select(reduced_prism_exp_ovarycell,c(BRCA1,BRCA2,KRA
 prism_cnv_BCRA1_KRAS_BCRA2
 
 ##noovary
-reduced_prism_exp_noovarycell<- prism.exp[rownames(prism.exp) %in% achilles_noovary_vector_cluster13,]
+reduced_prism_exp_noovarycell<- prism.exp[rownames(prism.exp) %in% achilles_noovary_vector_cluster24,]
 reduced_prism_exp_noovary<-select(reduced_prism_exp_noovarycell,vector_delta)
 reduced_prism_exp_noovary
 
@@ -562,7 +563,7 @@ prism_cnv_BCRA1_KRAS_BCRA2
 ```{r}
 ##prism.cnv copy number from the genes
 #ovary
-reduced_prism_cnv_ovarycell<- prism.cnv[rownames(prism.cnv) %in% achilles_vector_cluster13,]
+reduced_prism_cnv_ovarycell<- prism.cnv[rownames(prism.cnv) %in% achilles_vector_cluster24,]
 reduced_prism_cnv_ovary<-select(reduced_prism_cnv_ovarycell,vector_delta)
 reduced_prism_cnv_ovary
 
@@ -570,7 +571,7 @@ prism_cnv_BCRA1_KRAS_BCRA2<-select(reduced_prism_cnv_ovarycell,c(BRCA1,BRCA2,KRA
 prism_cnv_BCRA1_KRAS_BCRA2
                                    
 #noovary
-reduced_prism_cnv_noovarycell<- prism.cnv[rownames(prism.cnv) %in% achilles_noovary_vector_cluster13,]
+reduced_prism_cnv_noovarycell<- prism.cnv[rownames(prism.cnv) %in% achilles_noovary_vector_cluster24,]
 reduced_prism_cnv_noovary<-select(reduced_prism_cnv_noovarycell,vector_delta)
 reduced_prism_cnv_noovary
 
@@ -579,7 +580,7 @@ prism_cnv_BCRA1_KRAS_BCRA2
 
 ```
 ```{r}
-
+for (drug in colnames(df_ovary_prism_treat_effective[-c(1,2,3,4),]){ for gene in colnames(rownames(reduced_ovary_achilles)){cor(df_ovary_prism_treat_effective$name, rownames(reduced_ovary_achilles))}})
 
 ```
 
