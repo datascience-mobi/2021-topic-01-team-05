@@ -1,5 +1,5 @@
 ---
-title: "**Report of Project-01-Group-05**"
+title: "**Report - Project 01 - Group 05**"
 author: "Carolin Bayan, Savannah Cattarius, Laura Diekmann, Rositsa Todorovska"
 date: "07/19/2020"
 bibliography: ../Bibliography/References.bibtex
@@ -57,32 +57,31 @@ Using the provided prism data frame, we extracted the ovarian DepMap_IDs with th
 In order to get a general overview of our data, we computed two histograms showing the distribution of the mean sensitivity across all ovarian cell lines and all drugs.
 
 
-```{r, echo=FALSE, fig.cap="Ovarian Cancer Cell Lines Mean Sensitivity towards Drugs", fig.height=3.5, fig.width=4}
+```{r, echo=FALSE, fig.cap="**Left:** Ovarian Cancer Cell Lines Mean Sensitivity towards Drugs  **Right:** Mean Drug Efficiency regarding Proliferation in Ovarian Cell Lines", fig.height=4, fig.width=6.5}
+
+par(mfrow = c(1,2))
 hist_cell_growth_cl  <- hist(apply(df_ovary_DepMI_prism, 1,function(x){mean(x,na.rm=TRUE)}),
         breaks = 50, 
         xlim = c(-0.9, 0),
         main = NULL,
         xlab = "Mean log fold-change in cell growth",
         col="lightblue3")
-```
 
-Fig. 1 shows that all ovarian cancer cell lines had a mean sensitivity towards the drugs of less than or equal to zero, which showed us that in general, the applied drugs seemed to have a promising effect on their cell growth.
-
-
-```{r, echo=FALSE, fig.cap="Mean Drug Efficiency regarding Proliferation in Ovarian Cell Lines", fig.height=3.5, fig.width=4}
 hist_cell_growth_drugs <- hist(apply(df_ovary_DepMI_prism, 2,function(x){mean(x,na.rm=TRUE)}),
                                breaks = 50,
                                main = NULL,
                                xlab = "Mean log fold-change in cell growth", col="lightblue3")
-abline(v = 0, col = "red", lwd = 2)
+abline(v = 0, col = "red", lwd = 1.5)
 ```
 
-In Fig. 2, all values below zero indicate negative proliferation values. In total, 8652 drugs lie below zero. This means that these drugs generally - with regard to their mean values - caused a reduction in cell growth when they were administered to the ovarian cell lines.
+The left plot in Fig. 1 shows that all ovarian cancer cell lines had a mean sensitivity towards the drugs of less than or equal to zero, which showed us that in general, the applied drugs seemed to have a promising effect on their cell growth.
+
+The right plot shows all values for the mean drug efficiency in ovarian cell lines. Values below zero indicate negative proliferation. In total, 8652 drugs lie below zero. This means that these drugs generally - with regard to their mean values - caused a reduction in cell growth when they were administered to the ovarian cell lines.  
 
 ## Setting a threshold
 
 In our next step, we further analyzed the prism data set. Our aim was to determine the strongest effect each drug had on the ovarian cancer cell lines in terms of proliferation values - independent of the dosage that was used. This is why for each drug, we chose its minimum value which reflects the strongest negative effect on proliferation of the ovarian cell lines.
-In order to be able to work with a manageable amount of drugs, we decided to set a threshold at the 10 % quantile (see Fig.3) By doing so, we could focus on the 140 most effective drugs which caused the most negative proliferation values.
+In order to be able to work with a manageable amount of drugs, we decided to set a threshold at the 10 % quantile (see Fig. 3) By doing so, we could focus on the 140 most effective drugs which caused the most negative proliferation values.
 
 ```{r, echo=FALSE, fig.cap="Most Effective Drug-Proliferation Values in Ovarian Cell Lines", fig.height=3.5, fig.width=4}
 hist(min_values_treat_prism_reduced_ovary_vector,
@@ -98,7 +97,7 @@ text(-10, 175, "10 % quantile", col = "red", lwd = 2)
 
 While further analyzing the drugs that lie below the 10 % quantile, we focused on categorizing them after their mechanism of action which we found in the data set prism.treat. Unfortunately, the data regarding the usual disease areas and indications of the drugs was very incomplete, which is why we decided to further investigate the moas - these showed the lowest number of NA values and can also help determining whether these drugs are normally used for treating cancer or not.
 
-Our results are shown below. These are the 45 most common moas regarding the drugs that had the most promising effects on the ovarian cancer cell lines.
+Our results are shown in Fig. 4. These are the 45 most common moas regarding the drugs that had the most promising effects on the ovarian cancer cell lines.
 
 ```{r, echo=FALSE, fig.cap="Most frequent moas amongst the most effective drugs"}
 
@@ -115,18 +114,27 @@ barplot(most_common_moas_ovary$n,
         main = NULL)
 ```
 
-We found out that Topoisomerase- [@Parchment1998], Proteasome- [@Manasanch2017], PI3K- [@Vanhaesebroeck2021], HDAC- [@Xu2007], EGFR- [@https://doi.org/10.1002/ddr.20268], CDK- [@Wells2020], BCL- [@Montero2018] and ATPase-Inhibitors [@doi:10.4155/ppa.12.3] are all cancer related moas.
+We further investigated these moas and came to the following results. 
 
+10 out of the chosen 140 most promising drugs are HDAC inhibitors. Their epigenetic targets include amongst other things HDAC3, HDAC4, HDAC8. These are epigenetic targets for noncancer drug repurposing candiates [@Moreira-Silva2020] and were also found to be potential anti-cancer agents for inhibiting cancer cell migration and invasion in ovarian cancer [@AHN2012189].
 
+With 9 occurrences, the topoisomerase inhibitors are the second most frequent moas we found. However, this is not surprising since these drugs are commonly used in cancer therapy, thus they showed strong effects on the cancer cell lines [@Parchment1998]. Interestingly, the drug mitoxantrone is also used in the disease area neurology/psychiatry and multiple sclerosis[^3].
 
+In addition, CDK inhibitors appeared seven times in our findings regarding the most effective and common moas for treating ovarian cancer. Especially the targets CDK4 and CDK6 showed promising results in a different study [@Iyengar2018] as a new therpeutic approach to treat ovarian cancer. 
 
-All of the selected moas are common in cancer therapy which is why these results were not surprising. We hoped to find non-cancer related drugs with strong effects on the proliferation of ovarian cancer cell lines. However, we are also aware of the fact that these chances are much smaller compared to finding the results we did.
+We found 6 proteasome inhibitors to be most effective against ovarian cancer cell lines. They are an important class of drugs against multiple myeloma and cell lymphoma. However, they are currently in clinical trials for other types of cancer [@doi:10.1146/annurev-pharmtox-010919-023603] which is why it makes sense for us that we also found them to have promising effects in our analysis. 
+
+In a different study, researchers found that EGFR is not a suitable target for ovarian cancer therapy [@Mehner2017] and seems to be more effective for lung cancer and pancreas cancer therapy. However, we found three EGFR inhibitors with effective impacts on ovarian cancer cell lines. 
+
+The remaining three moas: PI3K- [@Vanhaesebroeck2021], BCL- [@Montero2018] and ATPase-inhibitors [@doi:10.4155/ppa.12.3], are all cancer related moas. Therefore, all of them are commonly used in cancer therapy which is why it is not surprising that they appeard in our findings. 
+
+[^3]: National Center for Biotechnology Information (2021). PubChem Compound Summary for CID 4212, Mitoxantrone. Retrieved July 11, 2021 from https://pubchem.ncbi.nlm.nih.gov/compound/Mitoxantrone.
+
 
 
 ## Dimension Reduction
 
 Our next step included performing kmeans and finding the optimal number of clusters in order to compute a principal component analysis (PCA). 
-
 
 ```{r, echo=FALSE, fig.cap="Variance explained by mechanism of action PCs", fig.height=3.5, fig.width=4}
 B_moa = as.matrix(moa_drugs_ovary)
@@ -142,7 +150,7 @@ barplot(pca2_var_per_moa, main = NULL,
 ```
 
 
-As you can see from the plot above, the majority of the variance is explained by using the first two principal components.
+As you can see from the plot (see Fig. 5), the majority of the variance is explained by using the first two principal components.
 
 ```{r, echo=FALSE, fig.cap = "Elbow Method for Finding Optimal Number of Clusters", fig.height=3.5, fig.width=4}
 wss2_moa = sapply(2:7,function(k) {
@@ -155,8 +163,7 @@ plot(2:7,wss2_moa,type='b',
      main = NULL)
 ```
 
-
-In order to find the most optimal number of clusters for our PCA of PC1 and PC2, we used the elbow method. As a result, the optimal number of clusters seems to be 4.
+In order to find the most optimal number of clusters for our PCA of PC1 and PC2, we used the elbow method. As a result, the optimal number of clusters seems to be 4 (see Fig. 6).
 
 
 ```{r, echo=FALSE, fig.cap = "PC1 vs. PC2 for Ovary Cell Line Clusters", fig.height=4, fig.width=4.5}
@@ -170,7 +177,7 @@ main = NULL)
 legend("topright", legend = c("Cluster 1", "Cluster 2", "Cluster 3", "Cluster 4"), fill = col, cex = 0.5)
 ```
 
-
+Fig. 7 shows 
 ...
 ANALYSIS noch
 ...
