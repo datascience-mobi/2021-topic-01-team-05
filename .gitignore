@@ -7,11 +7,10 @@
 *.tex
 *.md
 *.pdf
-*.RData
 *.rda
 *.rds
 *.png
-*.RData
 *.rdb
+Original_Environment/
 *.rdx
-.DS_Store
+
