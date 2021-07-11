@@ -114,3 +114,5 @@ plot(pca1_moa_all$x[,1], pca1_moa_all$x[,2], pch=20, col = colVec,
 
 ```
 
+## Drug for linear regression 
+https://pubchem.ncbi.nlm.nih.gov/compound/Zardaverine 
