@@ -62,21 +62,14 @@ barplot(moa_frequencies$n, names.arg = moa_frequencies$moa,
 
 ```
 -> Cancer drugs:
-- Topoisomerase inhibitors (https://www.ncbi.nlm.nih.gov/books/NBK548372/)
-- Proteasome inhibitors (https://www.nature.com/articles/nrclinonc.2016.206)
-- PI3K inhibitors (https://www.nature.com/articles/s41573-021-00209-1)
+
 - NFkB pathway inhibitors (https://www.nature.com/articles/1209982)
-- HDAC inhibitors (https://www.nature.com/articles/1210620)
-- EGFR inhibitors (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2701650/)
-- CDK inhibitors (https://www.nature.com/articles/s41467-020-16559-0) 
-- BCL inhibitors (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5729538/)
-- ATPase inhibitors (https://www.future-science.com/doi/abs/10.4155/ppa.12.3)
 
-As was the case with the selected moas amongst the ovary cell lines, all selected moas amongst the other cell lines are also commonly used in cancer therapy. Although the likelihood of finding non-oncological drugs with a strong negative effect on cell proliferation is very low, these results are nonetheless disappointing. 
+As can be seen in Fig. X, all but one of the most frequently occurring moas are the same as the most frequently occurring moas in ovary cancer cell lines, however; the frequency with which they occur in the other cell lines differs slightly from the frequency with which they occur in the ovary cell lines. The NFkB pathway inhibitor is the one moa that appears among the 45 most frequent moas in the other cell lines three times but not at all in the 45 most frequent moas in the ovary cell lines. Although NFkB pathway inhibitors do occur in the ovary cell lines twice, this is not often enough to have made the top 45 which explains why they are not shown in Fig X. NFkB transcription factors are often used to regulate inflammation and immune responses, cell growth, apoptosis, and the expression of certain viral genes [@Gilmore2006]. Due to the importance of the NFkB transcription factors in regulating these processes, NFkB pathway inhibitors are often used in treating chronic inflammation and cancer. 
 
-## T-Tests
+## Fisher - Exact Tests
 
-After finding the most common moas amongst the ovary and all other cell lines, respectively, the next step in our analysis was to find out if any of these moas showed a statistically significant efficiency in ovary cancer specifically. In order to test this, we decided to perform a t-test on all of our selected most common moas for ovary cancer and all other cell lines. The results are as follow: 
+After finding the most common moas among the ovary and all other cell lines, respectively, the next step in our analysis was to find out if any of these moas showed a statistically significant efficiency in ovary cancer specifically. In order to test this, we decided to perform a fisher-exact-test on all of our selected most common moas for ovary cancer and all other cell lines.
 
 ```{r}
 
@@ -92,6 +85,8 @@ fisher.test(fisher_ATPase)
 
 
 ```
+The results of the fisher-exact-test show that there is no statistically significant difference in the occurrence of the moas between the ovary cell lines and the other cell lines. In order for the null hypothesis - that the odds ratio is equal to one - to be rejected, the p-value must be smaller than our confidence level of 0.05. The p-value is larger than 0.05 in every fisher test we conducted. This means that the H0 hypothesis cannot be rejected and therefore the odds ratio must be one. An odds ratio of one means that there is no relation between the number of times a specific moa occurs and the cell line type of either ovary or all others. 
+
 
 ## PC1 vs. PC2 for All Cell Line Clusters
 
