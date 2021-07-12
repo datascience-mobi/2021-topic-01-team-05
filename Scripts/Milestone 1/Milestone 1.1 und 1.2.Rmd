@@ -1121,4 +1121,17 @@ fisher_NFkB
 
 fisher.test(fisher_NFkB)
 
+## The results of the fisher-exact-test show that there is no statistically significant difference in the occurrence of the moas between the ovary cell lines and the other cell lines. In order for the null hypothesis - that the odds ratio is equal to one - to be rejected, the p-value must be smaller than our confidence level of 0.05. The p-value is larger than 0.05 in every fisher test we conducted. This means that the H0 hypothesis cannot be rejected and therefore the odds ratio must be one. An odds ratio of one means that there is no relation between the number of times a specific moa occurs and the cell line type of either ovary or all others. 
+
+
+## creating a bar plot showing the p and odds ratio values
+
+par(mar=c(10,10,2,2))
+barplot(c(1, 1, 0.7494, 1.520121, 1, 1, 1,  0.6628035, 1, 1.119206, 1, 0.7453084, 0.7694, 1.419276, 1, 0.7453084, 1, 1),
+        names.arg = c("Topoisomerase p-value", "Topoisomerase OR", "Proteasome p-value", "Proteasome OR", "PI3K p-value", "PI3K OR", "NFkB p-value", "NFkB OR", "HDAC p-value", "HDAC OR", "EGFR p-value", "EGFR OR", "CDK p-value", "CDK OR", "BCL p-value", "BCL OR", "ATPase p-value", "ATPase OR"),
+        las = 3,
+        col = c("Lightblue3", "Lightblue3", "Lightblue1", "Lightblue1", "Lightblue3", "Lightblue3", "Lightblue1", "Lightblue1", "Lightblue3", "Lightblue3", "Lightblue1", "Lightblue1", "Lightblue3", "Lightblue3", "Lightblue1", "Lightblue1", "Lightblue3", "Lightblue3", "Lightblue1", "Lightblue1", "Lightblue3", "Lightblue3", "Lightblue1", "Lightblue1", "Lightblue3", "Lightblue3", "Lightblue1", "Lightblue1"),
+        ylim = c(0, 1.7))
+ 
+
 ```
