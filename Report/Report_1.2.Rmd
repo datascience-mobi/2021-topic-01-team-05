@@ -1,26 +1,29 @@
 ---
-title: "Untitled"
-output:
-  pdf_document: default
-  html_document: default
+title: "**Report - Project 01 - Group 05**"
+author: "Carolin Bayan, Savannah Cattarius, Laura Diekmann, Rositsa Todorovska"
+date: "07/19/2020"
+bibliography: ../Bibliography/References.bibtex
+output: pdf_document
 ---
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
 ```
 
+```{r, include=FALSE}
+load("../Original_Environment/Original.RData")
+```
+
 # Milestone 1.2
 
-```{r, echo=FALSE, fig.cap="Most frequent moa's amongst the most effective drugs"}
+## Mechanism of action
+
+```{r, echo=FALSE, fig.cap = "Most frequent moa's amongst the most effective drugs"}
 
 moa_frequencies = prism.treat_reduced_2 %>% count(moa) %>% filter(n >= 3)
 moa_frequencies = moa_frequencies[0:9,]
+
 par(mar=c(4, 20, 4, 4))
 barplot(moa_frequencies$n, names.arg = moa_frequencies$moa, 
         las = 1, 
@@ -31,7 +34,6 @@ barplot(moa_frequencies$n, names.arg = moa_frequencies$moa,
         main = NULL) 
 
 ```
-## Mechanism of action
 
 After finding the drugs with the most effective response in regards to the ovary cancer cell lines, we now continued our analysis by testing if the efficiency of these drugs is dependent on the cancer cell line type or not. In order to test this we repeated many of the same steps as in milestone 1.1 but on all cell lines except the ovary cell lines. We extracted the most negative proliferation value for each drug in each cell line (except ovary), set the threshold to the 10% quantile, and then extracted the most common moas.
 
@@ -39,7 +41,7 @@ As can be seen in Fig. X, all but one of the most frequently occurring moas are 
 
 ## Fisher - Exact Tests
 
-```{r}
+```{r, include = FALSE}
 
 fisher.test(fisher_topoisomerase)
 fisher.test(fisher_proteasome)
@@ -54,7 +56,7 @@ fisher.test(fisher_ATPase)
 ```
 
 
-```{r Barplot showing all p-values and OR}
+```{r, echo = FALSE, fig.cap = "Barplot showing all p-values and OR"}
 
 par(mar=c(10,10,2,2))
 barplot(c(1, 1, 0.7494, 1.520121, 1, 1, 1,  0.6628035, 1, 1.119206, 1, 0.7453084, 0.7694, 1.419276, 1, 0.7453084, 1, 1),
