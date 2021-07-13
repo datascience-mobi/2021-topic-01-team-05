@@ -23,9 +23,12 @@ A_achilles = as.matrix(prism.achilles)
 
 A_achilles_new <- A_achilles[ , which(apply(A_achilles, 2, var) != 0)] ## removing zero variance values
 
-pca_A_achilles = prcomp(A_achilles_new, scale = TRUE)
+pca_A_achilles = prcomp(A_achilles_new[-which(rownames(A_achilles_new) == c("ACH-000680", "ACH-000916")),], scale = TRUE)
 
 plot(pca_A_achilles$x[,1], pca_A_achilles$x[,2], pch=20)
+
+#names(pca_A_achilles$x[,1])[pca_A_achilles$x[,1] == max(pca_A_achilles$x[,1])]
+#names(pca_A_achilles$x[,2])[pca_A_achilles$x[,2] == max(pca_A_achilles$x[,2])]
 ```
 
 
@@ -64,7 +67,7 @@ pairs(regression_data_no_nas_all[,-1], pch=20, col="Lightblue3")
 
 
 ```{r}
-learning_celllines_all = sample(1:nrow(regression_data_no_nas_all), 240, replace = F)
+learning_celllines_all = sample(1:nrow(regression_data_no_nas_all), 161, replace = F)
 learning_regression_all <- regression_data_no_nas_all[learning_celllines_all,]
 check_regression_all <- regression_data_no_nas_all[-learning_celllines_all,]
 
@@ -110,7 +113,7 @@ rmse.learning_all = sqrt(1/n_all*sum(regression_model_all$residuals^2))
 n_all=nrow(check_regression_all)
 # the residuals of the predicted model are: 
 residuals_all = check_regression_all$zardaverine - proliferation_pred_all
-rmse.check_all = sqrt(1/n_all*sum(residuals^2))
+rmse.check_all = sqrt(1/n_all*sum(residuals_all^2))
 
 rmse.learning_all
 rmse.check_all

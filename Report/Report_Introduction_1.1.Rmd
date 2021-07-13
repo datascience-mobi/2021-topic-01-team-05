@@ -32,7 +32,10 @@ library(tidyr)
 
 
 ```{r, include=FALSE}
-load("../Original_Environment/Original.RData")
+#load("../Original_Environment/Original.RData")
+load("../Original_Environment/prism_datasets.rda")
+load("../Original_Environment/cellline_datasets.rda")
+
 ```
 
 
@@ -239,9 +242,13 @@ However, the cell line did show a different behavior and clustered separately fr
 
 ```{r, echo = FALSE, fig.cap = "Contribution to PC1", fig.height=3.5, fig.width=7}
 # 1st pc
-barplot(sort(pca2_moa$rotation[,1]), las=3, cex.names = 0.6, main = NULL, col = "Lightblue3")
 
-## HIER NOCH SCHAFFEN DIE SPEZIFISCHEN DRUGS EINZUFÄRBEN
+colVec2 = vector(length = length(pca2_moa$rotation[,1]))
+colVec2 = ifelse(sort(pca2_moa$rotation[,1]) > 0.03, "Lightblue3", "red")
+colVec2[1] = "Lightblue3"
+
+barplot(sort(pca2_moa$rotation[,1]), las=3, cex.names = 0.6, main = NULL, col = colVec2)
+
 ```
 
 In Fig. 5, the contribution to PC1 for ovary cell line clusters (see Fig. 4.a.) is shown. Drugs with values close to zero show a similar effect on the proliferation amongst all cell lines - thus, these are generally effective when administered to ovary cancer cell lines. This is the case for the following drugs (see highlighted in Fig. 5). 
