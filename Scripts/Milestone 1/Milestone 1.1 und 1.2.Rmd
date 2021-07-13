@@ -749,6 +749,8 @@ for (i in 1:(ncol(prism)/8)){
   prism_reduced[drug] = max_effect
 }
 
+prism_reduced_all = prism_reduced
+
 ## Extracting the lowest proliferation values of each drug for all cell lines except the ovary cell lines
 prism_reduced = prism_reduced[-which(rownames(prism_reduced) %in% vector_ovary_DepMI),]
 
