@@ -249,13 +249,13 @@ A_moa_all = as.matrix(moa_drugs_all)
 pca1_moa_all = prcomp(A_moa_all[,-42], scale = TRUE)
 
 colVec = vector(length = nrow(A_moa_all))
-colVec[which(rownames(A_moa_all) %in% df_ovary_cl$DepMap_ID)] = "red"
+colVec[which(rownames(A_moa_all) %in% df_ovary_cl$DepMap_ID)] = "red3"
 colVec[-which(rownames(A_moa_all) %in% df_ovary_cl$DepMap_ID)] = "gray"
 
 plot(pca1_moa_all$x[,1], pca1_moa_all$x[,2], pch=20, col = colVec, 
      xlab='PC1',ylab='PC2',
       main = "PC1 vs. PC2 for All Cell Line Clusters")
-      legend("topleft", legend = c("Ovary cell lines", "Other cell lines"), fill = c("Red", "Gray"))
+      legend("topleft", legend = c("Ovary cell lines", "Other cell lines"), fill = c("Red3", "Gray"))
 
 ```
 
