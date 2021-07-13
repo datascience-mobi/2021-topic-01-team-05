@@ -903,33 +903,33 @@ prism.cl[prism.cl$DepMap_ID %in% cl_topoisomerase_inhibitor,]
 ```{r S11 Finding the names of the medications used in the cell lines in which the following moas were active: topoisomerase inhibitor, proteasome inhibitor, PI3K inhibitor, NFkB pathway inhibitor, HDAC, EGFR, CDK, BCL, and ATPase}
 
 ## Extracting the medication names of topoisomerase moas
-topoisomerase_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "topoisomerase inhibitor",])$name))
+topoisomerase_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "topoisomerase inhibitor",])$name)) 
 
 ## Extracting the medication names of proteasome moas
-proteasome_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "proteasome inhibitor",])$name))
+proteasome_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "proteasome inhibitor",])$name)) 
 
 ## Extracting the medication names of PI3K moas
-PI3K_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "PI3K inhibitor",])$name))
+PI3K_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "PI3K inhibitor",])$name)) 
 
 ## Extracting the medication names of NFkB_pathway moas
-NFkB_pathway_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "NFkB_pathway inhibitor",])$name))
+NFkB_pathway_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "NFkB_pathway inhibitor",])$name)) 
 
 ## Extracting the medication names of HDAC moas
-hdac_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "HDAC inhibitor",])$name))
+hdac_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "HDAC inhibitor",])$name)) 
 
 ## Extracting the medication names of EGFR moas
-EGFR_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "EGFR inhibitor",])$name))
+EGFR_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "EGFR inhibitor",])$name)) 
 
 ## Extracting the medication names of CDK moas
-CDK_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "CDK inhibitor",])$name))
+CDK_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "CDK inhibitor",])$name)) 
 
 ## Extracting the medication names of BCL moas
-BCL_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "BCL inhibitor",])$name))
+BCL_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "BCL inhibitor",])$name)) 
 
 ## Extracting the medication names of ATPase moas
-ATPase_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "ATPase inhibitor",])$name))
+ATPase_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "ATPase inhibitor",])$name)) 
 
-## Combining all the medication names into one vector
+## Combining all the medication names into one vector 
 
 most_effective_moas_drugs = c(topoisomerase_inhibitors, proteasome_inhibitors, PI3K_inhibitors, NFkB_pathway_inhibitors, hdac_inhibitors, EGFR_inhibitors, CDK_inhibitors, BCL_inhibitors, ATPase_inhibitors)
 
@@ -938,6 +938,8 @@ most_effective_moas_drugs = c(topoisomerase_inhibitors, proteasome_inhibitors, P
 names_use <- names(prism_reduced_no_NAs)[names(prism_reduced_no_NAs) %in% most_effective_moas_drugs]
 
 moa_drugs <- prism_reduced_no_NAs[,names_use]
+
+moa_drugs_all = prism_reduced_all_no_NAs[,names_use]
 
 ```
 
