@@ -1,0 +1,106 @@
+---
+title: "Report Milestone 1.3"
+author: "Rositsa Todorovska"
+date: 
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# Loading the required packages
+library(tidyr)
+library(readr)
+library(dplyr)
+library(plyr)
+library(ggplot2)
+library(ggcorrplot)
+library(devtools)
+library(tinytex)
+
+```
+
+```{r, include = FALSE}
+
+load("C:/Users/pc/Desktop/4 FS/Data Analysis/Original_RData/.RData")
+load("C:/Users/pc/Desktop/4 FS/Data Analysis/Original_RData/original_data_environment.RData")
+
+
+```
+
+## Milestone 1.3 
+
+# Overview
+
+In Milestone 1.3 our goal was to show how the dosage of the medical treatment affects the treatment results.
+
+# Analysis of the results and the procedure
+
+First we created a dataframe of the dosages and the corresponding broadIDs for all drugs of the prism.treat dataset.
+According to the experimental methods, implied in the scientific paper by Corsello, S. M., Nagari, R. T., Spangler, R. D., Rossen, J., Kocak, M., Bryan, J. G., … Golub, T. R. (2020). Discovering the anticancer potential of non-oncology drugs by systematic viability profiling. Nature Cancer, 1(2), 235–248, we used the single dose 2.5 μM of the drugs as a marker to divide the drugs into subgroups.
+
+After subsetting the created dataframe containing the lineages and DepMap_IDs of prism.cl, we obtained a data frame containing only the ovary cancer cell lines with their corresponding DepMap_IDs.
+
+In the next step, we decided to work only with a dataframe, containing only the DepMap_IDs, proliferation values, broad_ID and dose of the cell lines, removing all the not available(NA) values.
+
+In order to create a data frame with the effective drugs from Milestones 1.1 and 1.2,  we created a vector containing only the most effective drugs and reduced the dataframe 'df_ovary_DepMI_prism_treat'. Next, we selected only the low and the high dosages from the 'df_ovary_DepMI_prism_treat' dataframe and removed the NAs. This resulted in two new data frames with low dosages and high dosages, respectively. 
+
+```{r}
+
+df_ovary_prism_treat_effective <- df_ovary_DepMI_prism_treat[df_ovary_DepMI_prism_treat$name %in% most_effective_moas_drugs2,]
+
+# Dataframe only with low dosages
+df_lowdose_effectivedrugs<- df_ovary_prism_treat_effective[-which(df_ovary_prism_treat_effective$dose>2,5),]
+df_lowdose_effectivedrugs
+
+
+# Dataframe only with high dosages 
+df_highdose_effectivedrugs<- df_ovary_prism_treat_effective[-which(df_ovary_prism_treat_effective$dose<=2,5),]
+df_highdose_effectivedrugs
+```
+
+
+Proceeding to the further analysis, a ggplot and a boxplot were implemented, to plot the dosage(µM) against the ovary cell lines proliferation values and demonstrate how the proliferation values change with an increasing or decreasing dosage of the medicaments. 
+
+
+Therefore, a visualization with a boxplot to show the distribution of the proliferation rates of the ovary cell lines, regarding the drug dose was performed. According to the boxplot, the highest median proliferation value was observed by the lowest dosage (0<=2 µM), by dosage (2<7.5 µM) there was an increase of the median, whereas by the highest dosage  (7.5<11 µM) the corresponding median was at the lowest. This means that with an increasing dose of the medicaments, the proliferation rates are reduced.
+
+```{r}
+
+ggplot_plot_boxplot_dose_proliferation <- ggplot(df_ovary_prism_treat_effective_long, aes(x=dose_high_low, y=proliferationvalues)) + geom_boxplot(outlier.shape=8, aes(fill=dose_high_low))+labs(title="Plot of proliferation value per dose",x="Dose (µM)", y = "Proliferation value")
+ggplot_plot_boxplot_dose_proliferation
+
+```
+
+
+To answer the initial question - how the dosage of the medical treatment affects the proliferation and viability of the ovary cell lines, a Pearson correlation between the dose of the drugs and the proliferation value was performed. It can be observed that all the Pearson correlation coefficients have negative values (except the NA values, for which there is no information available).
+There is consequently an inverse negative correlation and some medicaments show a very strong correlation with the proliferation of the cell lines, while others almost do not affect it.
+
+```{r}
+
+cordf_effective= data.frame(row.names=rownames(prism))
+
+for (drug in unique(df_ovary_prism_treat_effective$name)){
+  dose = prism.treat[prism.treat$name==drug,]$dose
+  response = prism[,rownames(prism.treat)[prism.treat$name == drug]]
+  
+  cordf_effective[drug]=apply(response,1,function(x){cor(x,dose)})
+}
+cordf_effective<-cordf_effective[rownames(cordf_effective) %in% vector_ovary_DepMI,]
+cordf_effective
+
+```
+
+In the next step, we created the correlation matrix from the obtained data frame and 
+in order to display graphically the Pearson correlation, the function ggcorrplot() on the created correlation matrix was applied. As you can see, the blue and the purple squares which indicate higher correlation, ranging from 0.0 to -1.0 are in prevalence, meaning that the majority of the drugs reduce the cell proliferation. We also included a Pearson correlation histogram to demonstrate the frequency of the Pearson correlation values, and the most frequent values lie between -0.9 and -1.0.
+
+```{r}
+cormatrix_effective<- data.matrix(cordf_effective)
+cormatrix_effective
+dim(cormatrix_effective)
+
+ggplot2_dose_proliferation<-ggcorrplot(cormatrix_effective)
+ggplot2_dose_proliferation
+
+```
+
