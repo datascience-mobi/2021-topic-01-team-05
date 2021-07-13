@@ -1,38 +1,6 @@
 ---
-title: "Untitled"
-output:
-  pdf_document: default
-  html_document: default
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
----
-title: "Report"
-output:
-  pdf_document: default
-  rmdformats::material: default
+bibliography: ../Bibliography/References.bibtex
+output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
@@ -40,17 +8,20 @@ knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
 ```
 
+```{r, include=FALSE}
+load("../Original_Environment/Original.RData")
+load("/Users/sassac2000/Desktop/Uni/SS21/Data_Projekt/Untitled.RData")
+```
+
 # Milestone 1.2
 
 ## Mechanism of action
 
-After finding the drugs with the most effective response in regards to the ovary cancer cell lines, we now continued our analysis by testing if the efficiency of these drugs is dependent on the cancer cell line type or not. In order to test this we repeated many of the same steps as in milestone 1.1 but on all cell lines except the ovary cell lines. We extracted the most negative proliferation value for each drug in each cell line (except ovary), set the threshold to the 10% quantile, and then extracted the most common moas. The results of this are shown below:
-
-
-```{r, echo=FALSE, fig.cap="Most frequent moa's amongst the most effective drugs"}
+```{r, echo=FALSE, fig.cap = "Most frequent MOA's amongst the most effective drugs"}
 
 moa_frequencies = prism.treat_reduced_2 %>% count(moa) %>% filter(n >= 3)
 moa_frequencies = moa_frequencies[0:9,]
+
 par(mar=c(4, 20, 4, 4))
 barplot(moa_frequencies$n, names.arg = moa_frequencies$moa, 
         las = 1, 
@@ -61,24 +32,14 @@ barplot(moa_frequencies$n, names.arg = moa_frequencies$moa,
         main = NULL) 
 
 ```
--> Cancer drugs:
-- Topoisomerase inhibitors (https://www.ncbi.nlm.nih.gov/books/NBK548372/)
-- Proteasome inhibitors (https://www.nature.com/articles/nrclinonc.2016.206)
-- PI3K inhibitors (https://www.nature.com/articles/s41573-021-00209-1)
-- NFkB pathway inhibitors (https://www.nature.com/articles/1209982)
-- HDAC inhibitors (https://www.nature.com/articles/1210620)
-- EGFR inhibitors (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2701650/)
-- CDK inhibitors (https://www.nature.com/articles/s41467-020-16559-0) 
-- BCL inhibitors (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5729538/)
-- ATPase inhibitors (https://www.future-science.com/doi/abs/10.4155/ppa.12.3)
 
-As was the case with the selected moas amongst the ovary cell lines, all selected moas amongst the other cell lines are also commonly used in cancer therapy. Although the likelihood of finding non-oncological drugs with a strong negative effect on cell proliferation is very low, these results are nonetheless disappointing. 
+After finding the drugs with the most effective response in regards to the ovary cancer cell lines, we now continued our analysis by testing if the efficiency of these drugs is dependent on the cancer cell line type or not. In order to test this we repeated many of the same steps as in milestone 1.1 but on all cell lines except the ovary cell lines. We extracted the most negative proliferation value for each drug in each cell line (except ovary), set the threshold to the 10% quantile, and then extracted the most common MOAs.
 
-## T-Tests
+As can be seen in Fig. X, all but one of the most frequently occurring MOAs are the same as the most frequently occurring MOAs in ovary cancer cell lines, however; the frequency with which they occur in the other cell lines differs slightly from the frequency with which they occur in the ovary cell lines. The NFkB pathway inhibitor is the one MOA that appears among the 45 most frequent MOAs in the other cell lines three times but not at all in the 45 most frequent MOAs in the ovary cell lines. Although NFkB pathway inhibitors do occur in the ovary cell lines twice, this is not often enough to have made the top 45 which explains why they are not shown in Fig 2.b. NFkB transcription factors are often used to regulate inflammation and immune responses, cell growth, apoptosis, and the expression of certain viral genes [@Gilmore2006]. Due to the importance of the NFkB transcription factors in regulating these processes, NFkB pathway inhibitors are often used in treating chronic inflammation and cancer [@Gilmore2006]. 
 
-After finding the most common moas amongst the ovary and all other cell lines, respectively, the next step in our analysis was to find out if any of these moas showed a statistically significant efficiency in ovary cancer specifically. In order to test this, we decided to perform a t-test on all of our selected most common moas for ovary cancer and all other cell lines. The results are as follow: 
+## Fisher - Exact Tests
 
-```{r}
+```{r, include = FALSE}
 
 fisher.test(fisher_topoisomerase)
 fisher.test(fisher_proteasome)
@@ -90,14 +51,27 @@ fisher.test(fisher_cdk)
 fisher.test(fisher_BCL)
 fisher.test(fisher_ATPase)
 
+```
+
+
+```{r, echo = FALSE, fig.cap = "Barplot showing all p-values and OR"}
+
+par(mar=c(10,10,2,2))
+barplot(c(1, 1, 0.7494, 1.520121, 1, 1, 1,  0.6628035, 1, 1.119206, 1, 0.7453084, 0.7694, 1.419276, 1, 0.7453084, 1, 1),
+        names.arg = c("Topoisomerase p-value", "Topoisomerase OR", "Proteasome p-value", "Proteasome OR", "PI3K p-value", "PI3K OR", "NFkB p-value", "NFkB OR", "HDAC p-value", "HDAC OR", "EGFR p-value", "EGFR OR", "CDK p-value", "CDK OR", "BCL p-value", "BCL OR", "ATPase p-value", "ATPase OR"),
+        las = 2,
+        col = c("Lightblue3", "Lightblue3", "Lightblue1", "Lightblue1", "Lightblue3", "Lightblue3", "Lightblue1", "Lightblue1", "Lightblue3", "Lightblue3", "Lightblue1", "Lightblue1", "Lightblue3", "Lightblue3", "Lightblue1", "Lightblue1", "Lightblue3", "Lightblue3", "Lightblue1", "Lightblue1", "Lightblue3", "Lightblue3", "Lightblue1", "Lightblue1", "Lightblue3", "Lightblue3", "Lightblue1", "Lightblue1"),
+        ylim = c(0, 1.7))
 
 ```
 
+After finding the most common MOAs among the ovary and all other cell lines respectively, the next step in our analysis was to find out if any of these MOAs showed a statistically significant occurrence in ovary cancer specifically. In order to test this, we decided to perform a fisher-exact-test on all of our selected most common MOAs for ovary cancer and all other cell lines (see Fig. X).
+
+In order for the null hypothesis - that there is no association between the occurrence of specific MOAs and the cell line type (either ovary or non-ovary) - to be rejected, the p-value must be smaller than the confidence level of 0.05. This was not the case with any of the fisher tests that we conducted. For the fisher tests conducted on the topoisomerase inhibitor, the PI3K inhibitor, the NFkB pathway inhibitor, the HDAC inhibitor, the EGFR inhibitor, the BCL inhibitor, and the ATPase inhibitor the p-values were equal to one, as were the odds-ratios. This shows without a doubt that the H0-hypothesis cannot be rejected and that there therefore is no association between the occurrence of specific MOAs and the cell line type (either ovary or the others) for these MOAs. The fisher tests conducted on the remaining MOAs all calculate a p-value that is lower than 1, none of which are lower than 0.7 however. The odds ratios for these remaining MOAs are all either larger than one or lower than one, which would suggest a positive/negative association, respectively. Since the corresponding p-values are much larger than the confidence level of 0.5 however, these associations are most likely due to chance and aren't true associations. Conclusively these fisher tests have shown that not a single one of the most common MOAs among our cell lines occur so commonly due to an association to a specific cell line (either ovary or the others).
+
 ## PC1 vs. PC2 for All Cell Line Clusters
 
-As a next step we decided to perform a PCA on all cell lines. We clustered by cell lines in order to test if the ovary cell lines would form their own distinctive cluster regarding the drug response. As can be seen in Fig. X, this was not the case. The fact that the ovary cell lines did not form their own cluster shows that there seems to be no combining trait among them that would trigger a similar drug response. 
-
-```{r, echo = TRUE, fig.cap = "PC1 vs. PC2 for All Cell Line Clusters"}
+```{r, echo = FALSE, fig.cap = "PC1 vs. PC2 for All Cell Line Clusters"}
 
 A_moa_all = as.matrix(moa_drugs_all)
 
@@ -114,5 +88,4 @@ plot(pca1_moa_all$x[,1], pca1_moa_all$x[,2], pch=20, col = colVec,
 
 ```
 
-## Drug for linear regression 
-https://pubchem.ncbi.nlm.nih.gov/compound/Zardaverine 
+As a next step we decided to perform a PCA on all cell lines. We clustered by cell lines in order to test if the ovary cell lines would form their own distinctive cluster regarding the drug response. As can be seen in Fig. X, this was not the case. The red dots representing the ovary cancer cell lines are distributed across the entire plot, rather than concentrated into one distinctive cluster. The fact that the ovary cell lines did not form their own cluster shows that there seems to be no combining trait among them that would trigger a similar drug response. 
