@@ -8,7 +8,26 @@ output: pdf_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(BiocManager)
+library(car)
+library(data.table)
 library(dplyr)
+library(factoextra)
+library(formattable)
+library(ggplot2)
+library(GSA)
+library(igraph)
+library(knitr)
+library(matrixStats)
+library(naniar)
+library(NbClust)
+library(pheatmap)
+library(RColorBrewer)
+library(reshape2)
+library(rlist)
+library(rmdformats)
+library(stats)
+library(tidyr)
 ```
 
 
@@ -99,7 +118,7 @@ abline(v=quantile(min_values_treat_prism_reduced_ovary_vector, 0.1), col = "red"
 text(-10, 175, "10 % quantile", col = "red", lwd = 0.5, cex = 0.5)
 
 
-most_common_moas_ovary <- reduced_prism_treat_ovary_df_2 %>% count(moa) %>% filter(n >= 3)
+most_common_moas_ovary <- reduced_prism_treat_ovary_df_2 %>% dplyr::count(moa) %>% filter(n >= 3)
 most_common_moas_ovary <- most_common_moas_ovary[0:8,]
 
 par(mar=c(2,10,2,2))
