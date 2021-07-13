@@ -21,12 +21,7 @@ library(tinytex)
 ```
 
 ```{r, include = FALSE}
-
-load("C:/Users/pc/Desktop/4 FS/Data Analysis/Environment.RData")
-load("C:/Users/pc/Desktop/4 FS/Data Analysis/Original_RData/.RData")
-load("C:/Users/pc/Desktop/4 FS/Data Analysis/Original_RData/original_data_environment.RData")
-
-
+load("../Original_Environment/Original.RData")
 ```
 
 # Milestone 1.3 
