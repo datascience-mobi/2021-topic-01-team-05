@@ -177,7 +177,7 @@ hist(min_values_treat_prism_reduced_ovary_vector, main= "Most effective drug-pro
 
 summary(min_values_treat_prism_reduced_ovary_vector)
 
-## setting threshold at 5% quantile
+## setting threshold at 10 % quantile
 quantile(min_values_treat_prism_reduced_ovary_vector, 0.1)
 
 hist(min_values_treat_prism_reduced_ovary_vector, main= "Most effective drug-proliferation values in ovary cell lines", xlab = "Minimum values for each drug")
@@ -481,6 +481,8 @@ xlab='PC1',ylab='PC2',
 main = "PC1 vs. PC2 for kmeans clusters")
 
 ```
+
+
 ```{r c.4.13. - extracting the drug names of the most efficient drugs with regard to their moas}
 
 ## hdac

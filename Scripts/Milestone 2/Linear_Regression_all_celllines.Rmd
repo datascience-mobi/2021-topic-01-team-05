@@ -8,46 +8,43 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
+# performing PCA for all cancer cell lines based on their gene transcript per million (TPM) values
 A_exp = as.matrix(prism.exp)
-
-
 A_exp_new <- A_exp[ , which(apply(A_exp, 2, var) != 0)] ## removing zero variance values
-
 pca_A_exp = prcomp(A_exp_new, scale = TRUE)
-
 plot(pca_A_exp$x[,1], pca_A_exp$x[,2], pch=20)
 ```
 ```{r}
+# performing PCA for all cancer cell lines based on their gene knockdown scores
 A_achilles = as.matrix(prism.achilles)
-
-
 A_achilles_new <- A_achilles[ , which(apply(A_achilles, 2, var) != 0)] ## removing zero variance values
 
-pca_A_achilles = prcomp(A_achilles_new[-which(rownames(A_achilles_new) == c("ACH-000680", "ACH-000916")),], scale = TRUE)
+# removing outlier cell lines ACH-000680, ACH-000916 since their influence on variance was too great and deformed the whole plot
 
+pca_A_achilles = prcomp(A_achilles_new[-which(rownames(A_achilles_new) == c("ACH-000680", "ACH-000916")),], scale = TRUE)
 plot(pca_A_achilles$x[,1], pca_A_achilles$x[,2], pch=20)
 
-#names(pca_A_achilles$x[,1])[pca_A_achilles$x[,1] == max(pca_A_achilles$x[,1])]
-#names(pca_A_achilles$x[,2])[pca_A_achilles$x[,2] == max(pca_A_achilles$x[,2])]
+
+# names(pca_A_achilles$x[,1])[pca_A_achilles$x[,1] == max(pca_A_achilles$x[,1])]
+# names(pca_A_achilles$x[,2])[pca_A_achilles$x[,2] == max(pca_A_achilles$x[,2])]
 ```
 
 
 ```{r}
+# performing PCA for all cancer cell lines based on gene copy number (CN) values
 A_cnv = as.matrix(prism.cnv)
-
 pca_A_cnv = prcomp(A_cnv, scale = TRUE)
-
 plot(pca_A_cnv$x[,1], pca_A_cnv$x[,2],
 xlab='PC1',ylab='PC2', pch = 20)
 ```
-
-
 
 ## linear regression
 
 
 ```{r}
+# choosing data for our linear regression consisting of PC1, PC2 and PC3 for prism.achilles and PC1 & PC2 for prism.exp and prism.cnv, respectively 
 
+# we chose drug zardaverine as basis for our regression model (was mentioned in coresello paper) to find out how cell lines react towards this drug based on their specific mutations and characteristics explained by the PCs
 regression_data_all <- prism_reduced_no_NAs["zardaverine"]
 
 regression_data_all$pca_A_achilles1 = pca_A_achilles$x[match(rownames(regression_data_all), names(pca_A_achilles$x[,1])),1]
@@ -58,46 +55,56 @@ regression_data_all$pca_A_exp2 = pca_A_exp$x[match(rownames(regression_data_all)
 regression_data_all$pca_A_cnv1 = pca_A_cnv$x[match(rownames(regression_data_all), names(pca_A_cnv$x[,1])),1]
 regression_data_all$pca_A_cnv2 = pca_A_cnv$x[match(rownames(regression_data_all), names(pca_A_cnv$x[,2])),2]
 
-
+# removing na values which results in 324 remaining cell lines
 regression_data_no_nas_all <- na.omit(regression_data_all)
 
+# plotting pairwise correlation visualized by scatter plots 
 pairs(regression_data_no_nas_all[,-1], pch=20, col="Lightblue3")
 
 ```
 
 
-```{r}
-learning_celllines_all = sample(1:nrow(regression_data_no_nas_all), 161, replace = F)
+```{r splitting all cell lines in 2 groups}
+
+# one group of cell lines is used for regression learning and the other one to check our model
+# in order to receive the best results, we use random groups
+
+learning_celllines_all = sample(1:nrow(regression_data_no_nas_all), 162, replace = F)
 learning_regression_all <- regression_data_no_nas_all[learning_celllines_all,]
 check_regression_all <- regression_data_no_nas_all[-learning_celllines_all,]
-
 
 ```
 
 
 ```{r}
+# building a multiple regression model
 regression_model_all <- lm(formula = zardaverine ~  .,data=learning_regression_all)
 summary(regression_model_all)
 ```
 
 
-```{r}
+```{r verification of regression model}
+# residuals have a mean value close to zero (good)
 mean(regression_model_all$residuals)
 
+# residuals are somewhat normally distributed (semi good)
 qqnorm(regression_model_all$residuals, ylab = "Residuals", main = "Q-Q Plot residuals" );qqline(regression_model_all$residuals)
 ```
 
 ```{r}
-
-
+# correlation beteween our control group and our residuals should be close to zero which it is not
 cor(learning_regression_all$zardaverine, regression_model_all$residuals)
 
+# ...
 plot(learning_regression_all$zardaverine, regression_model_all$fitted.values,pch=20, col="light blue", xlab = "Control", ylab = "Residuals");abline(0,1,col="red")
 ```
 
 
 ```{r}
+# creating a vector based on the previous regression model
 proliferation_pred_all <- predict(regression_model_all, newdata = check_regression_all)
+
+# plotting real and predicted values... no real correlation there unfortunately 
 
 plot(check_regression_all$zardaverine, proliferation_pred_all,pch=20, col="lightblue3", xlab = "Real values", ylab = "Predicted values");abline(0,1,col="red" )
 title("Predicted values from the regression to real values")
