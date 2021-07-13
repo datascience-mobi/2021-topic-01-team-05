@@ -7,7 +7,10 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-
+load("/Users/laura/OneDrive/Dokumente/Environment2.2.RData")
+library(dplyr)
+library(tidyr)
+library(tibble)
 ```
 
 ```{r}
@@ -101,7 +104,7 @@ df_noovary_prism_treat_effective
 
 ```{r}
 ##making a long dataframe
-library(tidyr)
+
 df_noovary_prism_treat_effective_long<-pivot_longer(df_noovary_prism_treat_effective,cols = starts_with("ACH"),names_to= "DepMap_ID", values_to="proliferationvalues", values_drop_na=TRUE)
 df_noovary_prism_treat_effective_long
 ```
@@ -445,8 +448,10 @@ df_ovary_prism_treat_effective_longc2c4 <- df_ovary_prism_treat_effective_longc2
 df_ovary_prism_treat_effective_longc2c4
 
 ##using pivot wider
-pivot_wider(df_ovary_prism_treat_effective_longc2c4, names_from = DepMap_ID,values_from= proliferationvalues)
-##creating a dataframe from non ovary celllines out of cluster 1 and 3
+df_ovary_prism_treat_effective_c2c4<-pivot_wider(df_ovary_prism_treat_effective_longc2c4, names_from = DepMap_ID,values_from= proliferationvalues)
+df_ovary_prism_treat_effective_c2c4
+
+##creating a dataframe from non ovary celllines out of cluster 2 and 4
 
 ##creating a vector from cluster 2 and 4
 achilles_noovary_vector_cluster24<- as.vector(c(achilles_noovary_vector_cluster2, achilles_noovary_vector_cluster4))
@@ -460,7 +465,8 @@ df_noovary_prism_treat_effective_longc2c4 <- df_noovary_prism_treat_effective_lo
 df_noovary_prism_treat_effective_longc2c4
 
 ##using pivot wider
-pivot_wider(df_noovary_prism_treat_effective_longc2c4, names_from = DepMap_ID,values_from= proliferationvalues)
+df_noovary_prism_treat_effective_c2c4<-pivot_wider(df_noovary_prism_treat_effective_longc2c4, names_from = DepMap_ID,values_from= proliferationvalues)
+df_noovary_prism_treat_effective_c2c4
 
 ```
 
@@ -497,7 +503,7 @@ delta_ovary_nonovary<-data.frame(ovary_achilles_cluster24mean-noovary_achilles_c
 ##looking at the 10 Genes with the delta 
 df_highest_delta<-delta_ovary_nonovary %>% top_n(10)
 df_lowest_delta<-delta_ovary_nonovary  %>% top_n(-10) 
-library(tibble)
+
 df_highest_delta<-rownames_to_column(df_highest_delta, var = "genes")
 df_lowest_delta<-rownames_to_column(df_lowest_delta, var = "genes")
 
@@ -536,6 +542,111 @@ reduced_noovary_achilles_BBK<-select(noovary_achilles_cluster24,c(BRCA1,BRCA2,KR
 reduced_noovary_achilles_BBK
 ```
 
+```{r}
+##t-test with ovary and nonovary
+
+##for each column dfovary and dfnonovary t-test
+pvalues_t_test_achilles24<-data.frame(mapply(function(x,y)t.test(x,y)$p.value,ovary_achilles_cluster24,noovary_achilles_cluster24))
+
+pvalues_t_test_achilles24
+
+##creatig a dataframe with p-vaues and genes
+pvalues_t_test_achilles24<-dplyr::rename(pvalues_t_test_achilles24,p_value=mapply.function.x..y..t.test.x..y..p.value..ovary_achilles_cluster24..)
+
+##adjusting the pvalue by all methods and creating a dataframe with new columns with those methods
+pvalues_t_test_achilles24$Bonferroni <-
+      p.adjust(pvalues_t_test_achilles24$p_value,
+               method = "bonferroni")
+
+pvalues_t_test_achilles24$BH <-
+      p.adjust(pvalues_t_test_achilles24$p_value,
+               method = "BH")
+
+pvalues_t_test_achilles24$Holm <-
+      p.adjust(pvalues_t_test_achilles24$p_value,
+               method = "holm")
+
+pvalues_t_test_achilles24$Hochberg <-
+      p.adjust(pvalues_t_test_achilles24$p_value,
+               method = "hochberg")
+
+pvalues_t_test_achilles24$Hommel <-
+      p.adjust(pvalues_t_test_achilles24$p_value,
+               method = "hommel")
+
+pvalues_t_test_achilles24$BY <-
+      p.adjust(pvalues_t_test_achilles24$p_value,
+               method = "BY")
+
+pvalues_t_test_achilles24
+
+##doing a plot for each column
+X = pvalues_t_test_achilles24$p_value
+Y = cbind(pvalues_t_test_achilles24$Bonferroni,
+          pvalues_t_test_achilles24$BH,
+          pvalues_t_test_achilles24$Holm,
+          pvalues_t_test_achilles24$Hochberg,
+          pvalues_t_test_achilles24$Hommel,
+          pvalues_t_test_achilles24$BY)
+
+matplot(X, Y,
+        xlab="Raw p-value",
+        ylab="Adjusted p-value",
+        type="l",
+        asp=1,
+        col=1:6,
+        lty=1,
+        lwd=2)
+
+legend('bottomright',
+       legend = c("Bonferroni", "BH", "Holm", "Hochberg", "Hommel", "BY"),
+       col = 1:6,
+       cex = 1,   
+       pch = 16)
+
+abline(0, 1,
+       col=1,
+       lty=2,
+       lwd=1)
+
+```
+```{r}
+##ranking the genes
+dplyr::arrange(pvalues_t_test_achilles24, BH)
+
+##Therefore, the smaller the p-value, the stronger the evidence is that the two populations have different means.
+
+##creating a reduced dataframe with only the 6 genes with the most difference between the meanvalues and the lowest t-test.
+vector_genes_difference<-as.vector(c("IGF1R","OR2V2","WNK1","CD200R1L","CPT1A","RAB6A"))
+
+
+reduced_ovary_achilles_genes<-select(ovary_achilles_cluster24,vector_genes_difference)
+reduced_ovary_achilles_genes
+
+reduced_noovary_achilles_genes<-select(noovary_achilles_cluster24,vector_genes_difference)
+reduced_noovary_achilles_genes
+
+```
+
+```{r}
+##exatecan-mesylate,romidepsin,carfilzomib
+df_ovary_prism_treat_effective_c2c4
+df_noovary_prism_treat_effective_c2c4
+reduced_ovary_achilles_genes
+reduced_noovary_achilles_genes
+
+cor_achilles_treat= data.frame(row.names=rownames(prism))
+
+for (drug in unique(df_ovary_prism_treat_effective$name)){
+  dose = prism.treat[prism.treat$name==drug,]$dose
+  response = prism[,rownames(prism.treat)[prism.treat$name == drug]]
+  
+  cordf_effective[drug]=apply(response,1,function(x){cor(x,dose)})
+}
+cordf_effective<-cordf_effective[rownames(cordf_effective) %in% vector_ovary_DepMI,]
+cordf_effective
+
+```
 
 ```{r}
 
@@ -543,7 +654,7 @@ reduced_noovary_achilles_BBK
 ##reducing prism.exp to the cluster 13 and the 20 genes
 ##ovary
 reduced_prism_exp_ovarycell<- prism.exp[rownames(prism.exp) %in% achilles_vector_cluster24,]
-reduced_prism_exp_ovary<-select(reduced_prism_exp_ovarycell,vector_delta)
+reduced_prism_exp_ovary<-select(reduced_prism_exp_ovarycell,vector_genes_difference)
 reduced_prism_exp_ovary
 
 prism_cnv_BCRA1_KRAS_BCRA2<-select(reduced_prism_exp_ovarycell,c(BRCA1,BRCA2,KRAS))
@@ -551,7 +662,7 @@ prism_cnv_BCRA1_KRAS_BCRA2
 
 ##noovary
 reduced_prism_exp_noovarycell<- prism.exp[rownames(prism.exp) %in% achilles_noovary_vector_cluster24,]
-reduced_prism_exp_noovary<-select(reduced_prism_exp_noovarycell,vector_delta)
+reduced_prism_exp_noovary<-select(reduced_prism_exp_noovarycell,vector_genes_difference)
 reduced_prism_exp_noovary
 
 prism_cnv_BCRA1_KRAS_BCRA2<-select(reduced_prism_exp_noovarycell,c(BRCA1,BRCA2,KRAS))
@@ -564,7 +675,7 @@ prism_cnv_BCRA1_KRAS_BCRA2
 ##prism.cnv copy number from the genes
 #ovary
 reduced_prism_cnv_ovarycell<- prism.cnv[rownames(prism.cnv) %in% achilles_vector_cluster24,]
-reduced_prism_cnv_ovary<-select(reduced_prism_cnv_ovarycell,vector_delta)
+reduced_prism_cnv_ovary<-select(reduced_prism_cnv_ovarycell,vector_genes_difference)
 reduced_prism_cnv_ovary
 
 prism_cnv_BCRA1_KRAS_BCRA2<-select(reduced_prism_cnv_ovarycell,c(BRCA1,BRCA2,KRAS))
@@ -572,7 +683,7 @@ prism_cnv_BCRA1_KRAS_BCRA2
                                    
 #noovary
 reduced_prism_cnv_noovarycell<- prism.cnv[rownames(prism.cnv) %in% achilles_noovary_vector_cluster24,]
-reduced_prism_cnv_noovary<-select(reduced_prism_cnv_noovarycell,vector_delta)
+reduced_prism_cnv_noovary<-select(reduced_prism_cnv_noovarycell,vector_genes_difference)
 reduced_prism_cnv_noovary
 
 prism_cnv_BCRA1_KRAS_BCRA2<-select(reduced_prism_cnv_noovarycell,c(BRCA1,BRCA2,KRAS))
@@ -580,7 +691,6 @@ prism_cnv_BCRA1_KRAS_BCRA2
 
 ```
 ```{r}
-for (drug in colnames(df_ovary_prism_treat_effective[-c(1,2,3,4),]){ for gene in colnames(rownames(reduced_ovary_achilles)){cor(df_ovary_prism_treat_effective$name, rownames(reduced_ovary_achilles))}})
 
 ```
 
