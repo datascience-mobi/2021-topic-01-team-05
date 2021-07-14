@@ -58,7 +58,7 @@ regression_data_all$pca_A_cnv2 = pca_A_cnv$x[match(rownames(regression_data_all)
 # removing na values which results in 324 remaining cell lines
 regression_data_no_nas_all <- na.omit(regression_data_all)
 
-# plotting pairwise correlation visualized by scatter plots 
+# plotting pairwise correlation visualized by scatter plots --> highly correlated variables should be avoided in a multiple regression model which is the case here 
 pairs(regression_data_no_nas_all[,-1], pch=20, col="Lightblue3")
 
 ```
@@ -68,6 +68,10 @@ pairs(regression_data_no_nas_all[,-1], pch=20, col="Lightblue3")
 
 # one group of cell lines is used for regression learning and the other one to check our model
 # in order to receive the best results, we use random groups
+
+# training: learn regression model from data
+# teststing: test validity on independent datasets 
+# predict: predict on new data
 
 learning_celllines_all = sample(1:nrow(regression_data_no_nas_all), 162, replace = F)
 learning_regression_all <- regression_data_no_nas_all[learning_celllines_all,]
@@ -94,6 +98,11 @@ qqnorm(regression_model_all$residuals, ylab = "Residuals", main = "Q-Q Plot resi
 ```{r}
 # correlation beteween our control group and our residuals should be close to zero which it is not
 cor(learning_regression_all$zardaverine, regression_model_all$residuals)
+# residuals should:
+# - not correlate with X (that's not the case)
+# - have mean value zero (that's the case)
+# - be normally distributed (kind of)
+# --> if that is not the case, the linearity assumption is not true! 
 
 # ...
 plot(learning_regression_all$zardaverine, regression_model_all$fitted.values,pch=20, col="light blue", xlab = "Control", ylab = "Residuals");abline(0,1,col="red")
@@ -112,7 +121,7 @@ title("Predicted values from the regression to real values")
 
 
 ```{r}
-#RMSE of our residuals
+#RMSE (root mean square error) of our residuals
 n_all = nrow(learning_regression_all)
 rmse.learning_all = sqrt(1/n_all*sum(regression_model_all$residuals^2))
 
@@ -124,5 +133,7 @@ rmse.check_all = sqrt(1/n_all*sum(residuals_all^2))
 
 rmse.learning_all
 rmse.check_all
+
+# --> if the regression model is good, RMSE of our resudals should be and RMSE
 ```
 
