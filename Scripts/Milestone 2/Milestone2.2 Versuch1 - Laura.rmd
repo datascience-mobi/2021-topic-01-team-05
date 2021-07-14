@@ -1110,9 +1110,7 @@ prism_cnv_BCRA1_KRAS_BCRA2
 ##higher values say over expression lesser values means lower expression
 
 ```
-```{r}
 
-```
 
 
 ```{r}
@@ -1134,7 +1132,5 @@ prism_cnv_BCRA1_KRAS_BCRA2<-select(reduced_prism_cnv_noovarycell,c(BRCA1,BRCA2,K
 prism_cnv_BCRA1_KRAS_BCRA2
 
 ```
-```{r}
 
-```
 
