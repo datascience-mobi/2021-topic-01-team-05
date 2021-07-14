@@ -9,7 +9,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 
-regression_data <- prism_reduced_ovary_no_NAs["zardaverine"]
+regression_data <- prism_reduced_ovary_no_NAs["disulfiram"]
 
 regression_data$pca_achilles1 = pca_achilles$x[match(rownames(regression_data), names(pca_achilles$x[,1])),1]
 regression_data$pca_achilles2 = pca_achilles$x[match(rownames(regression_data), names(pca_achilles$x[,2])),2]
@@ -19,6 +19,7 @@ regression_data$pca_exp2 = pca_exp$x[match(rownames(regression_data), names(pca_
 regression_data$pca_cnv1 = pca_cnv$x[match(rownames(regression_data), names(pca_cnv$x[,1])),1]
 regression_data$pca_cnv2 = pca_cnv$x[match(rownames(regression_data), names(pca_cnv$x[,2])),2]
 
+#regression_data$ic = moa_drugs_ovary$`CR8-(R)`
 
 regression_data_no_nas <- na.omit(regression_data)
 
@@ -37,7 +38,7 @@ check_regression <- regression_data_no_nas[-learning_celllines,]
 
 
 ```{r}
-regression_model <- lm(formula = zardaverine ~  .,data=learning_regression)
+regression_model <- lm(formula = (disulfiram) ~  .,data=learning_regression)
 summary(regression_model)
 ```
 
@@ -51,20 +52,16 @@ qqnorm(regression_model$residuals, ylab = "Residuals", main = "Q-Q Plot residual
 ```{r}
 
 
-cor(learning_regression$zardaverine, regression_model$residuals)
+cor(learning_regression$disulfiram, regression_model$residuals)
 
-
-
-
-
-plot(learning_regression$zardaverine, regression_model$fitted.values,pch=20, col="light blue", xlab = "Control", ylab = "Residuals");abline(0,1,col="red")
+plot(learning_regression$disulfiram, regression_model$fitted.values,pch=20, col="light blue", xlab = "Control", ylab = "Residuals");abline(0,1,col="red")
 ```
 
 
 ```{r}
 proliferation_pred <- predict(regression_model, newdata = check_regression)
 
-plot(check_regression$zardaverine, proliferation_pred,pch=20, col="lightblue3", xlab = "Real values", ylab = "Predicted values");abline(0,1,col="red" )
+plot(check_regression$disulfiram, proliferation_pred,pch=20, col="lightblue3", xlab = "Real values", ylab = "Predicted values");abline(0,1,col="red" )
 title("Predicted values from the regression to real values")
 ```
 
@@ -77,7 +74,7 @@ rmse.learning = sqrt(1/n*sum(regression_model$residuals^2))
 #RMSE of predicted model
 n=nrow(check_regression)
 # the residuals of the predicted model are: 
-residuals = check_regression$zardaverine - proliferation_pred
+residuals = check_regression$disulfiram - proliferation_pred
 rmse.check = sqrt(1/n*sum(residuals^2))
 
 rmse.learning
