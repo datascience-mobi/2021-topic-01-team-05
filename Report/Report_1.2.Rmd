@@ -91,9 +91,9 @@ barplot(moa_frequencies$n, names.arg = moa_frequencies$moa,
 
 ```
 
-After finding the drugs with the most effective response in regards to the ovary cancer cell lines, we now continued our analysis by testing if the efficiency of these drugs is dependent on the cancer cell line type or not. In order to test this we repeated many of the same steps as in milestone 1.1 but on all cell lines except the ovary cell lines. We extracted the most negative proliferation value for each drug in each cell line (except ovary), set the threshold to the 10% quantile, and then extracted the most common MOAs.
+After finding the drugs with the most effective response in regards to the ovary cancer cell lines, we now continued our analysis by testing if the efficiency of these drugs is dependent on the cancer cell line type or not. In order to test this we repeated many of the same steps as in milestone 1.1 but on all cell lines except the ovary cell lines. We extracted the most negative proliferation value for each drug in each non-ovary cell line, set the threshold to the 10% quantile, and then extracted the most common MOAs.
 
-As can be seen in Fig. X, all but one of the most frequently occurring MOAs are the same as the most frequently occurring MOAs in ovary cancer cell lines, however; the frequency with which they occur in the other cell lines differs slightly from the frequency with which they occur in the ovary cell lines. The NFkB pathway inhibitor is the one MOA that appears among the 45 most frequent MOAs in the other cell lines three times but not at all in the 45 most frequent MOAs in the ovary cell lines. Although NFkB pathway inhibitors do occur in the ovary cell lines twice, this is not often enough to have made the top 45 which explains why they are not shown in Fig 2.b. NFkB transcription factors are often used to regulate inflammation and immune responses, cell growth, apoptosis, and the expression of certain viral genes [@Gilmore2006]. Due to the importance of the NFkB transcription factors in regulating these processes, NFkB pathway inhibitors are often used in treating chronic inflammation and cancer [@Gilmore2006]. 
+As can be seen in Fig. X, all but one of the most frequently occurring MOAs are the same as the most frequently occurring MOAs in ovary cancer cell lines, however; the frequency with which they occur in the other cell lines differs slightly from the frequency with which they occur in the ovary cell lines. The NFkB pathway inhibitor is the one MOA that appears among the 45 most frequent MOAs in the non-ovary cell lines three times but not at all in the 45 most frequent MOAs in the ovary cell lines. Although NFkB pathway inhibitors do occur in the ovary cell lines twice, this is not often enough to have made the top 45 which explains why they are not shown in Fig 2.b. NFkB transcription factors are often used to regulate inflammation and immune responses, cell growth, apoptosis, and the expression of certain viral genes [@Gilmore2006]. Due to the importance of the NFkB transcription factors in regulating these processes, NFkB pathway inhibitors are often used in treating chronic inflammation and cancer [@Gilmore2006]. 
 
 ## Fisher - Exact Tests
 
@@ -172,7 +172,7 @@ fisher.test(fisher_ATPase)
 ```
 
 
-```{r, echo = FALSE, fig.cap = "Barplot showing all p-values and OR"}
+```{r, include = FALSE, echo = FALSE, fig.cap = "Barplot showing all p-values and OR"}
 
 par(mar=c(10,10,2,2))
 barplot(c(1, 1, 0.7494, 1.520121, 1, 1, 1,  0.6628035, 1, 1.119206, 1, 0.7453084, 0.7694, 1.419276, 1, 0.7453084, 1, 1),
@@ -254,7 +254,7 @@ colVec[-which(rownames(A_moa_all) %in% df_ovary_cl$DepMap_ID)] = "gray"
 
 plot(pca1_moa_all$x[,1], pca1_moa_all$x[,2], pch=20, col = colVec, 
      xlab='PC1',ylab='PC2',
-      main = "PC1 vs. PC2 for All Cell Line Clusters")
+      main = " ")
       legend("topleft", legend = c("Ovary cell lines", "Other cell lines"), fill = c("Red3", "Gray"))
 
 ```
