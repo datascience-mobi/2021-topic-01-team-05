@@ -195,7 +195,7 @@ cordf_effective_noovary
 cormatrix_effective_noovary<- data.matrix(cordf_effective_noovary)
 cormatrix_effective_noovary
 dim(cormatrix_effective_noovary)
-
+library(ggcorrplot)
 ##visualization the correlation using ggplot2
 ggplot2_dose_proliferation_noovary<-ggcorrplot(cormatrix_effective_noovary)
 ggplot2_dose_proliferation_noovary
@@ -326,6 +326,7 @@ which(mean_effective_noovary_mean2==min(mean_effective_noovary_mean2), arr.ind =
 
 
 
+
 ```{r}
 ##cluster 3 ovary
 mean_effective_ovary3= data.frame(row.names=rownames(prism))
@@ -422,7 +423,7 @@ for (drug in unique(df_noovary_prism_treat_effective_long$name)){
   
   mean_effective_noovary5[drug]=apply(response,1,function(x){mean(x, na.rm=TRUE)})
 }
-mean_effective_noovary5<-mean_effective_noovary3[rownames(mean_effective_noovary5) %in% achilles_noovary_vector_cluster5,]
+mean_effective_noovary5<-mean_effective_noovary5[rownames(mean_effective_noovary5) %in% achilles_noovary_vector_cluster5,]
 mean_effective_noovary5
 
 
@@ -434,22 +435,432 @@ which(mean_effective_noovary_mean5==min(mean_effective_noovary_mean5), arr.ind =
 ```
 
 ```{r}
-#'creating a dataframe from non ovary celllines out of cluster 2 and 4
+## looking at one drug which is responding to those cluster differently between 3 and 4
+##mean for 4
+mean_effective_ovary_new4= data.frame(row.names=rownames(prism))
+
+for (drug in unique(prism.treat$name)){
+  dose = prism.treat[prism.treat$name==drug,]$dose
+  response = prism[,rownames(prism.treat)[prism.treat$name == drug]]
+  
+  mean_effective_ovary_new4[drug]=apply(response,1,function(x){mean(x, na.rm=TRUE)})
+}
+mean_effective_ovary_new4<-mean_effective_ovary_new4[rownames(mean_effective_ovary_new4) %in% achilles_vector_cluster4,]
+mean_effective_ovary_new4
+
+##mean for 3
+mean_effective_ovarynew3= data.frame(row.names=rownames(prism))
+
+for (drug in unique(prism.treat$name)){
+  dose = prism.treat[prism.treat$name==drug,]$dose
+  response = prism[,rownames(prism.treat)[prism.treat$name == drug]]
+  
+  mean_effective_ovarynew3[drug]=apply(response,1,function(x){mean(x, na.rm=TRUE)})
+}
+mean_effective_ovarynew3<-mean_effective_ovarynew3[rownames(mean_effective_ovarynew3) %in% achilles_vector_cluster3,]
+mean_effective_ovarynew3
+
+##for each column dfovary and dfnonovary t-test
+pvalues_t_test_treat3vs4<-data.frame(mapply(function(x,y)t.test(x,y,na.rm=TRUE,alternative="two.sided", var.equal= FALSE, paired=FALSE)$p.value,mean_effective_ovary_new4,mean_effective_ovarynew3))
+pvalues_t_test_treat3vs4
+
+##creatig a dataframe with p-vaues and genes
+pvalues_t_test_treat3vs4<-rename(pvalues_t_test_treat3vs4,p_value=mapply.function.x..y..t.test.x..y..na.rm...TRUE..alternative....two.sided...)
+
+##adjusting the pvalue by all methods and creating a dataframe with new columns with those methods
+pvalues_t_test_treat3vs4$Bonferroni <-
+      p.adjust(pvalues_t_test_treat3vs4$p_value,
+               method = "bonferroni")
+
+
+pvalues_t_test_treat3vs4
+
+##ranking the drugs
+dplyr::arrange(pvalues_t_test_treat3vs4, Bonferroni)
+```
+```{r}
+##important
+## looking at one drug which is responding to those cluster differently between 1 and 3
+##mean for cluster 1
+mean_effective_ovary_new1= data.frame(row.names=rownames(prism))
+
+for (drug in unique(prism.treat$name)){
+  dose = prism.treat[prism.treat$name==drug,]$dose
+  response = prism[,rownames(prism.treat)[prism.treat$name == drug]]
+  
+  mean_effective_ovary_new1[drug]=apply(response,1,function(x){mean(x, na.rm=TRUE)})
+}
+mean_effective_ovary_new1<-mean_effective_ovary_new1[rownames(mean_effective_ovary_new1) %in% achilles_vector_cluster1,]
+mean_effective_ovary_new1
+
+##mean for cluster 3
+mean_effective_ovarynew3= data.frame(row.names=rownames(prism))
+
+for (drug in unique(prism.treat$name)){
+  dose = prism.treat[prism.treat$name==drug,]$dose
+  response = prism[,rownames(prism.treat)[prism.treat$name == drug]]
+  
+  mean_effective_ovarynew3[drug]=apply(response,1,function(x){mean(x, na.rm=TRUE)})
+}
+mean_effective_ovarynew3<-mean_effective_ovarynew3[rownames(mean_effective_ovarynew3) %in% achilles_vector_cluster3,]
+mean_effective_ovarynew3
+
+##for each column 1vs3 t-test
+pvalues_t_test_treat3vs1<-data.frame(mapply(function(x,y)t.test(x,y,na.rm=TRUE,alternative="two.sided", var.equal= FALSE, paired=FALSE)$p.value,mean_effective_ovary_new1,mean_effective_ovarynew3))
+pvalues_t_test_treat3vs1
+
+##creatig a dataframe with p-vaues and genes
+pvalues_t_test_treat3vs1<-rename(pvalues_t_test_treat3vs1,p_value=mapply.function.x..y..t.test.x..y..na.rm...TRUE..alternative....two.sided...)
+
+##adjusting the pvalue by all methods and creating a dataframe with new columns with those methods
+pvalues_t_test_treat3vs1$Bonferroni <-
+      p.adjust(pvalues_t_test_treat3vs1$p_value,
+               method = "bonferroni")
+
+
+pvalues_t_test_treat3vs1
+
+##ranking the drugs
+pvalues_t_test_treat3vs1<-dplyr::arrange(pvalues_t_test_treat3vs1, Bonferroni)
+pvalues_t_test_treat3vs1
+```
+```{r}
+##extra dataframe for the report to show the solutions from the t.test at prism.treat
+pvalues_t_test_treat3vs1_reduced<-pvalues_t_test_treat3vs1[rownames(pvalues_t_test_treat3vs1)%in% c("trichostatin-a","semaxanib","alvocidib"),]
+pvalues_t_test_treat3vs1_reduced
+```
+
+```{r}
+## only those 3 drugs in one dataframe
+##looking into SN38
+selected_drug_ovary1<-select(mean_effective_ovary_new1, c("trichostatin-a","semaxanib","alvocidib"))
+selected_drug_ovary1
+selected_drug_ovary3<-select(mean_effective_ovarynew3,c("trichostatin-a","semaxanib","alvocidib"))
+selected_drug_ovary3
+```
+
+```{r}
+## looking at the genes from cluster 1 and 3 and doing a t-test
+
+##for each column df1 and df3 welch t-test (assuming anequal variance)
+pvalues_t_test_achilles_new1vs3<-data.frame(mapply(function(x,y)t.test(x,y, alternative="two.sided", var.equal= FALSE, paired=FALSE)$p.value,ovary_achilles_cluster1,ovary_achilles_cluster3))
+
+pvalues_t_test_achilles_new1vs3
+
+##creatig a dataframe with p-values and genes
+pvalues_t_test_achilles_new1vs3<-dplyr::rename(pvalues_t_test_achilles_new1vs3,p_value=mapply.function.x..y..t.test.x..y..alternative....two.sided...)
+
+##adjusting the pvalue by all methods and creating a dataframe with new columns with those methods
+pvalues_t_test_achilles_new1vs3$Bonferroni <-
+      p.adjust(pvalues_t_test_achilles_new1vs3$p_value,
+               method = "bonferroni")
+
+pvalues_t_test_achilles_new1vs3
+
+pvalues_t_test_achilles_new1vs3<-dplyr::arrange(pvalues_t_test_achilles_new1vs3, p_value)
+pvalues_t_test_achilles_new1vs3
+```
+```{r}
+##1vs3
+##extra dataframe for the report to show the solutions from the t.test at prism.achilles
+pvalues_t_test_achilles_new1vs3_reduced<-pvalues_t_test_achilles_new1vs3[rownames(pvalues_t_test_achilles_new1vs3)%in% c("OR4C11","KLRK1","KRT36"),]
+pvalues_t_test_achilles_new1vs3_reduced
+```
+
+```{r}
+## looking at the genes from cluster 1 and 3 and doing a t-test
+##prism.exp
+reduced_prism_exp_ovarycellc1<- prism.exp[rownames(prism.exp) %in% achilles_vector_cluster1,]
+reduced_prism_exp_ovarycellc3<- prism.exp[rownames(prism.exp) %in% achilles_vector_cluster3,]
+
+##for each column df1 and df3 welch t-test (assuming anequal variance)
+pvalues_t_test_exp_1vs3<-data.frame(mapply(function(x,y)t.test(x,y, alternative="two.sided", var.equal= FALSE, paired=FALSE)$p.value,reduced_prism_exp_ovarycellc1,reduced_prism_exp_ovarycellc3))
+
+pvalues_t_test_exp_1vs3
+
+##creatig a dataframe with p-vaues and genes
+pvalues_t_test_exp_1vs3<-dplyr::rename(pvalues_t_test_exp_1vs3,p_value=mapply.function.x..y..t.test.x..y..alternative....two.sided...)
+
+##adjusting the pvalue by all methods and creating a dataframe with new columns with those methods
+pvalues_t_test_exp_1vs3$Bonferroni <-
+      p.adjust(pvalues_t_test_exp_1vs3$p_value,
+               method = "bonferroni")
+
+pvalues_t_test_exp_1vs3
+
+pvalues_t_test_exp_1vs3<-dplyr::arrange(pvalues_t_test_exp_1vs3, p_value)
+pvalues_t_test_exp_1vs3
+```
+```{r}
+##1vs3
+##extra dataframe for the report to show the solutions from the t.test at prism.exp
+pvalues_t_test_exp_1vs3_reduced<-pvalues_t_test_exp_1vs3[rownames(pvalues_t_test_exp_1vs3)%in% c("UCHL1","UACA","BEX4"),]
+pvalues_t_test_exp_1vs3_reduced
+```
+
+
+```{r}
+## looking at the genes from cluster 1 and 3 and doing a t-test
+##prism.cnv
+reduced_prism_cnv_ovarycellc1<- prism.cnv[rownames(prism.cnv) %in% achilles_vector_cluster1,]
+reduced_prism_cnv_ovarycellc3<- prism.cnv[rownames(prism.cnv) %in% achilles_vector_cluster3,]
+
+##for each column df1 and df4 welch t-test (assuming anequal variance)
+pvalues_t_test_cnv_1vs3<-data.frame(mapply(function(x,y)t.test(x,y, alternative="two.sided", var.equal= FALSE, paired=FALSE)$p.value,reduced_prism_cnv_ovarycellc1,reduced_prism_cnv_ovarycellc3))
+
+pvalues_t_test_cnv_1vs3
+
+##creatig a dataframe with p-vaues and genes
+pvalues_t_test_cnv_1vs3<-dplyr::rename(pvalues_t_test_cnv_1vs3,p_value=mapply.function.x..y..t.test.x..y..alternative....two.sided...)
+
+##adjusting the pvalue by all methods and creating a dataframe with new columns with those methods
+pvalues_t_test_cnv_1vs3$Bonferroni <-
+      p.adjust(pvalues_t_test_cnv_1vs3$p_value,
+               method = "bonferroni")
+
+pvalues_t_test_cnv_1vs3
+
+pvalues_t_test_cnv_1vs3<-dplyr::arrange(pvalues_t_test_cnv_1vs3, p_value)
+pvalues_t_test_cnv_1vs3
+```
+```{r}
+##1vs3
+##extra dataframe for the report to show the solutions from the t.test at prism.cnv
+pvalues_t_test_cnv_1vs3_reduced<-pvalues_t_test_cnv_1vs3[rownames(pvalues_t_test_cnv_1vs3)%in% c("OPHN1","YIPF6","STARD8"),]
+pvalues_t_test_cnv_1vs3_reduced
+```
+
+
+
+```{r}
+##trying cluster 1vs4
+##important
+## looking at one drug which is responding to those cluster differently between 1 and 4
+##mean for cluster 1 and 4
+
+mean_effective_ovary_new1
+mean_effective_ovary_new4
+
+##for each column df1 and df4 t-test
+pvalues_t_test_treat4vs1<-data.frame(mapply(function(x,y)t.test(x,y,na.rm=TRUE,alternative="two.sided", var.equal= FALSE, paired=FALSE)$p.value,mean_effective_ovary_new1,mean_effective_ovary_new4))
+pvalues_t_test_treat4vs1
+
+##creatig a dataframe with p-vaues and genes
+pvalues_t_test_treat4vs1<-rename(pvalues_t_test_treat4vs1,p_value=mapply.function.x..y..t.test.x..y..na.rm...TRUE..alternative....two.sided...)
+
+##adjusting the pvalue by all methods and creating a dataframe with new columns with those methods
+pvalues_t_test_treat4vs1$Bonferroni <-
+      p.adjust(pvalues_t_test_treat4vs1$p_value,
+               method = "bonferroni")
+
+
+pvalues_t_test_treat4vs1
+
+##ranking the drugs
+pvalues_t_test_treat4vs1<-dplyr::arrange(pvalues_t_test_treat4vs1, Bonferroni)
+pvalues_t_test_treat4vs1
+```
+```{r}
+##1vs4
+##extra dataframe for the report to show the solutions from the t.test at prism.treat
+pvalues_t_test_treat4vs1_reduced<-pvalues_t_test_treat4vs1[rownames(pvalues_t_test_treat4vs1)%in% c("torin-1","AVN-944"),]
+pvalues_t_test_treat4vs1_reduced
+```
+
+
+```{r}
+## only those 3 drugs in one dataframe
+
+selected_drug_ovary1<-select(mean_effective_ovary_new1, c("torin-1","AVN-944"))
+selected_drug_ovary1
+selected_drug_ovary4<-select(mean_effective_ovary_new4,c("torin-1","AVN-944"))
+selected_drug_ovary4
+```
+
+```{r}
+## looking at the genes from cluster 1 and 4 and doing a t-test
+
+##for each column df1 and df4 welch t-test (assuming unequal variance)
+pvalues_t_test_achilles_new1vs4<-data.frame(mapply(function(x,y)t.test(x,y, alternative="two.sided", var.equal= FALSE, paired=FALSE)$p.value,ovary_achilles_cluster1,ovary_achilles_cluster4))
+
+pvalues_t_test_achilles_new1vs4
+
+##creatig a dataframe with p-vaues and genes
+pvalues_t_test_achilles_new1vs4<-dplyr::rename(pvalues_t_test_achilles_new1vs4,p_value=mapply.function.x..y..t.test.x..y..alternative....two.sided...)
+
+##adjusting the pvalue by all methods and creating a dataframe with new columns with those methods
+pvalues_t_test_achilles_new1vs4$Bonferroni <-
+      p.adjust(pvalues_t_test_achilles_new1vs4$p_value,
+               method = "bonferroni")
+
+pvalues_t_test_achilles_new1vs4
+
+pvalues_t_test_achilles_new1vs4<-dplyr::arrange(pvalues_t_test_achilles_new1vs4, p_value)
+pvalues_t_test_achilles_new1vs4
+```
+```{r}
+##1vs4
+##extra dataframe for the report to show the solutions from the t.test at prism.achilles
+pvalues_t_test_achilles_new1vs4_reduced<-pvalues_t_test_achilles_new1vs4[rownames(pvalues_t_test_achilles_new1vs4)%in% c("SF3B5","TM4SF4","GINS4"),]
+pvalues_t_test_achilles_new1vs4_reduced
+```
+
+
+```{r}
+## looking at the genes from cluster 1 and 4 and doing a t-test
+##prism.exp
+reduced_prism_exp_ovarycellc1<- prism.exp[rownames(prism.exp) %in% achilles_vector_cluster1,]
+reduced_prism_exp_ovarycellc4<- prism.exp[rownames(prism.exp) %in% achilles_vector_cluster4,]
+
+##for each column df1 and df4 welch t-test (assuming anequal variance)
+pvalues_t_test_exp_1vs4<-data.frame(mapply(function(x,y)t.test(x,y, alternative="two.sided", var.equal= FALSE, paired=FALSE)$p.value,reduced_prism_exp_ovarycellc1,reduced_prism_exp_ovarycellc4))
+
+pvalues_t_test_exp_1vs4
+
+##creatig a dataframe with p-vaues and genes
+pvalues_t_test_exp_1vs4<-dplyr::rename(pvalues_t_test_exp_1vs4,p_value=mapply.function.x..y..t.test.x..y..alternative....two.sided...)
+
+##adjusting the pvalue by all methods and creating a dataframe with new columns with those methods
+pvalues_t_test_exp_1vs4$Bonferroni <-
+      p.adjust(pvalues_t_test_exp_1vs4$p_value,
+               method = "bonferroni")
+
+pvalues_t_test_exp_1vs4
+
+pvalues_t_test_exp_1vs4<-dplyr::arrange(pvalues_t_test_exp_1vs4, p_value)
+pvalues_t_test_exp_1vs4
+```
+```{r}
+##1vs4
+##extra dataframe for the report to show the solutions from the t.test at prism.exp
+pvalues_t_test_exp_1vs4_reduced<-pvalues_t_test_exp_1vs4[rownames(pvalues_t_test_exp_1vs4)%in% c("KBTBD11","TSPAN33","ASPHD2"),]
+pvalues_t_test_exp_1vs4_reduced
+```
+
+```{r}
+## looking at the genes from cluster 1 and 4 and doing a t-test
+##prism.cnv
+reduced_prism_cnv_ovarycellc1<- prism.cnv[rownames(prism.cnv) %in% achilles_vector_cluster1,]
+reduced_prism_cnv_ovarycellc4<- prism.cnv[rownames(prism.cnv) %in% achilles_vector_cluster4,]
+
+##for each column df1 and df4 welch t-test (assuming anequal variance)
+pvalues_t_test_cnv_1vs4<-data.frame(mapply(function(x,y)t.test(x,y, alternative="two.sided", var.equal= FALSE, paired=FALSE)$p.value,reduced_prism_cnv_ovarycellc1,reduced_prism_cnv_ovarycellc4))
+
+pvalues_t_test_cnv_1vs4
+
+##creatig a dataframe with p-vaues and genes
+pvalues_t_test_cnv_1vs4<-dplyr::rename(pvalues_t_test_cnv_1vs4,p_value=mapply.function.x..y..t.test.x..y..alternative....two.sided...)
+
+##adjusting the pvalue by all methods and creating a dataframe with new columns with those methods
+pvalues_t_test_cnv_1vs4$Bonferroni <-
+      p.adjust(pvalues_t_test_cnv_1vs4$p_value,
+               method = "bonferroni")
+
+pvalues_t_test_cnv_1vs4
+
+pvalues_t_test_cnv_1vs4<-dplyr::arrange(pvalues_t_test_cnv_1vs4, p_value)
+pvalues_t_test_cnv_1vs4
+```
+
+```{r}
+##1vs4
+##extra dataframe for the report to show the solutions from the t.test at prism.cnv
+pvalues_t_test_cnv_1vs4_reduced<-pvalues_t_test_cnv_1vs4[rownames(pvalues_t_test_cnv_1vs4)%in% c("LINC00842","ANTXRLP1","MIR1468"),]
+pvalues_t_test_cnv_1vs4_reduced
+```
+
+```{r}
+##cluster 2 and 4
+mean_effective_ovary_new2= data.frame(row.names=rownames(prism))
+
+for (drug in unique(prism.treat$name)){
+  dose = prism.treat[prism.treat$name==drug,]$dose
+  response = prism[,rownames(prism.treat)[prism.treat$name == drug]]
+  
+  mean_effective_ovary_new2[drug]=apply(response,1,function(x){mean(x, na.rm=TRUE)})
+}
+mean_effective_ovary_new2<-mean_effective_ovary_new2[rownames(mean_effective_ovary_new2) %in% achilles_vector_cluster2,]
+mean_effective_ovary_new2
+
+##prism.treat
+pvalues_t_test_treat4vs2<-data.frame(mapply(function(x,y)t.test(x,y,na.rm=TRUE)$p.value,mean_effective_ovary_new2,mean_effective_ovary_new4))
+pvalues_t_test_treat4vs2
+
+##creatig a dataframe with p-vaues and genes
+pvalues_t_test_treat4vs2<-rename(pvalues_t_test_treat4vs2,p_value=mapply.function.x..y..t.test.x..y..na.rm...TRUE..alternative....two.sided...)
+
+##adjusting the pvalue by all methods and creating a dataframe with new columns with those methods
+pvalues_t_test_treat4vs2$Bonferroni <-
+      p.adjust(pvalues_t_test_treat4vs2$p_value,
+               method = "bonferroni")
+
+
+pvalues_t_test_treat4vs2
+
+##ranking the drugs
+dplyr::arrange(pvalues_t_test_treat4vs2, Bonferroni)
+
+
+## looking at the genes from cluster 2 and 4 and doing a t-test
+
+##for each column df2 and df4 welch t-test (assuming anequal variance)
+pvalues_t_test_achilles_new2vs4<-data.frame(mapply(function(x,y)t.test(x,y, alternative="two.sided", var.equal= FALSE, paired=FALSE)$p.value,ovary_achilles_cluster2,ovary_achilles_cluster4))
+
+pvalues_t_test_achilles_new2vs4
+
+##creatig a dataframe with p-vaues and genes
+pvalues_t_test_achilles_new2vs4<-rename(pvalues_t_test_achilles_new2vs4,p_value=mapply.function.x..y..t.test.x..y..alternative....two.sided...)
+
+##adjusting the pvalue by all methods and creating a dataframe with new columns with those methods
+pvalues_t_test_achilles_new2vs4$Bonferroni <-
+      p.adjust(pvalues_t_test_achilles_new2vs4$p_value,
+               method = "bonferroni")
+
+pvalues_t_test_achilles_new2vs4$BH <-
+      p.adjust(pvalues_t_test_achilles_new2vs4$p_value,
+               method = "BH")
+
+pvalues_t_test_achilles_new2vs4$Holm <-
+        p.adjust(pvalues_t_test_achilles_new2vs4$p_value,
+               method = "holm")
+
+pvalues_t_test_achilles_new2vs4$Hochberg <-
+      p.adjust(pvalues_t_test_achilles_new2vs4$p_value,
+               method = "hochberg")
+
+pvalues_t_test_achilles_new2vs4$Hommel <-
+      p.adjust(pvalues_t_test_achilles_new2vs4$p_value,
+               method = "hommel")
+
+pvalues_t_test_achilles_new2vs4$BY <-
+      p.adjust(pvalues_t_test_achilles_new2vs4$p_value,
+               method = "BY")
+
+
+pvalues_t_test_achilles_new2vs4
+
+dplyr::arrange(pvalues_t_test_achilles_new2vs4, p_value)
+```
+
+
+```{r}
+##creating a dataframe from non ovary celllines out of cluster 2 and 4
 
 ##vector from cluster 2,4
 achilles_vector_cluster24<- as.vector(c(achilles_vector_cluster2,achilles_vector_cluster4))
 
 df_ovary_prism_treat_effective_longc2c4 <- df_ovary_prism_treat_effective_long [df_ovary_prism_treat_effective_long$DepMap_ID%in%achilles_vector_cluster24,]
 
-
+df_ovary_treat_drugs<-pivot_wider(df_ovary_prism_treat_effective_longc2c4, names_from = DepMap_ID,values_from= proliferationvalues)
+df_ovary_treat_drugs
 ##deleting every drug except for exatecan-mesylate, romidepsin and carfilzomib
 ##for ovary
-df_ovary_prism_treat_effective_longc2c4 <- df_ovary_prism_treat_effective_longc2c4 [df_ovary_prism_treat_effective_longc2c4$name%in%c("exatecan-mesylate","romidepsin","carfilzomib"),]
-df_ovary_prism_treat_effective_longc2c4
+df_ovary_prism_treat_effective_longc2c4erc <- df_ovary_prism_treat_effective_longc2c4 [df_ovary_prism_treat_effective_longc2c4$name%in%c("exatecan-mesylate","romidepsin","carfilzomib"),]
+df_ovary_prism_treat_effective_longc2c4erc
 
 ##using pivot wider
-df_ovary_prism_treat_effective_c2c4<-pivot_wider(df_ovary_prism_treat_effective_longc2c4, names_from = DepMap_ID,values_from= proliferationvalues)
-df_ovary_prism_treat_effective_c2c4
+df_ovary_prism_treat_effective_c2c4erc<-pivot_wider(df_ovary_prism_treat_effective_longc2c4, names_from = DepMap_ID,values_from= proliferationvalues)
+df_ovary_prism_treat_effective_c2c4erc
 
 ##creating a dataframe from non ovary celllines out of cluster 2 and 4
 
@@ -459,99 +870,135 @@ achilles_noovary_vector_cluster24<- as.vector(c(achilles_noovary_vector_cluster2
 df_noovary_prism_treat_effective_longc2c4 <- df_noovary_prism_treat_effective_long [df_noovary_prism_treat_effective_long$DepMap_ID%in%achilles_noovary_vector_cluster24,]
 df_noovary_prism_treat_effective_longc2c4
 
+df_noovary_treat_drugs<-pivot_wider(df_noovary_prism_treat_effective_longc2c4, names_from = DepMap_ID,values_from= proliferationvalues)
+df_noovary_treat_drugs
 ##deleting every drug except for exatecan-mesylate, romidepsin and carfilzomib
 ##for non ovary
-df_noovary_prism_treat_effective_longc2c4 <- df_noovary_prism_treat_effective_longc2c4 [df_noovary_prism_treat_effective_longc2c4$name%in%c("exatecan-mesylate","romidepsin","carfilzomib"),]
-df_noovary_prism_treat_effective_longc2c4
+df_noovary_prism_treat_effective_longc2c4erc <- df_noovary_prism_treat_effective_longc2c4 [df_noovary_prism_treat_effective_longc2c4$name%in%c("exatecan-mesylate","romidepsin","carfilzomib"),]
+df_noovary_prism_treat_effective_longc2c4erc
 
 ##using pivot wider
-df_noovary_prism_treat_effective_c2c4<-pivot_wider(df_noovary_prism_treat_effective_longc2c4, names_from = DepMap_ID,values_from= proliferationvalues)
-df_noovary_prism_treat_effective_c2c4
+df_noovary_prism_treat_effective_c2c4erc<-pivot_wider(df_noovary_prism_treat_effective_longc2c4, names_from = DepMap_ID,values_from= proliferationvalues)
+df_noovary_prism_treat_effective_c2c4erc
 
 ```
 
-```{r}
-##creating a dataframe from the cellines out of cluster 1 and 3
+```{r, 1.2}
+##creating a dataframe from the cellines out of cluster 2 and 4
+##creating a ector for cluster k2moa 2 and 4
+##ovary
+achilles_vector_cluster2 = as.vector(na.omit(names(which(km2_moa$cluster == 2))))
+achilles_vector_cluster2
+achilles_vector_cluster4 = as.vector(na.omit(names(which(km2_moa$cluster == 4))))
+achilles_vector_cluster4
+##noovary
+achilles_noovary_vector_cluster2 = as.vector(na.omit(names(which(km1_moa$cluster == 2))))
+achilles_noovary_vector_cluster2
+achilles_noovary_vector_cluster4 = as.vector(na.omit(names(which(km1_moa$cluster == 4))))
+achilles_noovary_vector_cluster4
+
+
+##creating a vector with both 
+##ovary
+achilles_vector_cluster24<- as.vector(c(achilles_vector_cluster2,achilles_vector_cluster4))
+##noovary
+achilles_noovary_vector_cluster24<- as.vector(c(achilles_noovary_vector_cluster2, achilles_noovary_vector_cluster4))
+
+
+##reducing prism.achilles for the t.test to only the cluster 24 celllines
 ##ovary
 ovary_achilles_cluster24 <- prism.achilles[rownames(prism.achilles) %in% achilles_vector_cluster24,]
 ovary_achilles_cluster24
-
 ##nonovary
 noovary_achilles_cluster24 <- prism.achilles[rownames(prism.achilles) %in% achilles_noovary_vector_cluster24,]
 noovary_achilles_cluster24
 
-
-
-##show only the negative values
-##ovary
-ovary_achilles_cluster24mean<-data.frame(apply(ovary_achilles_cluster24,2,mean, na.rm=TRUE))
-ovary_achilles_cluster24mean
-
-
-which(ovary_achilles_cluster24mean==min(ovary_achilles_cluster24mean), arr.ind =TRUE)
-select(ovary_achilles_cluster24, RAN)
-
-##non ovary
-noovary_achilles_cluster24mean<-data.frame(apply(noovary_achilles_cluster24,2,mean, na.rm=TRUE))
-noovary_achilles_cluster24mean
-
-which(noovary_achilles_cluster24mean==min(noovary_achilles_cluster24mean), arr.ind =TRUE)
-select(noovary_achilles_cluster24, RAN)
-
-##creating a dataframe with the delta between the ovary and non ovary proliferationvalues
-delta_ovary_nonovary<-data.frame(ovary_achilles_cluster24mean-noovary_achilles_cluster24mean)
-##looking at the 10 Genes with the delta 
-df_highest_delta<-delta_ovary_nonovary %>% top_n(10)
-df_lowest_delta<-delta_ovary_nonovary  %>% top_n(-10) 
-
-df_highest_delta<-rownames_to_column(df_highest_delta, var = "genes")
-df_lowest_delta<-rownames_to_column(df_lowest_delta, var = "genes")
-
-##creating a vector with the gene names
-vector_delta<- as.vector(c(df_highest_delta$genes,df_lowest_delta$genes))
-##looking at those 20 genes
-
-reduced_ovary_achilles<-select(ovary_achilles_cluster24,vector_delta)
-reduced_ovary_achilles
-reduced_noovary_achilles<-select(noovary_achilles_cluster24,vector_delta)
-reduced_noovary_achilles
-
-##histogram for the two with the highest delta
-delta_ovary_nonovary %>% top_n(1)
-delta_ovary_nonovary  %>% top_n(-1)
-
-hist(reduced_ovary_achilles$WNK1)
-hist(reduced_noovary_achilles$WNK1)
-
-hist(reduced_ovary_achilles$PAX8)
-hist(reduced_noovary_achilles$PAX8)
-
-reduced_ovary_achilles_r<-rownames_to_column(reduced_ovary_achilles, var = "DepMap_ID")
-
-reduced_ovary_achilleslong<-pivot_longer(reduced_ovary_achilles_r,cols = 2:21,names_to= "knockout_genes", values_to="gene_proliferation", values_drop_na=TRUE)
-reduced_ovary_achilleslong
-
-## merged prism achilles with prism treat
-
-df_achilles_treat<-merge(reduced_ovary_achilleslong,df_ovary_prism_treat_effective_longc2c4, by="DepMap_ID")
-df_achilles_treat
-
-reduced_ovary_achilles_BBK<-select(ovary_achilles_cluster24,c(BRCA1,BRCA2,KRAS))
-reduced_ovary_achilles_BBK
-reduced_noovary_achilles_BBK<-select(noovary_achilles_cluster24,c(BRCA1,BRCA2,KRAS))
-reduced_noovary_achilles_BBK
+ 
 ```
+```{r, 1.2}
+## looking at one drug which is responding to those cluster differently
+##mean for non ovary
+mean_effective_noovary24= data.frame(row.names=rownames(prism))
+
+for (drug in unique(prism.treat$name)){
+  dose = prism.treat[prism.treat$name==drug,]$dose
+  response = prism[,rownames(prism.treat)[prism.treat$name == drug]]
+  
+  mean_effective_noovary24[drug]=apply(response,1,function(x){mean(x, na.rm=TRUE)})
+}
+mean_effective_noovary24<-mean_effective_noovary24[rownames(mean_effective_noovary24) %in% achilles_noovary_vector_cluster24,]
+mean_effective_noovary24
+
+##mean for ovary
+mean_effective_ovary24= data.frame(row.names=rownames(prism))
+
+for (drug in unique(prism.treat$name)){
+  dose = prism.treat[prism.treat$name==drug,]$dose
+  response = prism[,rownames(prism.treat)[prism.treat$name == drug]]
+  
+  mean_effective_ovary24[drug]=apply(response,1,function(x){mean(x, na.rm=TRUE)})
+}
+mean_effective_ovary24<-mean_effective_ovary24[rownames(mean_effective_ovary24) %in% achilles_vector_cluster24,]
+mean_effective_ovary24
+
+##for each column dfovary and dfnonovary t-test
+pvalues_t_test_treat24<-data.frame(mapply(function(x,y)t.test(x,y,na.rm=TRUE,alternative="two.sided", var.equal= FALSE, paired=FALSE)$p.value,mean_effective_ovary24,mean_effective_noovary24))
+pvalues_t_test_treat24
+
+##creatig a dataframe with p-values and drugs
+pvalues_t_test_treat24<-rename(pvalues_t_test_treat24,p_value=mapply.function.x..y..t.test.x..y..na.rm...TRUE..alternative....two.sided...)
+
+##adjusting the pvalue by all methods and creating a dataframe with new columns with those methods
+pvalues_t_test_treat24$Bonferroni <-
+      p.adjust(pvalues_t_test_treat24$p_value,
+               method = "bonferroni")
+
+pvalues_t_test_treat24$BH <-
+      p.adjust(pvalues_t_test_treat24$p_value,
+               method = "BH")
+
+pvalues_t_test_treat24$Holm <-
+      p.adjust(pvalues_t_test_treat24$p_value,
+               method = "holm")
+
+pvalues_t_test_treat24$Hochberg <-
+      p.adjust(pvalues_t_test_treat24$p_value,
+               method = "hochberg")
+
+pvalues_t_test_treat24$Hommel <-
+      p.adjust(pvalues_t_test_treat24$p_value,
+               method = "hommel")
+
+pvalues_t_test_treat24$BY <-
+      p.adjust(pvalues_t_test_treat24$p_value,
+               method = "BY")
+
+pvalues_t_test_treat24
+
+##ranking the drugs
+dplyr::arrange(pvalues_t_test_treat24, Bonferroni)
+
+####no significant differences between the drug response between ovary and non ovary celllines!
+```
+```{r}
+##looking into TAK-733
+selected_drug_ovary<-select(mean_effective_ovary24, "TAK-733")
+selected_drug_ovary
+selected_drug_noovary<-select(mean_effective_noovary24,"TAK-733")
+selected_drug_noovary
+```
+
 
 ```{r}
 ##t-test with ovary and nonovary
 
-##for each column dfovary and dfnonovary t-test
-pvalues_t_test_achilles24<-data.frame(mapply(function(x,y)t.test(x,y)$p.value,ovary_achilles_cluster24,noovary_achilles_cluster24))
+##for each column dfovary and dfnonovary welch t-test (assuming anequal variance)
+pvalues_t_test_achilles24<-data.frame(mapply(function(x,y)t.test(x,y, alternative="two.sided", var.equal= FALSE, paired=FALSE)$p.value,ovary_achilles_cluster24,noovary_achilles_cluster24))
 
 pvalues_t_test_achilles24
 
 ##creatig a dataframe with p-vaues and genes
-pvalues_t_test_achilles24<-dplyr::rename(pvalues_t_test_achilles24,p_value=mapply.function.x..y..t.test.x..y..p.value..ovary_achilles_cluster24..)
+pvalues_t_test_achilles24<-rename(pvalues_t_test_achilles24,p_value=mapply.function.x..y..t.test.x..y..alternative....two.sided...)
 
 ##adjusting the pvalue by all methods and creating a dataframe with new columns with those methods
 pvalues_t_test_achilles24$Bonferroni <-
@@ -612,12 +1059,12 @@ abline(0, 1,
 ```
 ```{r}
 ##ranking the genes
-dplyr::arrange(pvalues_t_test_achilles24, BH)
+dplyr::arrange(pvalues_t_test_achilles24, Bonferroni)
 
 ##Therefore, the smaller the p-value, the stronger the evidence is that the two populations have different means.
 
 ##creating a reduced dataframe with only the 6 genes with the most difference between the meanvalues and the lowest t-test.
-vector_genes_difference<-as.vector(c("IGF1R","OR2V2","WNK1","CD200R1L","CPT1A","RAB6A"))
+vector_genes_difference<-as.vector(c("IGF1R","OR2V2","WNK1"))
 
 
 reduced_ovary_achilles_genes<-select(ovary_achilles_cluster24,vector_genes_difference)
@@ -626,25 +1073,18 @@ reduced_ovary_achilles_genes
 reduced_noovary_achilles_genes<-select(noovary_achilles_cluster24,vector_genes_difference)
 reduced_noovary_achilles_genes
 
+hist(reduced_ovary_achilles_genes$IGF1R)
+hist(reduced_noovary_achilles_genes$IGF1R)
+
+hist(reduced_ovary_achilles_genes$OR2V2)
+hist(reduced_noovary_achilles_genes$OR2V2)
+
+hist(reduced_ovary_achilles_genes$WNK1)
+hist(reduced_noovary_achilles_genes$WNK1)
 ```
 
 ```{r}
-##exatecan-mesylate,romidepsin,carfilzomib
-df_ovary_prism_treat_effective_c2c4
-df_noovary_prism_treat_effective_c2c4
-reduced_ovary_achilles_genes
-reduced_noovary_achilles_genes
-
-cor_achilles_treat= data.frame(row.names=rownames(prism))
-
-for (drug in unique(df_ovary_prism_treat_effective$name)){
-  dose = prism.treat[prism.treat$name==drug,]$dose
-  response = prism[,rownames(prism.treat)[prism.treat$name == drug]]
-  
-  cordf_effective[drug]=apply(response,1,function(x){cor(x,dose)})
-}
-cordf_effective<-cordf_effective[rownames(cordf_effective) %in% vector_ovary_DepMI,]
-cordf_effective
+## correlation between drug and genes
 
 ```
 
@@ -671,6 +1111,8 @@ prism_cnv_BCRA1_KRAS_BCRA2
 
 ```
 
+
+
 ```{r}
 ##prism.cnv copy number from the genes
 #ovary
@@ -690,7 +1132,5 @@ prism_cnv_BCRA1_KRAS_BCRA2<-select(reduced_prism_cnv_noovarycell,c(BRCA1,BRCA2,K
 prism_cnv_BCRA1_KRAS_BCRA2
 
 ```
-```{r}
 
-```
 
