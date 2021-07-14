@@ -21,13 +21,11 @@ library(tinytex)
 ```
 
 ```{r, include = FALSE}
+
 #load("../Original_Environment/Original.RData")
 load("../Original_Environment/prism_datasets.rda")
 load("../Original_Environment/cellline_datasets.rda")
-load("C:/Users/pc/Desktop/4 FS/Data Analysis/.RData")
-load("C:/Users/pc/Desktop/4 FS/Data Analysis/Original_RData/original_data_environment.RData")
-#load("../Original_Environment/prism_datasets.rda")
-#load("../Original_Environment/cellline_datasets.rda")
+
 ```
 
 
@@ -78,11 +76,6 @@ ggplot2_dose_proliferation<-ggcorrplot(cormatrix_effective, tl.cex = 7.5 )+
   coord_fixed(xlim = c(15, 7))
  
 ggplot2_dose_proliferation + coord_flip()
-
-
-#dev.new(width=10, height=10)
-#theme(plot.margin = unit(c(0.2,5,0.2,5),"cm"))
-#ggarrange(p1, p2, ncol=1)
 
 ```
 
