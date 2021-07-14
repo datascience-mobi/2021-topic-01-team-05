@@ -80,7 +80,7 @@ pvalues_t_test_treat3vs4<-data.frame(mapply(function(x,y)t.test(x,y,na.rm=TRUE,a
 pvalues_t_test_treat3vs4
 
 ##creatig a dataframe with p-vaues and genes
-pvalues_t_test_treat3vs4<-rename(pvalues_t_test_treat3vs4,p_value=mapply.function.x..y..t.test.x..y..na.rm...TRUE..alternative....two.sided...)
+pvalues_t_test_treat3vs4<-dplyr::rename(pvalues_t_test_treat3vs4,p_value=mapply.function.x..y..t.test.x..y..na.rm...TRUE..alternative....two.sided...)
 
 ##adjusting the pvalue by all methods and creating a dataframe with new columns with those methods
 pvalues_t_test_treat3vs4$Bonferroni <-
@@ -128,7 +128,7 @@ pvalues_t_test_treat3vs1<-data.frame(mapply(function(x,y)t.test(x,y,na.rm=TRUE,a
 pvalues_t_test_treat3vs1
 
 ##creatig a dataframe with p-vaues and genes
-pvalues_t_test_treat3vs1<-rename(pvalues_t_test_treat3vs1,p_value=mapply.function.x..y..t.test.x..y..na.rm...TRUE..alternative....two.sided...)
+pvalues_t_test_treat3vs1<-dplyr::rename(pvalues_t_test_treat3vs1,p_value=mapply.function.x..y..t.test.x..y..na.rm...TRUE..alternative....two.sided...)
 
 ##adjusting the pvalue by all methods and creating a dataframe with new columns with those methods
 pvalues_t_test_treat3vs1$Bonferroni <-
@@ -266,7 +266,7 @@ pvalues_t_test_treat4vs1<-data.frame(mapply(function(x,y)t.test(x,y,na.rm=TRUE,a
 pvalues_t_test_treat4vs1
 
 ##creatig a dataframe with p-vaues and genes
-pvalues_t_test_treat4vs1<-rename(pvalues_t_test_treat4vs1,p_value=mapply.function.x..y..t.test.x..y..na.rm...TRUE..alternative....two.sided...)
+pvalues_t_test_treat4vs1<-dplyr::rename(pvalues_t_test_treat4vs1,p_value=mapply.function.x..y..t.test.x..y..na.rm...TRUE..alternative....two.sided...)
 
 ##adjusting the pvalue by all methods and creating a dataframe with new columns with those methods
 pvalues_t_test_treat4vs1$Bonferroni <-
