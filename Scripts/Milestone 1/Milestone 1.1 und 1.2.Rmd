@@ -177,7 +177,7 @@ hist(min_values_treat_prism_reduced_ovary_vector, main= "Most effective drug-pro
 
 summary(min_values_treat_prism_reduced_ovary_vector)
 
-## setting threshold at 5% quantile
+## setting threshold at 10 % quantile
 quantile(min_values_treat_prism_reduced_ovary_vector, 0.1)
 
 hist(min_values_treat_prism_reduced_ovary_vector, main= "Most effective drug-proliferation values in ovary cell lines", xlab = "Minimum values for each drug")
@@ -481,6 +481,8 @@ xlab='PC1',ylab='PC2',
 main = "PC1 vs. PC2 for kmeans clusters")
 
 ```
+
+
 ```{r c.4.13. - extracting the drug names of the most efficient drugs with regard to their moas}
 
 ## hdac
@@ -767,15 +769,18 @@ hist_prism_reduced <- hist(unlist(prism_reduced), xlab = "Proliferation values",
 ```{r S3 Replacing NAs in prism_reduced with the column means}
 
 ## Creating a copy of prism_reduced to keep a version that includes the NAs
-prism_reduced_no_NAs = prism_reduced
+prism_reduced_no_NAs = prism_reduced 
+## Creating a copy of prism_reduced_all to keep a version that includes the NAs
+prism_reduced_all_no_NAs = prism_reduced_all
 
 ## Replacing the NAs in prism_reduced with the col mean and saving it into a new data frame called prism_reduced_no_NAs
 
 for(i in 1:ncol(prism_reduced)){
   prism_reduced_no_NAs[is.na(prism_reduced[, i]), i] <- mean(prism_reduced[, i], na.rm = TRUE)
+  prism_reduced_all_no_NAs[is.na(prism_reduced_all[, i]), i] <- mean(prism_reduced_all[, i], na.rm = TRUE)
 }  
 
-## Plotting a histogram of the lowest proliferation values without NAs for all cell lines except ovary
+## Plotting a histogram of the lowest proliferation values without NAs for all cell lines except ovary 
 hist(unlist(prism_reduced_no_NAs), breaks = 100, xlab = "Proliferation values", main = "Proliferation values of prism_reduced_no_NAs for every drug")
 ```
 
@@ -898,33 +903,33 @@ prism.cl[prism.cl$DepMap_ID %in% cl_topoisomerase_inhibitor,]
 ```{r S11 Finding the names of the medications used in the cell lines in which the following moas were active: topoisomerase inhibitor, proteasome inhibitor, PI3K inhibitor, NFkB pathway inhibitor, HDAC, EGFR, CDK, BCL, and ATPase}
 
 ## Extracting the medication names of topoisomerase moas
-topoisomerase_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "topoisomerase inhibitor",])$name))
+topoisomerase_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "topoisomerase inhibitor",])$name)) 
 
 ## Extracting the medication names of proteasome moas
-proteasome_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "proteasome inhibitor",])$name))
+proteasome_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "proteasome inhibitor",])$name)) 
 
 ## Extracting the medication names of PI3K moas
-PI3K_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "PI3K inhibitor",])$name))
+PI3K_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "PI3K inhibitor",])$name)) 
 
 ## Extracting the medication names of NFkB_pathway moas
-NFkB_pathway_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "NFkB_pathway inhibitor",])$name))
+NFkB_pathway_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "NFkB_pathway inhibitor",])$name)) 
 
 ## Extracting the medication names of HDAC moas
-hdac_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "HDAC inhibitor",])$name))
+hdac_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "HDAC inhibitor",])$name)) 
 
 ## Extracting the medication names of EGFR moas
-EGFR_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "EGFR inhibitor",])$name))
+EGFR_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "EGFR inhibitor",])$name)) 
 
 ## Extracting the medication names of CDK moas
-CDK_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "CDK inhibitor",])$name))
+CDK_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "CDK inhibitor",])$name)) 
 
 ## Extracting the medication names of BCL moas
-BCL_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "BCL inhibitor",])$name))
+BCL_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "BCL inhibitor",])$name)) 
 
 ## Extracting the medication names of ATPase moas
-ATPase_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "ATPase inhibitor",])$name))
+ATPase_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "ATPase inhibitor",])$name)) 
 
-## Combining all the medication names into one vector
+## Combining all the medication names into one vector 
 
 most_effective_moas_drugs = c(topoisomerase_inhibitors, proteasome_inhibitors, PI3K_inhibitors, NFkB_pathway_inhibitors, hdac_inhibitors, EGFR_inhibitors, CDK_inhibitors, BCL_inhibitors, ATPase_inhibitors)
 
@@ -933,6 +938,8 @@ most_effective_moas_drugs = c(topoisomerase_inhibitors, proteasome_inhibitors, P
 names_use <- names(prism_reduced_no_NAs)[names(prism_reduced_no_NAs) %in% most_effective_moas_drugs]
 
 moa_drugs <- prism_reduced_no_NAs[,names_use]
+
+moa_drugs_all = prism_reduced_all_no_NAs[,names_use]
 
 ```
 
@@ -1064,7 +1071,7 @@ legend("topleft", legend = c("Cluster 1", "Cluster 2", "Cluster 3", "Cluster 4")
 
 ```
 
-```{r}
+```{r S16}
 
 ## fisher PI3
 
@@ -1137,3 +1144,18 @@ barplot(c(1, 1, 0.7494, 1.520121, 1, 1, 1,  0.6628035, 1, 1.119206, 1, 0.7453084
  
 
 ```
+
+```{r S17 PCA on prism.cnv}
+
+A_cnv = as.matrix(prism.cnv)
+
+pca_cnv = prcomp(A_cnv, scale = TRUE)
+
+plot(pca_cnv$x[,1], pca_cnv$x[,2],
+xlab='PC1',ylab='PC2', pch = 20)
+
+
+
+
+```
+
