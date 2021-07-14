@@ -56,17 +56,16 @@ In our project, we aimed to answer two main questions:
 
 > 2. Is the sensitivity of different drugs on ovary cancer cell lines connected to specific cancer-related genes or gene knock-outs?
 
-We subdivided our project into six milestones in order to find answers to these questions.
+We subdivided our project into smaller steps in order to find answers to these questions.
 
-In **milestone 1.1 and 1.2** we analyzed the drugs and their influence on the proliferation of cancer cell lines. We were able to identify the most promising drugs and categorized them based on their mechanism of action (MOA).  
-In **milestone 1.3**, we analyzed to what extent the used drug dosage had an effect on the proliferation values of the cancer cell lines and found out that in most cases the higher the dosage the greater the effect on proliferation.  
-**Milestone 2.1** ...  
-In **milestone 2.2**, we investigated the drug response of the ovarian cancer cell lines based on certain gene expression patterns and knockdown scores. This showed...  
-Finally, in **milestone 2.3** we used the data to perform a linear regression model in order to predict drug efficiency from certain gene mutations or expressions.
+First, we analyzed the drugs and their influence on the proliferation of cancer cell lines. We were able to identify the most promising drugs and categorized them based on their mechanism of action (MOA).  
+In addition, we analyzed to what extent the used drug dosage had an effect on the proliferation values of the cancer cell lines and found out that in most cases the higher the dosage the greater the effect on proliferation.  
+We also investigated the drug response of the ovarian cancer cell lines based on certain gene expression patterns and knockdown scores which showed less correlations than we initially anticipated.
+Finally, we used the data to perform a linear regression model in order to predict drug efficiency from certain gene mutations or expressions.
 
 \newpage
 
-# MILESTONE 1.1
+# MOST EFFECTIVE DRUGS AMONG OVARIAN CELL LINES
 
 ## GENERAL OVERVIEW
 
@@ -112,7 +111,7 @@ The right plot (Fig. 1.b.) shows all values for the mean drug efficiency in ovar
 
 ## SETTING A THRESHOLD
 
-```{r, echo=FALSE, fig.cap="**2.a.** Most Effective Drug-Proliferation Values in Ovarian Cell Lines  **2.b.** Most Frequent MOAs Amongst the Most Effective Drugs", fig.height=3, fig.width=8}
+```{r, echo=FALSE, fig.cap="**2.a.** Most Effective Drug-Proliferation Values in Ovarian Cell Lines  **2.b.** Most Frequent MOAs Among the Most Effective Drugs", fig.height=3, fig.width=8}
 
 # creating a data frame that contains the most effective treatment values for each drug and dosage (min values) for every cell line and getting rid of nas
 prism_reduced_ovary = data.frame(row.names = rownames(df_ovary_DepMI_prism))
@@ -189,7 +188,7 @@ Our results are shown in Fig. 2.b. These are the 45 most common MOAs regarding t
 
 We further investigated these MOAs and came to the following results. 
 
-10 out of the 140 drugs below our threshold are Histone deacetylase (HDAC) inhibitors. Their targets include amongst other things HDAC3, HDAC4, HDAC8. These are epigenetic targets for noncancer drug repurposing candiates [@Moreira-Silva2020] and were also found to be potential anti-cancer agents for inhibiting cancer cell migration and invasion in ovarian cancer [@AHN2012189].
+10 out of the 140 drugs below our threshold are Histone deacetylase (HDAC) inhibitors. Their targets include among other things HDAC3, HDAC4, HDAC8. These are epigenetic targets for noncancer drug repurposing candiates [@Moreira-Silva2020] and were also found to be potential anti-cancer agents for inhibiting cancer cell migration and invasion in ovarian cancer [@AHN2012189].
 
 With 9 occurrences, the topoisomerase inhibitors are the second most frequent MOAs we found. However, this is not surprising since these drugs are commonly used in cancer therapy, thus they showed strong effects on the cancer cell lines [@Parchment1998]. Interestingly, one of the drugs, mitoxantrone, is also used in the disease area neurology/psychiatry and multiple sclerosis[^3].
 
@@ -332,11 +331,11 @@ barplot(sort(pca2_moa$rotation[,1]), las=3, cex.names = 0.6, main = NULL, col = 
 
 ```
 
-In Fig. 5, the contribution to PC1 for ovary cell line clusters (see Fig. 4.a.) is shown. Drugs with values close to zero show a similar effect on the proliferation amongst all cell lines - thus, these are generally effective when administered to ovary cancer cell lines. This is the case for the following drugs (see highlighted in Fig. 5). 
+In Fig. 5, the contribution to PC1 for ovary cell line clusters (see Fig. 4.a.) is shown. Drugs with values close to zero show a similar effect on the proliferation among all cell lines - thus, these are generally effective when administered to ovary cancer cell lines. This is the case for the following drugs (see highlighted red in Fig. 5). 
 
-The ATPase inhibitor ouabain is normally used to treat hypertension and cardiac arrhythmia - however, a study found that it can have promising effects as a cancer treatment for ER+ breast cancer [@Chen2006]. In another study, researchers found that one in three ovarian cancers is ER+ [@Harding1990], which leads to the conclusion that this is why we found that ouabain generally showed positive effects amongst the ovarian cancer cell lines.
+The ATPase inhibitor ouabain is normally used to treat hypertension and cardiac arrhythmia - however, a study found that it can have promising effects as a cancer treatment for ER+ breast cancer [@Chen2006]. In another study, researchers found that one in three ovarian cancers is ER+ [@Harding1990], which leads to the conclusion that this is why we found that ouabain generally showed positive effects among the ovarian cancer cell lines.
 
-The drugs JNJ-26481585 [@Arts6841] and romidepsin [@doi:10.1517/13543784.2011.594437] are HDAC inhibitors that, as mentioned before, in general show promising effects on ovarian cancer cell lines. Therefore, it makes sense that we found them amongst the five generally most effective drugs.
+The drugs JNJ-26481585 [@Arts6841] and romidepsin [@doi:10.1517/13543784.2011.594437] are HDAC inhibitors that, as mentioned before, in general show promising effects on ovarian cancer cell lines. Therefore, it makes sense that we found them among the five generally most effective drugs.
 
 BGT226 is a PI3K inhibitor that is actually being considered as a potential therapeutic treatment option in different solid tumors, including ovarian cancer [@Simioni2015].
 
