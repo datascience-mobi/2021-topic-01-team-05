@@ -328,7 +328,6 @@ colVec2 = vector(length = length(pca2_moa$rotation[,1]))
 colVec2 = ifelse(sort(pca2_moa$rotation[,1]) > 0.03, "Lightblue3", "red3")
 colVec2[1] = "Lightblue3"
 barplot(sort(pca2_moa$rotation[,1]), las=3, cex.names = 0.6, main = NULL, col = colVec2)
-
 ```
 
 In Fig. 5, the contribution to PC1 for ovary cell line clusters (see Fig. 4.a.) is shown. Drugs with values close to zero show a similar effect on the proliferation among all cell lines - thus, these are generally effective when administered to ovary cancer cell lines. This is the case for the following drugs (see highlighted red in Fig. 5). 
@@ -344,107 +343,362 @@ Amsacrine, a topoisomerase inhibitor, is a chemotherapy drug that is commonly us
 
 \newpage
 
+```{r, include = FALSE}
 
-# MULTIPLE REGRESSION MODEL
+## lineage
+lineage <- prism.cl$lineage
 
-In order to predict drug efficiency from unrelated variables in ovarian cancer cell lines, we built a regression model using the drug disulfiram as the dependent variable. As unrelated variables we chose PCs of the data frames prism.achilles, prism.exp and prism.cnv with regard to the ovarian cell lines. 
-We tested disulfiram since it is currently used to treat alcohol dependency and belongs to the disease area neurology/psychiatry. However, it was found to be effective against arm-level 16q loss which occurs in several tumor types but primarily in breast and ovarian cancer [@Corsello2020]. This is why we found that drug interesting with regard to drug repurposing for the treatment of ovarian cancer.
+## DepMap_ID
+DepMap_ID <- prism.cl$DepMap_ID
 
-```{r, echo=FALSE, include = FALSE}
+## df_cl
+df_cl <- data.frame(DepMap_ID, lineage)
 
-# subsetting dataset prism.achilles in order to obtain ovary cancer cell line data 
-ovary_achilles <- prism.achilles[rownames(prism.achilles) %in% vector_ovary_DepMI,]
-B_achilles = as.matrix(ovary_achilles)
-B_achilles_new <- B_achilles[ , which(apply(B_achilles, 2, var) != 0)] ## removing zero variance values
-pca_achilles = prcomp(B_achilles_new, scale = TRUE)
+## df_ovary_cl
+df_ovary_cl <- subset(df_cl, lineage == "ovary")
 
-# subsetting dataset prism.exp to obtain ovary cancer cell line data
-ovary_exp <- prism.exp[rownames(prism.exp) %in% vector_ovary_DepMI,]
-B_exp = as.matrix(ovary_exp)
-B_exp_new <- B_exp[ , which(apply(B_exp, 2, var) != 0)] ## removing zero variance values
-pca_exp = prcomp(B_exp_new, scale = TRUE)
-```
+## vector_ovary_DepMI
+vector_ovary_DepMI <- as.vector(df_ovary_cl$DepMap_ID)
 
-We used PC1 to PC3 of prism.achilles and PC1 and PC2 of prism.exp and prism.cnv, respectively. 
+## prism_reduced
+prism_reduced = data.frame(row.names = rownames(prism))
 
-```{r, echo=FALSE, include = FALSE}
-
-# building regression model with disulfiram as dependent variable and PCs as independent variables
-regression_data <- prism_reduced_ovary_no_NAs["disulfiram"]
-
-regression_data$pca_achilles1 = pca_achilles$x[match(rownames(regression_data), names(pca_achilles$x[,1])),1]
-regression_data$pca_achilles2 = pca_achilles$x[match(rownames(regression_data), names(pca_achilles$x[,2])),2]
-regression_data$pca_achilles3 = pca_achilles$x[match(rownames(regression_data), names(pca_achilles$x[,3])),3]
-regression_data$pca_exp1 = pca_exp$x[match(rownames(regression_data), names(pca_exp$x[,1])),1]
-regression_data$pca_exp2 = pca_exp$x[match(rownames(regression_data), names(pca_exp$x[,2])),2]
-regression_data$pca_cnv1 = pca_cnv$x[match(rownames(regression_data), names(pca_cnv$x[,1])),1]
-regression_data$pca_cnv2 = pca_cnv$x[match(rownames(regression_data), names(pca_cnv$x[,2])),2]
-
-# removing rows that contain NAs 
-regression_data_no_nas <- na.omit(regression_data)
-```
-
-
-```{r, echo=FALSE, fig.cap = "Pairwise Plots of Chosen Variables", fig.height=3.5, fig.width=6}
-# plotting pairwise correlation to visualize the variables
-pairs(regression_data_no_nas[,-1], pch=20, col="Lightblue3")
-```
-
-Fig. X shows the pairwise correlation of the explanatory variables. Highly correlated variables should be avoided in a regression model. By choosing PCs to build our regression model, it makes sense that they do not correlate. This is important for successfully computing a linear regression. 
-
-```{r, echo=FALSE, include = FALSE}
-# splitting cell lines into 2 groups (learning cell lines and one to check our model)
-
-learning_celllines = sample(1:nrow(regression_data_no_nas), 13, replace = F)
-learning_regression <- regression_data_no_nas[learning_celllines,]
-check_regression <- regression_data_no_nas[-learning_celllines,]
-```
-Next, we split the cell lines into two groups. We used one group for regression-learning and the other one to check our model. In order to obtain the most reliable results, we split the cell lines in a random manner. 
-
-```{r, echo = FALSE, include = FALSE}
-regression_model <- lm(formula = (disulfiram) ~  .,data=learning_regression)
-summary(regression_model)
-```
-
-```{r, include=FALSE}
-Regressionp <- function (modelobject) {
-   if (class(regression_model) != "lm") stop("Not an object of class 'lm' ")
-   f <- summary(regression_model)$fstatistic
-   p <- pf(f[1],f[2],f[3],lower.tail=F)
-   attributes(p) <- NULL
-   return(p)
+for (i in 1:(ncol(prism)/8)){
+  prism_subset = prism[,(8*(i-1)+1):(8*i)]
+  max_effect = apply(prism_subset, 1, min)
+  drug = toString(prism.treat$name[which(rownames(prism.treat)== colnames(prism)[i*8])])
+  prism_reduced[drug] = max_effect
 }
-Regressionp(LinearRegression)
+
+prism_reduced_all = prism_reduced
+
+prism_reduced = prism_reduced[-which(rownames(prism_reduced) %in% vector_ovary_DepMI),]
+
+prism_reduced = prism_reduced[, !is.na(apply(prism_reduced, 2, mean, na.rm = TRUE))]
+
+## min_values_treat_prism_reduced
+min_values_treat_prism_reduced <- apply(prism_reduced, 2, min, na.rm=TRUE)
+
+## min_values_treat_prism_reduced_vector
+min_values_treat_prism_reduced_vector <- as.vector(min_values_treat_prism_reduced)
+
+## prism_reduced_under_threshold 
+prism_reduced_under_threshold = data.frame(min_values_treat_prism_reduced[min_values_treat_prism_reduced < quantile(min_values_treat_prism_reduced_vector, 0.1)])
+
+## prism.treat_reduced
+prism.treat_reduced <- prism.treat[which(prism.treat$name %in% rownames(prism_reduced_under_threshold)),]
+
+prism.treat_reduced = prism.treat_reduced[seq(1, nrow(prism.treat_reduced),8),]
+
+prism.treat_reduced = droplevels(prism.treat_reduced)
+
+## Creating a new dataframe that only includes columns that are interesting for us
+prism.treat_reduced_2 = prism.treat_reduced[,which(colnames(prism.treat_reduced) %in% c("name", "moa", "target", "disease.area", "indication", "broad_id"))]
+
+## prism.treat_reduced_2
+prism.treat_reduced_2 = prism.treat_reduced[,which(colnames(prism.treat_reduced) %in% c("name", "moa", "target", "disease.area", "indication", "broad_id"))]
+
 ```
 
-After performing the linear regression, we analyzed the results in order to investigate its accuracy. The first value we looked at to do this was the R-squared value, which describes the percentage of the variance of the dependent variable described by the model [@Schneider2010]. This means that the higher the R-squared value, the more accurate the model. Our linear regression model, with an R-squared value of `r summary(regression_model)$r.squared` therefore seems to be quite unsatisfactory. We also looked at the p-value, which should be under 0.05 in order for the regression model to be accurate. In our model, the p-value is `Regressionp(LinearRegression)`. With every execution of the code, the p-value fluctuates around 0.05, sometimes being a little higher or a little lower. This also points towards the inaccuracy and instability of our model, since the p-value would stay consistently under the 0.05 threshold if the model were accurate. 
 
-```{r, echo=FALSE, include = FALSE}
-# verifying our regression model
-# mean of residuals should be zero 
-mean(regression_model$residuals) # close to zero
+# DEPENDANCY OF DRUG EFFICIENCY ON THE CELL LINE TYPE
 
-# residuals should be normally distributed
-qqnorm(regression_model$residuals, ylab = "Residuals", main = "Q-Q Plot residuals" );qqline(regression_model$residuals) # not really
+## MECHANISM OF ACTION
 
-# residuals should not correlate with our predicted values 
-cor(learning_regression$disulfiram, regression_model$residuals)
-```
+```{r, echo=FALSE, fig.cap = "Most frequent MOA's amongst the most effective drugs"}
 
-```{r, echo=FALSE, fig.cap = "**X.a.** Correlation between Residuals and Control **X.b.** Predicted Values vs. Real Values", fig.height=3.5, fig.width=8}
+moa_frequencies = prism.treat_reduced_2 %>% dplyr::count(moa) %>% filter(n >= 3)
+moa_frequencies = moa_frequencies[0:9,]
 
-par(mfrow = c(1,2))
-
-plot(learning_regression$disulfiram, regression_model$residuals,pch=20, col="lightblue3", xlab = "Control", ylab = "Residuals", cex.lab = 0.75);abline(0,0, col="red")
-
-proliferation_pred <- predict(regression_model, newdata = check_regression)
-plot(check_regression$disulfiram, proliferation_pred,pch=20, col="lightblue3", xlab = "Real values", ylab = "Predicted values", cex.lab = 0.75);abline(0,1,col="red" )
+par(mar=c(4, 20, 4, 4))
+barplot(moa_frequencies$n, names.arg = moa_frequencies$moa, 
+        las = 1, 
+        xlab = "Frequency", 
+        horiz = TRUE, 
+        xlim = c(0,10),
+        col = "Lightblue3",
+        main = NULL) 
 
 ```
 
-In order to make the linearity assumption, the residuals should be normally distributed. We checked this with the help of a q-q plot and saw that this was not fully the case as several values lay outside the qq-line. However, the residuals do have a mean value close to zero and do not correlate with our predicted values (see. Fig. X.a.).
+After finding the drugs with the most effective response in regards to the ovary cancer cell lines, we now continued our analysis by testing if the efficiency of these drugs is dependent on the cancer cell line type or not. In order to test this we repeated many of the same steps as in milestone 1.1 but on all cell lines except the ovary cell lines. We extracted the most negative proliferation value for each drug in each non-ovary cell line, set the threshold to the 10% quantile, and then extracted the most common MOAs.
 
-Finally, we tried to predict the drug efficiency of disulfiram on our remaining group of ovarian cell lines. As you can see in Fig. X.b., this worked semi-well. Nonetheless, this does correlate with our results of the previous analyses which showed that there is hardly a correlation between the proliferation values and the other data sets containing gene expression patterns and knockdown scores. Therefore, trying to predict a drug response based on PCs of these data sets is not a sufficient model in this case. 
+As can be seen in Fig. X, all but one of the most frequently occurring MOAs are the same as the most frequently occurring MOAs in ovary cancer cell lines, however; the frequency with which they occur in the other cell lines differs slightly from the frequency with which they occur in the ovary cell lines. The NFkB pathway inhibitor is the one MOA that appears among the 45 most frequent MOAs in the non-ovary cell lines three times but not at all in the 45 most frequent MOAs in the ovary cell lines. Although NFkB pathway inhibitors do occur in the ovary cell lines twice, this is not often enough to have made the top 45 which explains why they are not shown in Fig 2.b. NFkB transcription factors are often used to regulate inflammation and immune responses, cell growth, apoptosis, and the expression of certain viral genes [@Gilmore2006]. Due to the importance of the NFkB transcription factors in regulating these processes, NFkB pathway inhibitors are often used in treating chronic inflammation and cancer [@Gilmore2006]. 
+
+## FISCHER'S EXACT TESTS
+
+```{r, include = FALSE}
+
+## fisher test topoisomerase inhibitors
+
+fisher_topoisomerase <- data.frame(c(9,9), c(131,131), row.names = c("Ovary Cell Lines", "Non-Ovary Cell Lines"))
+
+colnames(fisher_topoisomerase) <- c("Topoisomerase Inhibitor", "Other")
+
+## fisher test hdac inhibitors
+
+fisher_hdac <- data.frame(c(10,9), c(130, 131), row.names = c("Ovary Cell Lines", "Non-Ovary Cell Lines"))
+
+colnames(fisher_hdac) <- c("HDAC Inhibitor", "Other")
+
+## fisher test cdk inhibitor
+
+fisher_cdk <- data.frame(c(7,5), c(133,135), row.names = c("Ovary Cell Lines", "Non-Ovary Cell Lines"))
+
+colnames(fisher_cdk) <- c("CDK Inhibitor", "Other")
+
+## ## fisher test proteasome inhibitor
+
+fisher_proteasome <- data.frame(c(6,4), c(134,136), row.names = c("Ovary Cell Lines", "Non-Ovary Cell Lines"))
+
+colnames(fisher_proteasome) <- c("Proteasome Inhibitor", "Other")
+
+## fisher PI3
+
+fisher_PI3K <- data.frame(c(3,3), c(137,137), row.names = c("Ovary Cell Lines", "Non-Ovary Cell Lines"))
+
+colnames(fisher_cdk) <- c("PI3K Inhibitor", "Other")
+
+## fisher EGFR
+
+fisher_EGFR <- data.frame(c(3,4), c(137,136), row.names = c("Ovary Cell Lines", "Non-Ovary Cell Lines"))
+
+colnames(fisher_cdk) <- c("EGFR Inhibitor", "Other")
+
+## fisher BCL
+
+fisher_BCL <- data.frame(c(3,4), c(137,136), row.names = c("Ovary Cell Lines", "Non-Ovary Cell Lines"))
+
+colnames(fisher_BCL) <- c("BCL Inhibitor", "Other")
+
+## fisher ATPase 
+
+fisher_ATPase <- data.frame(c(4,4), c(136,136), row.names = c("Ovary Cell Lines", "Non-Ovary Cell Lines"))
+
+colnames(fisher_ATPase) <- c("ATPase Inhibitor", "Other")
+
+## fisher NFkB
+
+fisher_NFkB <- data.frame(c(2,3), c(138,137), row.names = c("Ovary Cell Lines", "Non-Ovary Cell Lines"))
+
+colnames(fisher_ATPase) <- c("NFkB pathway Inhibitor", "Other")
+
+
+```
+
+
+```{r, include = FALSE}
+
+fisher.test(fisher_topoisomerase)
+fisher.test(fisher_proteasome)
+fisher.test(fisher_PI3K)
+fisher.test(fisher_NFkB)
+fisher.test(fisher_hdac)
+fisher.test(fisher_EGFR)
+fisher.test(fisher_cdk)
+fisher.test(fisher_BCL)
+fisher.test(fisher_ATPase)
+
+```
+
+
+```{r, include = FALSE, echo = FALSE, fig.cap = "Barplot showing all p-values and OR"}
+
+par(mar=c(10,10,2,2))
+barplot(c(1, 1, 0.7494, 1.520121, 1, 1, 1,  0.6628035, 1, 1.119206, 1, 0.7453084, 0.7694, 1.419276, 1, 0.7453084, 1, 1),
+        names.arg = c("Topoisomerase p-value", "Topoisomerase OR", "Proteasome p-value", "Proteasome OR", "PI3K p-value", "PI3K OR", "NFkB p-value", "NFkB OR", "HDAC p-value", "HDAC OR", "EGFR p-value", "EGFR OR", "CDK p-value", "CDK OR", "BCL p-value", "BCL OR", "ATPase p-value", "ATPase OR"),
+        las = 2,
+        col = c("Lightblue3", "Lightblue3", "Lightblue1", "Lightblue1", "Lightblue3", "Lightblue3", "Lightblue1", "Lightblue1", "Lightblue3", "Lightblue3", "Lightblue1", "Lightblue1", "Lightblue3", "Lightblue3", "Lightblue1", "Lightblue1", "Lightblue3", "Lightblue3", "Lightblue1", "Lightblue1", "Lightblue3", "Lightblue3", "Lightblue1", "Lightblue1", "Lightblue3", "Lightblue3", "Lightblue1", "Lightblue1"),
+        ylim = c(0, 1.7))
+
+```
+
+After finding the most common MOAs among the ovary and all other cell lines respectively, the next step in our analysis was to find out if any of these MOAs showed a statistically significant occurrence in ovary cancer specifically. In order to test this, we decided to perform a fisher-exact-test on all of our selected most common MOAs for ovary cancer and all other cell lines (see Fig. X).
+
+In order for the null hypothesis - that there is no association between the occurrence of specific MOAs and the cell line type (either ovary or non-ovary) - to be rejected, the p-value must be smaller than the confidence level of 0.05 [@Biau2010]. This was not the case with any of the fisher tests that we conducted. For the fisher tests conducted on the topoisomerase inhibitor, the PI3K inhibitor, the NFkB pathway inhibitor, the HDAC inhibitor, the EGFR inhibitor, the BCL inhibitor, and the ATPase inhibitor the p-values were equal to one, as were the odds-ratios. This shows without a doubt that the H0-hypothesis cannot be rejected and that there therefore is no association between the occurrence of specific MOAs and the cell line type (either ovary or the others) for these MOAs. The fisher tests conducted on the remaining MOAs all calculate a p-value that is lower than 1, none of which are lower than 0.7 however. The odds ratios for these remaining MOAs are all either larger than one or lower than one, which would suggest a positive/negative association, respectively. Since the corresponding p-values are much larger than the confidence level of 0.5 however, these associations are most likely due to chance and aren't true associations. Conclusively these fisher tests have shown that not a single one of the most common MOAs among our cell lines occur so commonly due to an association to a specific cell line (either ovary or the others).
+
+## DIMENSION REDUCTION
+
+```{r, include = FALSE}
+
+## prism_reduced_all_no_NAs
+prism_reduced_all_no_NAs = prism_reduced_all
+
+## prism_reduced_no_NAs 
+prism_reduced_no_NAs = prism_reduced 
+
+for(i in 1:ncol(prism_reduced)){
+  prism_reduced_no_NAs[is.na(prism_reduced[, i]), i] <- mean(prism_reduced[, i], na.rm = TRUE)
+  prism_reduced_all_no_NAs[is.na(prism_reduced_all[, i]), i] <- mean(prism_reduced_all[, i], na.rm = TRUE)
+}  
+
+## Extracting the medication names of topoisomerase moas
+topoisomerase_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "topoisomerase inhibitor",])$name)) 
+
+## Extracting the medication names of proteasome moas
+proteasome_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "proteasome inhibitor",])$name)) 
+
+## Extracting the medication names of PI3K moas
+PI3K_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "PI3K inhibitor",])$name)) 
+
+## Extracting the medication names of NFkB_pathway moas
+NFkB_pathway_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "NFkB_pathway inhibitor",])$name)) 
+
+## Extracting the medication names of HDAC moas
+hdac_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "HDAC inhibitor",])$name)) 
+
+## Extracting the medication names of EGFR moas
+EGFR_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "EGFR inhibitor",])$name)) 
+
+## Extracting the medication names of CDK moas
+CDK_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "CDK inhibitor",])$name)) 
+
+## Extracting the medication names of BCL moas
+BCL_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "BCL inhibitor",])$name)) 
+
+## Extracting the medication names of ATPase moas
+ATPase_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "ATPase inhibitor",])$name)) 
+
+## Combining all the medication names into one vector 
+
+most_effective_moas_drugs = c(topoisomerase_inhibitors, proteasome_inhibitors, PI3K_inhibitors, NFkB_pathway_inhibitors, hdac_inhibitors, EGFR_inhibitors, CDK_inhibitors, BCL_inhibitors, ATPase_inhibitors)
+
+## names_use
+names_use <- names(prism_reduced_no_NAs)[names(prism_reduced_no_NAs) %in% most_effective_moas_drugs]
+
+## moa_drugs_all
+moa_drugs_all = prism_reduced_all_no_NAs[,names_use]
+
+```
+
+
+```{r, echo = FALSE, fig.cap = "PC1 vs. PC2 for All Cell Line Clusters"}
+
+A_moa_all = as.matrix(moa_drugs_all)
+
+pca1_moa_all = prcomp(A_moa_all[,-42], scale = TRUE)
+
+colVec = vector(length = nrow(A_moa_all))
+colVec[which(rownames(A_moa_all) %in% df_ovary_cl$DepMap_ID)] = "red3"
+colVec[-which(rownames(A_moa_all) %in% df_ovary_cl$DepMap_ID)] = "gray"
+
+plot(pca1_moa_all$x[,1], pca1_moa_all$x[,2], pch=20, col = colVec, 
+     xlab='PC1',ylab='PC2',
+      main = " ")
+      legend("topleft", legend = c("Ovary cell lines", "Other cell lines"), fill = c("Red3", "Gray"))
+
+```
+As a next step we decided to perform a PCA on all cell lines. We clustered by cell lines in order to test if the ovary cell lines would form their own distinctive cluster regarding the drug response. As can be seen in Fig. X, this was not the case. The red dots representing the ovary cancer cell lines are distributed across the entire plot, rather than concentrated into one distinctive cluster. The fact that the ovary cell lines did not form their own cluster shows that there seems to be no combining trait among them that would trigger a similar drug response. 
+
+## WELCH'S T-TEST
+
+```{r, include = FALSE}
+
+##creating a dataframe from the cellines out of cluster 2 and 4
+##creating a vector for cluster k2moa 2 and 4
+##ovary
+achilles_vector_cluster2 = as.vector(na.omit(names(which(km2_moa$cluster == 2))))
+achilles_vector_cluster4 = as.vector(na.omit(names(which(km2_moa$cluster == 4))))
+
+##noovary
+achilles_noovary_vector_cluster2 = as.vector(na.omit(names(which(km1_moa$cluster == 2))))
+achilles_noovary_vector_cluster4 = as.vector(na.omit(names(which(km1_moa$cluster == 4))))
+
+
+##creating a vector with both 
+##ovary
+achilles_vector_cluster24<- as.vector(c(achilles_vector_cluster2,achilles_vector_cluster4))
+##noovary
+achilles_noovary_vector_cluster24<- as.vector(c(achilles_noovary_vector_cluster2, achilles_noovary_vector_cluster4))
+
+
+##reducing prism.achilles for the t.test to only the cluster 24 celllines
+##ovary
+ovary_achilles_cluster24 <- prism.achilles[rownames(prism.achilles) %in% achilles_vector_cluster24,]
+
+##nonovary
+noovary_achilles_cluster24 <- prism.achilles[rownames(prism.achilles) %in% achilles_noovary_vector_cluster24,]
+
+```
+
+```{r, include = FALSE}
+## looking at one drug which is responding to those cluster differently
+##mean for non ovary
+mean_effective_noovary24= data.frame(row.names=rownames(prism))
+
+for (drug in unique(prism.treat$name)){
+  dose = prism.treat[prism.treat$name==drug,]$dose
+  response = prism[,rownames(prism.treat)[prism.treat$name == drug]]
+  
+  mean_effective_noovary24[drug]=apply(response,1,function(x){mean(x, na.rm=TRUE)})
+}
+mean_effective_noovary24<-mean_effective_noovary24[rownames(mean_effective_noovary24) %in% achilles_noovary_vector_cluster24,]
+
+
+##mean for ovary
+mean_effective_ovary24= data.frame(row.names=rownames(prism))
+
+for (drug in unique(prism.treat$name)){
+  dose = prism.treat[prism.treat$name==drug,]$dose
+  response = prism[,rownames(prism.treat)[prism.treat$name == drug]]
+  
+  mean_effective_ovary24[drug]=apply(response,1,function(x){mean(x, na.rm=TRUE)})
+}
+mean_effective_ovary24<-mean_effective_ovary24[rownames(mean_effective_ovary24) %in% achilles_vector_cluster24,]
+
+
+##for each column dfovary and dfnonovary t-test
+pvalues_t_test_treat24<-data.frame(mapply(function(x,y)t.test(x,y,na.rm=TRUE,alternative="two.sided", var.equal= FALSE, paired=FALSE)$p.value,mean_effective_ovary24,mean_effective_noovary24))
+
+
+##creatig a dataframe with p-values and drugs
+pvalues_t_test_treat24<-rename(pvalues_t_test_treat24,p_value=mapply.function.x..y..t.test.x..y..na.rm...TRUE..alternative....two.sided...)
+
+##adjusting the pvalue by all methods and creating a dataframe with new columns with those methods
+pvalues_t_test_treat24$Bonferroni <-
+      p.adjust(pvalues_t_test_treat24$p_value,
+               method = "bonferroni")
+
+pvalues_t_test_treat24$BH <-
+      p.adjust(pvalues_t_test_treat24$p_value,
+               method = "BH")
+
+pvalues_t_test_treat24$Holm <-
+      p.adjust(pvalues_t_test_treat24$p_value,
+               method = "holm")
+
+pvalues_t_test_treat24$Hochberg <-
+      p.adjust(pvalues_t_test_treat24$p_value,
+               method = "hochberg")
+
+pvalues_t_test_treat24$Hommel <-
+      p.adjust(pvalues_t_test_treat24$p_value,
+               method = "hommel")
+
+pvalues_t_test_treat24$BY <-
+      p.adjust(pvalues_t_test_treat24$p_value,
+               method = "BY")
+
+##ranking the drugs
+dplyr::arrange(pvalues_t_test_treat24, Bonferroni)
+```
+
+```{r, include = FALSE}
+##looking into TAK-733
+selected_drug_ovary<-select(mean_effective_ovary24, "TAK-733")
+
+selected_drug_noovary<-select(mean_effective_noovary24,"TAK-733")
+```
+As a final step to find out if the drug response is related to the cell line type, we reduced the prism.treat data frame to include only those cell lines out of cluster two and four from the pca clustering for non ovary and ovary cell lines. With these two data frames we performed a welch's unpaired two sided t-test, which was subjected a Bonferroni correction. The resulting p-value was higher than the confidence level of 0.05 which means that the null hypothesis - that there is no association between the mean value of the drug response in ovary and non ovary cell lines - could not be rejected. This shows once again that the drug response seems to be independent of the cell line type in regards to the ovary or non-ovary cell lines. 
+
+
+
+
+
+
+
+
+
 
 \newpage
 # REFERENCES
