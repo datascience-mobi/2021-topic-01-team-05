@@ -77,7 +77,7 @@ prism.treat_reduced_2 = prism.treat_reduced[,which(colnames(prism.treat_reduced)
 
 ```{r, echo=FALSE, fig.cap = "Most frequent MOA's amongst the most effective drugs"}
 
-moa_frequencies = prism.treat_reduced_2 %>% count(moa) %>% filter(n >= 3)
+moa_frequencies = prism.treat_reduced_2 %>% dplyr::count(moa) %>% filter(n >= 3)
 moa_frequencies = moa_frequencies[0:9,]
 
 par(mar=c(4, 20, 4, 4))
@@ -263,6 +263,11 @@ As a next step we decided to perform a PCA on all cell lines. We clustered by ce
 ## WELCH'S T-TEST
 
 ```{r, include = FALSE}
+
+## 
+km1_moa = kmeans(pca1_moa$x[,1:2],centers=5,nstart = 100)
+km2_moa = kmeans(pca2_moa$x[,1:2],centers=4,nstart = 100)
+
 ##creating a dataframe from the cellines out of cluster 2 and 4
 ##creating a vector for cluster k2moa 2 and 4
 ##ovary
@@ -272,7 +277,6 @@ achilles_vector_cluster4 = as.vector(na.omit(names(which(km2_moa$cluster == 4)))
 ##noovary
 achilles_noovary_vector_cluster2 = as.vector(na.omit(names(which(km1_moa$cluster == 2))))
 achilles_noovary_vector_cluster4 = as.vector(na.omit(names(which(km1_moa$cluster == 4))))
-
 
 
 ##creating a vector with both 

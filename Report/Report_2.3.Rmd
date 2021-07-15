@@ -74,18 +74,7 @@ regression_model <- lm(formula = (disulfiram) ~  .,data=learning_regression)
 summary(regression_model)
 ```
 
-```{r, include=FALSE}
-Regressionp <- function (modelobject) {
-   if (class(regression_model) != "lm") stop("Not an object of class 'lm' ")
-   f <- summary(regression_model)$fstatistic
-   p <- pf(f[1],f[2],f[3],lower.tail=F)
-   attributes(p) <- NULL
-   return(p)
-}
-Regressionp(LinearRegression)
-```
-
-After performing the linear regression, we analyzed the results in order to investigate its accuracy. The first value we looked at to do this was the R-squared value, which describes the percentage of the variance of the dependent variable described by the model [@Schneider2010]. This means that the higher the R-squared value, the more accurate the model. Our linear regression model, with an R-squared value of `r summary(regression_model)$r.squared` therefore seems to be quite unsatisfactory. We also looked at the p-value, which should be under 0.05 in order for the regression model to be accurate. In our model, the p-value is `Regressionp(LinearRegression)`. With every execution of the code, the p-value fluctuates around 0.05, sometimes being a little higher or a little lower. This also points towards the inaccuracy and instability of our model, since the p-value would stay consistently under the 0.05 threshold if the model were accurate. 
+After performing the linear regression, we analyzed the results in order to investigate its accuracy. The first value we looked at to do this was the R-squared value, which describes the percentage of the variance of the dependent variable described by the model [@Schneider2010]. This means that the higher the R-squared value, the more accurate the model. Our linear regression model, with an R-squared value of `r summary(regression_model)$r.squared` therefore seems to be quite unsatisfactory. We also looked at the p-value, which should be under 0.05 in order for the regression model to be accurate. In our model, the p-value fluctuates around 0.05 with every execution of the code, sometimes being a little higher or a little lower. This also points towards the inaccuracy and instability of our model, since the p-value would stay consistently under the 0.05 significance level if the model were accurate. 
 
 ```{r, echo=FALSE, include = FALSE}
 # verifying our regression model
@@ -99,7 +88,7 @@ qqnorm(regression_model$residuals, ylab = "Residuals", main = "Q-Q Plot residual
 cor(learning_regression$disulfiram, regression_model$residuals)
 ```
 
-```{r, echo=FALSE, fig.cap = "**X.a.** Correlation between Residuals and Control **X.b.** Predicted Values vs. Real Values" fig.height=3.5, fig.width=8}
+```{r, echo=FALSE, fig.cap = "**X.a.** Correlation between Residuals and Control **X.b.** Predicted Values vs. Real Values", fig.height=3.5, fig.width=8}
 
 par(mfrow = c(1,2))
 
@@ -107,11 +96,16 @@ plot(learning_regression$disulfiram, regression_model$residuals,pch=20, col="lig
 
 proliferation_pred <- predict(regression_model, newdata = check_regression)
 plot(check_regression$disulfiram, proliferation_pred,pch=20, col="lightblue3", xlab = "Real values", ylab = "Predicted values", cex.lab = 0.75);abline(0,1,col="red" )
-
 ```
 
 In order to make the linearity assumption, the residuals should be normally distributed. We checked this with the help of a q-q plot and saw that this was not fully the case as several values lay outside the qq-line. However, the residuals do have a mean value close to zero and do not correlate with our predicted values (see. Fig. X.a.).
 
 Finally, we tried to predict the drug efficiency of disulfiram on our remaining group of ovarian cell lines. As you can see in Fig. X.b., this worked semi-well. Nonetheless, this does correlate with our results of the previous analyses which showed that there is hardly a correlation between the proliferation values and the other data sets containing gene expression patterns and knockdown scores. Therefore, trying to predict a drug response based on PCs of these data sets is not a sufficient model in this case. 
+
+# CONCLUSION
+
+To conduct to our two main questions, we found that HDAC-, topoisomerase- and CDK-inhibitors showed promising effects on the proliferation of ovarian cell lines. These were also the most prominent MOAs regarding all the other cell lines which was also proved by several Fisher's tests. They showed that there is no significant difference regarding the effect of these MOAs whether they were applied on ovarian or non ovarian cell lines.  
+In addition, by performing an unpaired two-sided Welch's t-test, we found that while certain drugs do have differing effects on different cell lines, we could not find a connection that these differences were a result of specific cancer-related genes or gene knock-outs. Therefore, our regression model did not work properly.
+
 
 

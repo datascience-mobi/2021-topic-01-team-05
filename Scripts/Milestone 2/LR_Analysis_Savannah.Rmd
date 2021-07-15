@@ -5,21 +5,10 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
 ```
 
-```{r, include=FALSE}
-Regressionp <- function (modelobject) {
-   if (class(regression_model) != "lm") stop("Not an object of class 'lm' ")
-   f <- summary(regression_model)$fstatistic
-   p <- pf(f[1],f[2],f[3],lower.tail=F)
-   attributes(p) <- NULL
-   return(p)
-}
-Regressionp(LinearRegression)
-```
-
-
-After building a linear regression in order to attempt to predict the drug efficiency from different unrelated variables in ovarian cancer cell lines, our next step was to test its accuracy. The first value we looked at to do this was the R-squared value, which describes the percentage of the variance of the dependent variable described by the model [@Schneider2010]. This means that the higher the R-squared value, the more accurate the model. Our linear regression model, with an R-squared value of `r summary(regression_model)$r.squared` therefore seems to be quite unsatisfactory. We also looked at the p-value, which should be under 0.05 in order for the regression model to be accurate. In our model, the p-value is `Regressionp(LinearRegression)`. With every execution of the code, the p-value fluctuates around 0.05, sometimes being a little higher or a little lower. This also points towards the inaccuracy of our model, since the p-value would stay consistently under the 0.05 threshold if the model were accurate. Additionally, all p-values for the individual explanatory variables are not significantly different from zero. 
+After building a linear regression in order to attempt to predict the drug efficiency from different unrelated variables in ovarian cancer cell lines, our next step was to test its accuracy. The first value we looked at to do this was the R-squared value, which describes the percentage of the variance of the dependent variable described by the model [@Schneider2010]. This means that the higher the R-squared value, the more accurate the model. Our linear regression model, with an R-squared value of `r summary(regression_model)$r.squared` therefore seems to be quite unsatisfactory. We also looked at the p-value, which should be under 0.05 in order for the regression model to be accurate. In our model, the p-value fluctuates around 0.05, sometimes being a little higher or a little lower. This also points towards the inaccuracy of our model, since the p-value would stay consistently under the 0.05 threshold if the model were accurate. Additionally, all p-values for the individual explanatory variables are not significantly different from zero. 
 
 
 
