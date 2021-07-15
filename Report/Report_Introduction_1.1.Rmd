@@ -8,12 +8,14 @@ output: pdf_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library(BiocManager)
+
 library(car)
 library(data.table)
+library(devtools)
 library(dplyr)
 library(factoextra)
 library(formattable)
+library(ggcorrplot)
 library(ggplot2)
 library(GSA)
 library(igraph)
@@ -22,12 +24,14 @@ library(matrixStats)
 library(naniar)
 library(NbClust)
 library(pheatmap)
-library(RColorBrewer)
+library(plyr)
+library(readr)
 library(reshape2)
 library(rlist)
 library(rmdformats)
 library(stats)
 library(tidyr)
+library(tinytex)
 ```
 
 
@@ -343,99 +347,7 @@ Amsacrine, a topoisomerase inhibitor, is a chemotherapy drug that is commonly us
 
 \newpage
 
-# MULTIPLE REGRESSION MODEL
 
-In order to predict drug efficiency from unrelated variables in ovarian cancer cell lines, we built a regression model using the drug disulfiram as the dependent variable. As unrelated variables we chose PCs of the data frames prism.achilles, prism.exp and prism.cnv with regard to the ovarian cell lines. 
-We tested disulfiram since it is currently used to treat alcohol dependency and belongs to the disease area neurology/psychiatry. However, it was found to be effective against arm-level 16q loss which occurs in several tumor types but primarily in breast and ovarian cancer [@Corsello2020]. This is why we found that drug interesting with regard to drug repurposing for the treatment of ovarian cancer.
-
-```{r, echo=FALSE, include = FALSE}
-
-# subsetting dataset prism.achilles in order to obtain ovary cancer cell line data 
-ovary_achilles <- prism.achilles[rownames(prism.achilles) %in% vector_ovary_DepMI,]
-B_achilles = as.matrix(ovary_achilles)
-B_achilles_new <- B_achilles[ , which(apply(B_achilles, 2, var) != 0)] ## removing zero variance values
-pca_achilles = prcomp(B_achilles_new, scale = TRUE)
-
-# subsetting dataset prism.exp to obtain ovary cancer cell line data
-ovary_exp <- prism.exp[rownames(prism.exp) %in% vector_ovary_DepMI,]
-B_exp = as.matrix(ovary_exp)
-B_exp_new <- B_exp[ , which(apply(B_exp, 2, var) != 0)] ## removing zero variance values
-pca_exp = prcomp(B_exp_new, scale = TRUE)
-```
-
-We used PC1 to PC3 of prism.achilles and PC1 and PC2 of prism.exp and prism.cnv, respectively. 
-
-```{r, echo=FALSE, include = FALSE}
-
-# building regression model with disulfiram as dependent variable and PCs as independent variables
-regression_data <- prism_reduced_ovary_no_NAs["disulfiram"]
-
-regression_data$pca_achilles1 = pca_achilles$x[match(rownames(regression_data), names(pca_achilles$x[,1])),1]
-regression_data$pca_achilles2 = pca_achilles$x[match(rownames(regression_data), names(pca_achilles$x[,2])),2]
-regression_data$pca_achilles3 = pca_achilles$x[match(rownames(regression_data), names(pca_achilles$x[,3])),3]
-regression_data$pca_exp1 = pca_exp$x[match(rownames(regression_data), names(pca_exp$x[,1])),1]
-regression_data$pca_exp2 = pca_exp$x[match(rownames(regression_data), names(pca_exp$x[,2])),2]
-regression_data$pca_cnv1 = pca_cnv$x[match(rownames(regression_data), names(pca_cnv$x[,1])),1]
-regression_data$pca_cnv2 = pca_cnv$x[match(rownames(regression_data), names(pca_cnv$x[,2])),2]
-
-# removing rows that contain NAs 
-regression_data_no_nas <- na.omit(regression_data)
-```
-
-
-```{r, echo=FALSE, fig.cap = "Pairwise Plots of Chosen Variables", fig.height=3.5, fig.width=6}
-# plotting pairwise correlation to visualize the variables
-pairs(regression_data_no_nas[,-1], pch=20, col="Lightblue3")
-```
-
-Fig. X shows the pairwise correlation of the explanatory variables. Highly correlated variables should be avoided in a regression model. By choosing PCs to build our regression model, it makes sense that they do not correlate. This is important for successfully computing a linear regression. 
-
-```{r, echo=FALSE, include = FALSE}
-# splitting cell lines into 2 groups (learning cell lines and one to check our model)
-
-learning_celllines = sample(1:nrow(regression_data_no_nas), 13, replace = F)
-learning_regression <- regression_data_no_nas[learning_celllines,]
-check_regression <- regression_data_no_nas[-learning_celllines,]
-```
-Next, we split the cell lines into two groups. We used one group for regression-learning and the other one to check our model. In order to obtain the most reliable results, we split the cell lines in a random manner. 
-
-```{r, echo = FALSE, include = FALSE}
-regression_model <- lm(formula = (disulfiram) ~  .,data=learning_regression)
-summary(regression_model)
-```
-
-After performing the linear regression, we analyzed the results in order to investigate its accuracy. The first value we looked at to do this was the R-squared value, which describes the percentage of the variance of the dependent variable described by the model [@Schneider2010]. This means that the higher the R-squared value, the more accurate the model. Our linear regression model, with an R-squared value of `r summary(regression_model)$r.squared` therefore seems to be quite unsatisfactory. We also looked at the p-value, which should be under 0.05 in order for the regression model to be accurate. In our model, the p-value fluctuates around 0.05 with every execution of the code, sometimes being a little higher or a little lower. This also points towards the inaccuracy and instability of our model, since the p-value would stay consistently under the 0.05 significance level if the model were accurate. 
-
-```{r, echo=FALSE, include = FALSE}
-# verifying our regression model
-# mean of residuals should be zero 
-mean(regression_model$residuals) # close to zero
-
-# residuals should be normally distributed
-qqnorm(regression_model$residuals, ylab = "Residuals", main = "Q-Q Plot residuals" );qqline(regression_model$residuals) # not really
-
-# residuals should not correlate with our predicted values 
-cor(learning_regression$disulfiram, regression_model$residuals)
-```
-
-```{r, echo=FALSE, fig.cap = "**X.a.** Correlation between Residuals and Control **X.b.** Predicted Values vs. Real Values", fig.height=3.5, fig.width=8}
-
-par(mfrow = c(1,2))
-
-plot(learning_regression$disulfiram, regression_model$residuals,pch=20, col="lightblue3", xlab = "Control", ylab = "Residuals", cex.lab = 0.75);abline(0,0, col="red")
-
-proliferation_pred <- predict(regression_model, newdata = check_regression)
-plot(check_regression$disulfiram, proliferation_pred,pch=20, col="lightblue3", xlab = "Real values", ylab = "Predicted values", cex.lab = 0.75);abline(0,1,col="red" )
-```
-
-In order to make the linearity assumption, the residuals should be normally distributed. We checked this with the help of a q-q plot and saw that this was not fully the case as several values lay outside the qq-line. However, the residuals do have a mean value close to zero and do not correlate with our predicted values (see. Fig. X.a.).
-
-Finally, we tried to predict the drug efficiency of disulfiram on our remaining group of ovarian cell lines. As you can see in Fig. X.b., this worked semi-well. Nonetheless, this does correlate with our results of the previous analyses which showed that there is hardly a correlation between the proliferation values and the other data sets containing gene expression patterns and knockdown scores. Therefore, trying to predict a drug response based on PCs of these data sets is not a sufficient model in this case. 
-
-# CONCLUSION
-
-To conduct to our two main questions, we found that HDAC-, topoisomerase- and CDK-inhibitors showed promising effects on the proliferation of ovarian cell lines. These were also the most prominent MOAs regarding all the other cell lines which was also proved by several Fisher's tests. They showed that there is no significant difference regarding the effect of these MOAs whether they were applied on ovarian or non ovarian cell lines.  
-In addition, by performing an unpaired two-sided Welch's t-test, we found that while certain drugs do have differing effects on different cell lines, we could not find a connection that these differences were a result of specific cancer-related genes or gene knock-outs. Therefore, our regression model did not work properly.
 
 
 
