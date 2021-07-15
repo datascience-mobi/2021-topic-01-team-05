@@ -38,7 +38,7 @@ At the beginning of our analysis for this milestone, we reduced the prism data f
 
 According to the experimental methods, implied in the scientific paper (Corsello et al. 2020), we used the single dose 2.5 micromolar of the drugs as a marker to divide them into subgroups.
 
-Then we created a vector containing only the most effective drugs from milestones 1.1 and 1.2 'most_effective_moas_drugs2'.
+Then we created a vector containing only the most effective drugs from milestones 1.1 and 1.2 'most_effective_moas_drugs'.
 In order to create a data frame with the most effective drugs from the previous milestones, a reduction of the 'df_ovary_DepMI_prism_treat' data frame to the most effective moa drugs from the mentioned milestones was conducted.
 
 Proceeding to the further analysis, a ggplot and a boxplot were implemented to plot the dosage against the ovary cell lines proliferation values and demonstrate how the proliferation values change with an increasing or decreasing dosage of the medicaments. 
@@ -64,7 +64,7 @@ df_treat_lowdose<-df_treat[dosage<2.5, c("broadID","dosage")]
 
 df_treat_highdose<-df_treat[dosage>=2.5, c("broadID","dosage")]
 
-most_effective_moas_drugs2<-c("TAS-103","nemorubicin","idarubicin","10-hydroxycamptothecin", "amsacrine","SN-38","doxorubicin","exatecan-mesylate","genz-644282","ixazomib-citrate","carfilzomib","delanzomib","ixazomib","BGT226","buparlisib","CUDC-907","PCI-24781","AR-42", "givinostat","scriptaid","M-344","romidepsin","trichostatin-a","vorinostat","JNJ-26481585","pelitinib","PD-168393","dacomitinib","afatinib","AT-7519","dinaciclib","CR8-(R)","P276-00" ,"R547","oridonin","obatoclax","HA14-1","TW-37","digoxin","thonzonium","digitoxigenin","NMS-873")
+
 
 lineage <- prism.cl$lineage
 DepMap_ID <- prism.cl$DepMap_ID 
@@ -92,11 +92,40 @@ df_ovary_DepMI_prism_treat[,c('screen_id','compound_plate','moa','target','disea
 
 df_ovary_DepMI_prism_treat_NAs<-drop_na(df_ovary_DepMI_prism_treat)
 
+most_effective_moas_drugs<-c("TAS-103","nemorubicin","idarubicin","10-hydroxycamptothecin", "amsacrine","SN-38","doxorubicin","exatecan-mesylate","genz-644282","ixazomib-citrate","carfilzomib","delanzomib","ixazomib","BGT226","buparlisib","CUDC-907","PCI-24781","AR-42", "givinostat","scriptaid","M-344","romidepsin","trichostatin-a","vorinostat","JNJ-26481585","pelitinib","PD-168393","dacomitinib","afatinib","AT-7519","dinaciclib","CR8-(R)","P276-00" ,"R547","oridonin","obatoclax","HA14-1","TW-37","digoxin","thonzonium","digitoxigenin","NMS-873")
 
-df_ovary_prism_treat_effective <- df_ovary_DepMI_prism_treat[df_ovary_DepMI_prism_treat$name %in% most_effective_moas_drugs2,]
+df_ovary_prism_treat_effective <- df_ovary_DepMI_prism_treat[df_ovary_DepMI_prism_treat$name %in% most_effective_moas_drugs,]
+
+df_lowdose<- df_ovary_DepMI_prism_treat[-which(df_ovary_DepMI_prism_treat$dose>2,5),]
+
+df_lowdose_NAs<-df_ovary_DepMI_prism_treat_NAs[-which(df_ovary_DepMI_prism_treat_NAs$dose>2,5),]
+
+df_highdose<- df_ovary_DepMI_prism_treat[-which(df_ovary_DepMI_prism_treat$dose<=2,5),]
+
+df_highdose_NAs<-df_ovary_DepMI_prism_treat_NAs[-which(df_ovary_DepMI_prism_treat_NAs$dose<=2,5),]
+
+df_lowdose_effectivedrugs<- df_ovary_prism_treat_effective[-which(df_ovary_prism_treat_effective$dose>2,5),]
+
+
+df_highdose_effectivedrugs<- df_ovary_prism_treat_effective[-which(df_ovary_prism_treat_effective$dose<=2,5),]
+df_highdose_effectivedrugs
 
 df_ovary_prism_treat_effective_long<-pivot_longer(df_ovary_prism_treat_effective,cols = starts_with("ACH"),names_to= "DepMap_ID", values_to="proliferationvalues", values_drop_na=TRUE)
 
+ggplot_dose_proliferationvalues<-ggplot(df_ovary_prism_treat_effective_long, aes(x=dose, y=proliferationvalues)) +
+  geom_point()+
+  labs(title="Plot of proliferation value per dose",x="Dose (µm)", y = "proliferation value")
+
+df_ovary_prism_treat_effective_long$dose_high_low <- df_ovary_prism_treat_effective_long$dose
+for(i in 1:nrow(df_ovary_prism_treat_effective_long)){
+  if(df_ovary_prism_treat_effective_long$dose[i] < 2){
+    df_ovary_prism_treat_effective_long$dose_high_low[i]="0<=2"
+  } else if(df_ovary_prism_treat_effective_long$dose[i] >= 2 & df_ovary_prism_treat_effective_long$dose[i] <= 7.5){
+    df_ovary_prism_treat_effective_long$dose_high_low[i]="2<7.5"
+  } else if(df_ovary_prism_treat_effective_long$dose[i] > 7.5){
+    df_ovary_prism_treat_effective_long$dose_high_low[i]="7.5<11"
+  }
+}
 
 
 ggplot_plot_boxplot_dose_proliferation <- ggplot(df_ovary_prism_treat_effective_long, aes(x=dose_high_low, y=proliferationvalues)) + geom_boxplot(outlier.shape=8, aes(fill=dose_high_low))+labs(x="Dose (micromolar)", y = "Proliferation value")
