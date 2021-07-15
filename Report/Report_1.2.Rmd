@@ -71,7 +71,7 @@ prism.treat_reduced_2 = prism.treat_reduced[,which(colnames(prism.treat_reduced)
 ```
 
 
-# DEPENDANCY OF DRUG EFFICIENCY ON THE CELL LINE TYPE
+# DRUG EFFECT ON THE CELL LINE TYPES
 
 ## MECHANISM OF ACTION
 
@@ -91,7 +91,7 @@ barplot(moa_frequencies$n, names.arg = moa_frequencies$moa,
 
 ```
 
-After finding the drugs with the most effective response in regards to the ovary cancer cell lines, we now continued our analysis by testing if the efficiency of these drugs is dependent on the cancer cell line type or not. In order to test this we repeated many of the same steps as in milestone 1.1 but on all cell lines except the ovary cell lines. We extracted the most negative proliferation value for each drug in each non-ovary cell line, set the threshold to the 10% quantile, and then extracted the most common MOAs.
+After finding the drugs with the most effective response in regards to the ovary cancer cell lines, we now continued our analysis by testing if the efficiency of these drugs is dependent on the cancer cell line type or not. In order to test this we repeated many of the same steps we completed for the ovary cell lines but on the non-ovary cell lines. We extracted the most negative proliferation value for each drug in each non-ovary cell line, set the threshold to the 10% quantile, and then extracted the most common MOAs.
 
 As can be seen in Fig. X, all but one of the most frequently occurring MOAs are the same as the most frequently occurring MOAs in ovary cancer cell lines, however; the frequency with which they occur in the other cell lines differs slightly from the frequency with which they occur in the ovary cell lines. The NFkB pathway inhibitor is the one MOA that appears among the 45 most frequent MOAs in the non-ovary cell lines three times but not at all in the 45 most frequent MOAs in the ovary cell lines. Although NFkB pathway inhibitors do occur in the ovary cell lines twice, this is not often enough to have made the top 45 which explains why they are not shown in Fig 2.b. NFkB transcription factors are often used to regulate inflammation and immune responses, cell growth, apoptosis, and the expression of certain viral genes [@Gilmore2006]. Due to the importance of the NFkB transcription factors in regulating these processes, NFkB pathway inhibitors are often used in treating chronic inflammation and cancer [@Gilmore2006]. 
 
@@ -264,6 +264,16 @@ As a next step we decided to perform a PCA on all cell lines. We clustered by ce
 
 ```{r, include = FALSE}
 
+##
+moa_drugs <- prism_reduced_no_NAs[,names_use]
+
+##
+A_moa = as.matrix(moa_drugs)
+
+##
+pca1_moa = prcomp(A_moa, scale = TRUE)
+pca2_moa = prcomp(B_moa, scale = TRUE)
+
 ## 
 km1_moa = kmeans(pca1_moa$x[,1:2],centers=5,nstart = 100)
 km2_moa = kmeans(pca2_moa$x[,1:2],centers=4,nstart = 100)
@@ -363,4 +373,4 @@ selected_drug_ovary<-select(mean_effective_ovary24, "TAK-733")
 
 selected_drug_noovary<-select(mean_effective_noovary24,"TAK-733")
 ```
-As a final step to find out if the drug response is related to the cell line type, we reduced the prism.treat data frame to include only those cell lines out of cluster two and four from the pca clustering for non ovary and ovary cell lines. With these two data frames we performed a welch's unpaired two sided t-test, which was subjected a Bonferroni correction. The resulting p-value was higher than the confidence level of 0.05 which means that the null hypothesis - that there is no association between the mean value of the drug response in ovary and non ovary cell lines - could not be rejected. This shows once again that the drug response seems to be independent of the cell line type in regards to the ovary or non-ovary cell lines. 
+Additionally to the PCA clustering in Fig. 4.a. and the PCA clustering above, we also conducted a PCA using only non-ovary cell lines (not shown). As a final step to find out if the drug response is related to the cell line type, we decided to perform a Welch's unpaired two sided t-test, which was subjected a Bonferroni correction. In order to do this we reduced the prism.treat data frame further. It now included only those cell lines located in clusters two and four from the PCA clusterings for non ovary and ovary cell lines, respectively. With these two data frames we performed a Welch's unpaired two sided t-test, which was subjected a Bonferroni correction. The resulting p-value was higher than the confidence level of 0.05 which means that the null hypothesis - that there is no association between the mean value of the drug response in ovary and non ovary cell lines - could not be rejected. This shows once again that the drug response seems to be independent of the cell line type in regards to the ovary or non-ovary cell lines. 
