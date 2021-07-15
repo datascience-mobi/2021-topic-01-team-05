@@ -77,7 +77,7 @@ qqnorm(regression_model$residuals, ylab = "Residuals", main = "Q-Q Plot residual
 
 cor(learning_regression$disulfiram, regression_model$residuals)
 
-plot(learning_regression$disulfiram, regression_model$fitted.values,pch=20, col="light blue", xlab = "Control", ylab = "Residuals");abline(0,1,col="red")
+plot(learning_regression$disulfiram, regression_model$residuals,pch=20, col="light blue", xlab = "Control", ylab = "Residuals");abline(0,0, col="red")
 
 
 # the residuals should have the expected value of zero 
