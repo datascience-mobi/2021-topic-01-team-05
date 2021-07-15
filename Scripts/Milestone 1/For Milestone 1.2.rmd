@@ -2,7 +2,9 @@
 title: "For Milestone 1.2"
 author: "Laura Diekmann"
 date: "14 7 2021"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -14,19 +16,20 @@ library(dplyr)
 
 ```
 
+
+We reduced the prism.treat data frame to only those cells out of cluster two and four of the pca clustering for non ovary and ovary cell lines. With those two data frames we performed a welch's unpaired two sided t-test. The p-value was higher than the confidence level of 0.05, so the null hypothesis - that there is a equality between the mean value of the drug response of ovary and non ovary cell lines - could not be rejected. Which shows that there seems to be no specific drug with a different drug response for ovary and non ovary cells. 
+
 ```{r, 1.2}
 ##creating a dataframe from the cellines out of cluster 2 and 4
-##creating a ector for cluster k2moa 2 and 4
+##creating a vector for cluster k2moa 2 and 4
 ##ovary
 achilles_vector_cluster2 = as.vector(na.omit(names(which(km2_moa$cluster == 2))))
-achilles_vector_cluster2
 achilles_vector_cluster4 = as.vector(na.omit(names(which(km2_moa$cluster == 4))))
-achilles_vector_cluster4
+
 ##noovary
 achilles_noovary_vector_cluster2 = as.vector(na.omit(names(which(km1_moa$cluster == 2))))
-achilles_noovary_vector_cluster2
 achilles_noovary_vector_cluster4 = as.vector(na.omit(names(which(km1_moa$cluster == 4))))
-achilles_noovary_vector_cluster4
+
 
 
 ##creating a vector with both 
@@ -39,10 +42,10 @@ achilles_noovary_vector_cluster24<- as.vector(c(achilles_noovary_vector_cluster2
 ##reducing prism.achilles for the t.test to only the cluster 24 celllines
 ##ovary
 ovary_achilles_cluster24 <- prism.achilles[rownames(prism.achilles) %in% achilles_vector_cluster24,]
-ovary_achilles_cluster24
+
 ##nonovary
 noovary_achilles_cluster24 <- prism.achilles[rownames(prism.achilles) %in% achilles_noovary_vector_cluster24,]
-noovary_achilles_cluster24
+
 
  
 ```
@@ -60,7 +63,7 @@ for (drug in unique(prism.treat$name)){
   mean_effective_noovary24[drug]=apply(response,1,function(x){mean(x, na.rm=TRUE)})
 }
 mean_effective_noovary24<-mean_effective_noovary24[rownames(mean_effective_noovary24) %in% achilles_noovary_vector_cluster24,]
-mean_effective_noovary24
+
 
 ##mean for ovary
 mean_effective_ovary24= data.frame(row.names=rownames(prism))
@@ -72,11 +75,11 @@ for (drug in unique(prism.treat$name)){
   mean_effective_ovary24[drug]=apply(response,1,function(x){mean(x, na.rm=TRUE)})
 }
 mean_effective_ovary24<-mean_effective_ovary24[rownames(mean_effective_ovary24) %in% achilles_vector_cluster24,]
-mean_effective_ovary24
+
 
 ##for each column dfovary and dfnonovary t-test
 pvalues_t_test_treat24<-data.frame(mapply(function(x,y)t.test(x,y,na.rm=TRUE,alternative="two.sided", var.equal= FALSE, paired=FALSE)$p.value,mean_effective_ovary24,mean_effective_noovary24))
-pvalues_t_test_treat24
+
 
 ##creatig a dataframe with p-values and drugs
 pvalues_t_test_treat24<-rename(pvalues_t_test_treat24,p_value=mapply.function.x..y..t.test.x..y..na.rm...TRUE..alternative....two.sided...)
@@ -106,7 +109,7 @@ pvalues_t_test_treat24$BY <-
       p.adjust(pvalues_t_test_treat24$p_value,
                method = "BY")
 
-pvalues_t_test_treat24
+
 
 ##ranking the drugs
 dplyr::arrange(pvalues_t_test_treat24, Bonferroni)
@@ -117,7 +120,7 @@ dplyr::arrange(pvalues_t_test_treat24, Bonferroni)
 ```{r}
 ##looking into TAK-733
 selected_drug_ovary<-select(mean_effective_ovary24, "TAK-733")
-selected_drug_ovary
+
 selected_drug_noovary<-select(mean_effective_noovary24,"TAK-733")
-selected_drug_noovary
+
 ```
