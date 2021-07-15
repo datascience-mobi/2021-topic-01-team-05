@@ -21,7 +21,7 @@ We reduced the prism.treat data frame to only those cells out of cluster two and
 
 ```{r, 1.2}
 ##creating a dataframe from the cellines out of cluster 2 and 4
-##creating a ector for cluster k2moa 2 and 4
+##creating a vector for cluster k2moa 2 and 4
 ##ovary
 achilles_vector_cluster2 = as.vector(na.omit(names(which(km2_moa$cluster == 2))))
 achilles_vector_cluster4 = as.vector(na.omit(names(which(km2_moa$cluster == 4))))
