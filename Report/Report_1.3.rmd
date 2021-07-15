@@ -47,7 +47,7 @@ Proceeding to the further analysis, a ggplot and a boxplot were implemented to p
 ## VISUALIZATION - BOXPLOT
 
 
-```{r, include = FALSE, echo = FALSE, fig.cap="**1.** Boxplot of the distribution of the proliferation rates of ovary cell lines according to the drug dosage", fig.height = 3, fig.width = 8, fig.align = 'center'}
+```{r, echo = FALSE, fig.cap="**1.** Boxplot of the distribution of the proliferation rates of ovary cell lines according to the drug dosage", fig.height = 3, fig.width = 8, fig.align = 'center'}
 
 dosage<- prism.treat$dose
 broadID<- prism.treat$broad_id
@@ -108,7 +108,6 @@ df_lowdose_effectivedrugs<- df_ovary_prism_treat_effective[-which(df_ovary_prism
 
 
 df_highdose_effectivedrugs<- df_ovary_prism_treat_effective[-which(df_ovary_prism_treat_effective$dose<=2,5),]
-df_highdose_effectivedrugs
 
 df_ovary_prism_treat_effective_long<-pivot_longer(df_ovary_prism_treat_effective,cols = starts_with("ACH"),names_to= "DepMap_ID", values_to="proliferationvalues", values_drop_na=TRUE)
 
@@ -145,7 +144,7 @@ Consequently,there is an inverse negative correlation. Some medicaments show a v
 Furthermore, we created the correlation matrix from the dosages of the different medicaments per cell line and to display graphically the Pearson correlation, the function ggcorrplot() on the created correlation matrix was applied. As you can see, the blue and the purple squares which indicate higher correlation, ranging from 0.0 to -1.0 are in prevalence, meaning that the majority of the drugs reduce the cell proliferation. A Pearson correlation histogram showed the frequency of the Pearson correlation values, with most frequent values between -0.9 and -1.0.
 
 
-```{r out.width = "70%", include = FALSE,echo=FALSE, error=FALSE, fig.cap="**2.** ggplot of the correlation between the proliferation rates of ovary cell lines and the dosage of the applied medical treatment", fig.height=5,fig.weight=9, message=FALSE, warning=FALSE, results='hide', fig.align='center'}
+```{r out.width = "70%",echo=FALSE, error=FALSE, fig.cap="**2.** ggplot of the correlation between the proliferation rates of ovary cell lines and the dosage of the applied medical treatment", fig.height=5,fig.weight=9, message=FALSE, warning=FALSE, results='hide', fig.align='center'}
 
 cordf_effective= data.frame(row.names=rownames(prism))
 
