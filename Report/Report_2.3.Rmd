@@ -1,6 +1,98 @@
+---
+title: "**REPORT - PROJECT 01 - GROUP 5**"
+author: "Carolin Bayan, Savannah Cattarius, Laura Diekmann, Rositsa Todorovska"
+date: 07/19/2021
+bibliography: ../Bibliography/References.bibtex
+output: pdf_document
+---
+
+
+```{r, include=FALSE}
+#load("../Original_Environment/Original.RData")
+load("../Original_Environment/prism_datasets.rda")
+load("../Original_Environment/cellline_datasets.rda")
+```
 
 # MULTIPLE REGRESSION MODEL
 
 In order to predict drug efficiency from unrelated variables in ovarian cancer cell lines, we built a regression model using the drug disulfiram as the dependent variable. As unrelated variables we chose PCs of the data frames prism.achilles, prism.exp and prism.cnv with regard to the ovarian cell lines. 
-We tested disulfiram since it is currently used to treat alcohol dependency and belongs to the disease area neurology/psychiatry. However, it was found to be effective against arm-level 16q loss which occurs in several tumor types but primarily in breast and ovarian cancer [@Corsello2020]. This is why we found that drug interesting in terms of drug repurposing regarding the treatment of ovarian cancer. 
+We tested disulfiram since it is currently used to treat alcohol dependency and belongs to the disease area neurology/psychiatry. However, it was found to be effective against arm-level 16q loss which occurs in several tumor types but primarily in breast and ovarian cancer [@Corsello2020]. This is why we found that drug interesting with regard to drug repurposing for the treatment of ovarian cancer.
+
+```{r, echo=FALSE, include = FALSE}
+
+# subsetting dataset prism.achilles in order to obtain ovary cancer cell line data 
+ovary_achilles <- prism.achilles[rownames(prism.achilles) %in% vector_ovary_DepMI,]
+B_achilles = as.matrix(ovary_achilles)
+B_achilles_new <- B_achilles[ , which(apply(B_achilles, 2, var) != 0)] ## removing zero variance values
+pca_achilles = prcomp(B_achilles_new, scale = TRUE)
+
+# subsetting dataset prism.exp to obtain ovary cancer cell line data
+ovary_exp <- prism.exp[rownames(prism.exp) %in% vector_ovary_DepMI,]
+B_exp = as.matrix(ovary_exp)
+B_exp_new <- B_exp[ , which(apply(B_exp, 2, var) != 0)] ## removing zero variance values
+pca_exp = prcomp(B_exp_new, scale = TRUE)
+```
+
+We used PC1 to PC3 of prism.achilles and PC1 and PC2 of prism.exp and prism.cnv, respectively. 
+
+```{r, echo=FALSE, include = FALSE}
+
+# building regression model with disulfiram as dependent variable and PCs as independent variables
+regression_data <- prism_reduced_ovary_no_NAs["disulfiram"]
+
+regression_data$pca_achilles1 = pca_achilles$x[match(rownames(regression_data), names(pca_achilles$x[,1])),1]
+regression_data$pca_achilles2 = pca_achilles$x[match(rownames(regression_data), names(pca_achilles$x[,2])),2]
+regression_data$pca_achilles3 = pca_achilles$x[match(rownames(regression_data), names(pca_achilles$x[,3])),3]
+regression_data$pca_exp1 = pca_exp$x[match(rownames(regression_data), names(pca_exp$x[,1])),1]
+regression_data$pca_exp2 = pca_exp$x[match(rownames(regression_data), names(pca_exp$x[,2])),2]
+regression_data$pca_cnv1 = pca_cnv$x[match(rownames(regression_data), names(pca_cnv$x[,1])),1]
+regression_data$pca_cnv2 = pca_cnv$x[match(rownames(regression_data), names(pca_cnv$x[,2])),2]
+
+# removing rows that contain NAs 
+regression_data_no_nas <- na.omit(regression_data)
+```
+
+
+```{r, echo=FALSE, fig.cap = "Pairwise Plots of Chosen Variables", fig.height=3.5, fig.width=6}
+# plotting pairwise correlation to visualize the variables
+pairs(regression_data_no_nas[,-1], pch=20, col="Lightblue3")
+```
+
+```{r, echo=FALSE, include = FALSE}
+# splitting cell lines into 2 groups (learning cell lines and one to check our model)
+
+learning_celllines = sample(1:nrow(regression_data_no_nas), 13, replace = F)
+learning_regression <- regression_data_no_nas[learning_celllines,]
+check_regression <- regression_data_no_nas[-learning_celllines,]
+```
+
+
+```{r, echo = FALSE, include = FALSE}
+regression_model <- lm(formula = (disulfiram) ~  .,data=learning_regression)
+summary(regression_model)
+```
+
+
+
+```{r, echo=FALSE, include = FALSE}
+# verifying our regression model
+# mean of residuals should be zero 
+mean(regression_model$residuals) # close to zero
+
+# residuals should be normally distributed
+qqnorm(regression_model$residuals, ylab = "Residuals", main = "Q-Q Plot residuals" );qqline(regression_model$residuals) # not really
+
+# residuals should not correlate with our predicted pathway 
+cor(learning_regression$disulfiram, regression_model$residuals) # they kind of do but not completely
+
+plot(learning_regression$disulfiram, regression_model$fitted.values,pch=20, col="light blue", xlab = "Control", ylab = "Residuals");abline(0,1,col="red")
+```
+
+
+```{r, echo=FALSE, fig.cap = "Predicted Values vs. Real Values", fig.height=3.5, fig.width=6}
+proliferation_pred <- predict(regression_model, newdata = check_regression)
+plot(check_regression$disulfiram, proliferation_pred,pch=20, col="lightblue3", xlab = "Real values", ylab = "Predicted values", cex.lab = 0.75);abline(0,1,col="red" )
+```
+
+
 
