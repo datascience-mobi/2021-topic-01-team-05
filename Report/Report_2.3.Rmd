@@ -104,8 +104,8 @@ Finally, we tried to predict the drug efficiency of disulfiram on our remaining 
 
 # CONCLUSION
 
-1.How do different drugs influence ovary cancer cell lines and which are particularly noticeable?How do these drugs affect the other cell lines? 2.Is the sensitivity of different drugs on ovary cancer cell lines connected to specific cancer-related genes or gene knock-outs?
-
+To conduct to our two main questions, we found that HDAC-, topoisomerase- and CDK-inhibitors showed promising effects on the proliferation of ovarian cell lines. These were also the most prominent MOAs regarding all the other cell lines which was also proved by several Fisher's tests. They showed that there is no significant difference regarding the effect of these MOAs whether they were applied on ovarian or non ovarian cell lines.  
+In addition, by performing an unpaired two-sided Welch's t-test, we found that while certain drugs do have differing effects on different cell lines, we could not find a connection that these differences were a result of specific cancer-related genes or gene knock-outs. Therefore, our regression model did not work properly.
 
 
 
