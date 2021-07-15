@@ -263,6 +263,7 @@ As a next step we decided to perform a PCA on all cell lines. We clustered by ce
 ## WELCH'S T-TEST
 
 ```{r, include = FALSE}
+
 ##creating a dataframe from the cellines out of cluster 2 and 4
 ##creating a vector for cluster k2moa 2 and 4
 ##ovary
@@ -272,7 +273,6 @@ achilles_vector_cluster4 = as.vector(na.omit(names(which(km2_moa$cluster == 4)))
 ##noovary
 achilles_noovary_vector_cluster2 = as.vector(na.omit(names(which(km1_moa$cluster == 2))))
 achilles_noovary_vector_cluster4 = as.vector(na.omit(names(which(km1_moa$cluster == 4))))
-
 
 
 ##creating a vector with both 
