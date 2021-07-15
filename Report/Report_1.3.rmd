@@ -1,7 +1,4 @@
 ---
-title: "Dependence of drug dose and ovary cell lines proliferation rates"
-author: "Rositsa Todorovska"
-date: 
 output: pdf_document
 ---
 
