@@ -71,9 +71,9 @@ prism.treat_reduced_2 = prism.treat_reduced[,which(colnames(prism.treat_reduced)
 ```
 
 
-# Milestone 1.2
+# DEPENDANCY OF DRUG EFFICIENCY ON THE CELL LINE TYPE
 
-## Mechanism of action
+## MECHANISM OF ACTION
 
 ```{r, echo=FALSE, fig.cap = "Most frequent MOA's amongst the most effective drugs"}
 
@@ -95,7 +95,7 @@ After finding the drugs with the most effective response in regards to the ovary
 
 As can be seen in Fig. X, all but one of the most frequently occurring MOAs are the same as the most frequently occurring MOAs in ovary cancer cell lines, however; the frequency with which they occur in the other cell lines differs slightly from the frequency with which they occur in the ovary cell lines. The NFkB pathway inhibitor is the one MOA that appears among the 45 most frequent MOAs in the non-ovary cell lines three times but not at all in the 45 most frequent MOAs in the ovary cell lines. Although NFkB pathway inhibitors do occur in the ovary cell lines twice, this is not often enough to have made the top 45 which explains why they are not shown in Fig 2.b. NFkB transcription factors are often used to regulate inflammation and immune responses, cell growth, apoptosis, and the expression of certain viral genes [@Gilmore2006]. Due to the importance of the NFkB transcription factors in regulating these processes, NFkB pathway inhibitors are often used in treating chronic inflammation and cancer [@Gilmore2006]. 
 
-## Fisher - Exact Tests
+## FISCHER'S EXACT TESTS
 
 ```{r, include = FALSE}
 
@@ -185,9 +185,9 @@ barplot(c(1, 1, 0.7494, 1.520121, 1, 1, 1,  0.6628035, 1, 1.119206, 1, 0.7453084
 
 After finding the most common MOAs among the ovary and all other cell lines respectively, the next step in our analysis was to find out if any of these MOAs showed a statistically significant occurrence in ovary cancer specifically. In order to test this, we decided to perform a fisher-exact-test on all of our selected most common MOAs for ovary cancer and all other cell lines (see Fig. X).
 
-In order for the null hypothesis - that there is no association between the occurrence of specific MOAs and the cell line type (either ovary or non-ovary) - to be rejected, the p-value must be smaller than the confidence level of 0.05. This was not the case with any of the fisher tests that we conducted. For the fisher tests conducted on the topoisomerase inhibitor, the PI3K inhibitor, the NFkB pathway inhibitor, the HDAC inhibitor, the EGFR inhibitor, the BCL inhibitor, and the ATPase inhibitor the p-values were equal to one, as were the odds-ratios. This shows without a doubt that the H0-hypothesis cannot be rejected and that there therefore is no association between the occurrence of specific MOAs and the cell line type (either ovary or the others) for these MOAs. The fisher tests conducted on the remaining MOAs all calculate a p-value that is lower than 1, none of which are lower than 0.7 however. The odds ratios for these remaining MOAs are all either larger than one or lower than one, which would suggest a positive/negative association, respectively. Since the corresponding p-values are much larger than the confidence level of 0.5 however, these associations are most likely due to chance and aren't true associations. Conclusively these fisher tests have shown that not a single one of the most common MOAs among our cell lines occur so commonly due to an association to a specific cell line (either ovary or the others).
+In order for the null hypothesis - that there is no association between the occurrence of specific MOAs and the cell line type (either ovary or non-ovary) - to be rejected, the p-value must be smaller than the confidence level of 0.05 [@Biau2010]. This was not the case with any of the fisher tests that we conducted. For the fisher tests conducted on the topoisomerase inhibitor, the PI3K inhibitor, the NFkB pathway inhibitor, the HDAC inhibitor, the EGFR inhibitor, the BCL inhibitor, and the ATPase inhibitor the p-values were equal to one, as were the odds-ratios. This shows without a doubt that the H0-hypothesis cannot be rejected and that there therefore is no association between the occurrence of specific MOAs and the cell line type (either ovary or the others) for these MOAs. The fisher tests conducted on the remaining MOAs all calculate a p-value that is lower than 1, none of which are lower than 0.7 however. The odds ratios for these remaining MOAs are all either larger than one or lower than one, which would suggest a positive/negative association, respectively. Since the corresponding p-values are much larger than the confidence level of 0.5 however, these associations are most likely due to chance and aren't true associations. Conclusively these fisher tests have shown that not a single one of the most common MOAs among our cell lines occur so commonly due to an association to a specific cell line (either ovary or the others).
 
-## PC1 vs. PC2 for All Cell Line Clusters
+## DIMENSION REDUCTION
 
 ```{r, include = FALSE}
 
@@ -258,5 +258,105 @@ plot(pca1_moa_all$x[,1], pca1_moa_all$x[,2], pch=20, col = colVec,
       legend("topleft", legend = c("Ovary cell lines", "Other cell lines"), fill = c("Red3", "Gray"))
 
 ```
-
 As a next step we decided to perform a PCA on all cell lines. We clustered by cell lines in order to test if the ovary cell lines would form their own distinctive cluster regarding the drug response. As can be seen in Fig. X, this was not the case. The red dots representing the ovary cancer cell lines are distributed across the entire plot, rather than concentrated into one distinctive cluster. The fact that the ovary cell lines did not form their own cluster shows that there seems to be no combining trait among them that would trigger a similar drug response. 
+
+## WELCH'S T-TEST
+
+```{r, include = FALSE}
+##creating a dataframe from the cellines out of cluster 2 and 4
+##creating a vector for cluster k2moa 2 and 4
+##ovary
+achilles_vector_cluster2 = as.vector(na.omit(names(which(km2_moa$cluster == 2))))
+achilles_vector_cluster4 = as.vector(na.omit(names(which(km2_moa$cluster == 4))))
+
+##noovary
+achilles_noovary_vector_cluster2 = as.vector(na.omit(names(which(km1_moa$cluster == 2))))
+achilles_noovary_vector_cluster4 = as.vector(na.omit(names(which(km1_moa$cluster == 4))))
+
+
+
+##creating a vector with both 
+##ovary
+achilles_vector_cluster24<- as.vector(c(achilles_vector_cluster2,achilles_vector_cluster4))
+##noovary
+achilles_noovary_vector_cluster24<- as.vector(c(achilles_noovary_vector_cluster2, achilles_noovary_vector_cluster4))
+
+
+##reducing prism.achilles for the t.test to only the cluster 24 celllines
+##ovary
+ovary_achilles_cluster24 <- prism.achilles[rownames(prism.achilles) %in% achilles_vector_cluster24,]
+
+##nonovary
+noovary_achilles_cluster24 <- prism.achilles[rownames(prism.achilles) %in% achilles_noovary_vector_cluster24,]
+
+```
+
+```{r, include = FALSE}
+## looking at one drug which is responding to those cluster differently
+##mean for non ovary
+mean_effective_noovary24= data.frame(row.names=rownames(prism))
+
+for (drug in unique(prism.treat$name)){
+  dose = prism.treat[prism.treat$name==drug,]$dose
+  response = prism[,rownames(prism.treat)[prism.treat$name == drug]]
+  
+  mean_effective_noovary24[drug]=apply(response,1,function(x){mean(x, na.rm=TRUE)})
+}
+mean_effective_noovary24<-mean_effective_noovary24[rownames(mean_effective_noovary24) %in% achilles_noovary_vector_cluster24,]
+
+
+##mean for ovary
+mean_effective_ovary24= data.frame(row.names=rownames(prism))
+
+for (drug in unique(prism.treat$name)){
+  dose = prism.treat[prism.treat$name==drug,]$dose
+  response = prism[,rownames(prism.treat)[prism.treat$name == drug]]
+  
+  mean_effective_ovary24[drug]=apply(response,1,function(x){mean(x, na.rm=TRUE)})
+}
+mean_effective_ovary24<-mean_effective_ovary24[rownames(mean_effective_ovary24) %in% achilles_vector_cluster24,]
+
+
+##for each column dfovary and dfnonovary t-test
+pvalues_t_test_treat24<-data.frame(mapply(function(x,y)t.test(x,y,na.rm=TRUE,alternative="two.sided", var.equal= FALSE, paired=FALSE)$p.value,mean_effective_ovary24,mean_effective_noovary24))
+
+
+##creatig a dataframe with p-values and drugs
+pvalues_t_test_treat24<-rename(pvalues_t_test_treat24,p_value=mapply.function.x..y..t.test.x..y..na.rm...TRUE..alternative....two.sided...)
+
+##adjusting the pvalue by all methods and creating a dataframe with new columns with those methods
+pvalues_t_test_treat24$Bonferroni <-
+      p.adjust(pvalues_t_test_treat24$p_value,
+               method = "bonferroni")
+
+pvalues_t_test_treat24$BH <-
+      p.adjust(pvalues_t_test_treat24$p_value,
+               method = "BH")
+
+pvalues_t_test_treat24$Holm <-
+      p.adjust(pvalues_t_test_treat24$p_value,
+               method = "holm")
+
+pvalues_t_test_treat24$Hochberg <-
+      p.adjust(pvalues_t_test_treat24$p_value,
+               method = "hochberg")
+
+pvalues_t_test_treat24$Hommel <-
+      p.adjust(pvalues_t_test_treat24$p_value,
+               method = "hommel")
+
+pvalues_t_test_treat24$BY <-
+      p.adjust(pvalues_t_test_treat24$p_value,
+               method = "BY")
+
+##ranking the drugs
+dplyr::arrange(pvalues_t_test_treat24, Bonferroni)
+```
+
+```{r, include = FALSE}
+##looking into TAK-733
+selected_drug_ovary<-select(mean_effective_ovary24, "TAK-733")
+
+selected_drug_noovary<-select(mean_effective_noovary24,"TAK-733")
+```
+As a final step to find out if the drug response is related to the cell line type, we reduced the prism.treat data frame to include only those cell lines out of cluster two and four from the pca clustering for non ovary and ovary cell lines. With these two data frames we performed a welch's unpaired two sided t-test, which was subjected a Bonferroni correction. The resulting p-value was higher than the confidence level of 0.05 which means that the null hypothesis - that there is no association between the mean value of the drug response in ovary and non ovary cell lines - could not be rejected. This shows once again that the drug response seems to be independent of the cell line type in regards to the ovary or non-ovary cell lines. 
