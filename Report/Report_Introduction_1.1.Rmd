@@ -108,9 +108,7 @@ abline(v = 0, col = "red3", lwd = 1.5)
 
 Using the provided prism data frame, we extracted the ovarian DepMap_IDs with their proliferation values after drug treatment.
 In order to get a general overview of our data, we computed two histograms showing the distribution of the mean sensitivity across all ovarian cell lines and all drugs (see Fig. 1).
-
 Fig. 1.a. shows that all ovarian cancer cell lines had a mean sensitivity towards the drugs of less than or equal to zero, which showed us that in general, the applied drugs seemed to have a promising effect on their cell growth.
-
 The right plot (Fig. 1.b.) shows all values for the mean drug efficiency in ovarian cell lines. Values below zero indicate negative proliferation. In total, 8652 drugs lie below zero. This means that these drugs generally - with regard to their mean values - caused a reduction in cell growth when they were administered to the ovarian cell lines.  
 
 ## SETTING A THRESHOLD
@@ -325,7 +323,7 @@ However, the cell line did show a different behavior and clustered separately fr
 
 ## GENERALLY EFFECTIVE DRUGS
 
-```{r, echo = FALSE, fig.cap = "Contribution to PC1", fig.height=3.5, fig.width=7}
+```{r, echo = FALSE, fig.cap = "Contribution to PC1", fig.height=3.0, fig.width=7}
 
 # contribution to PC1 for ovarian cell line clusters 
 colVec2 = vector(length = length(pca2_moa$rotation[,1]))
