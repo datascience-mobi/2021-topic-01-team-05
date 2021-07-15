@@ -5,9 +5,34 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+# "mitoxantrone" ist okay
+# afatinib ist okay 
+
+#entweder zardaverine oder romidepsin
+
 ```
 
+```{r, echo=FALSE}
+# subsetting datasets in order to obtain ovary cancer cell line data 
+ovary_achilles <- prism.achilles[rownames(prism.achilles) %in% vector_ovary_DepMI,]
+B_achilles = as.matrix(ovary_achilles)
+B_achilles_new <- B_achilles[ , which(apply(B_achilles, 2, var) != 0)] ## removing zero variance values
+pca_achilles = prcomp(B_achilles_new, scale = TRUE)
+
+
+ovary_exp <- prism.exp[rownames(prism.exp) %in% vector_ovary_DepMI,]
+B_exp = as.matrix(ovary_exp)
+B_exp_new <- B_exp[ , which(apply(B_exp, 2, var) != 0)] ## removing zero variance values
+pca_exp = prcomp(B_exp_new, scale = TRUE)
+```
+
+
+
+
+
 ```{r}
+
+
 
 regression_data <- prism_reduced_ovary_no_NAs["disulfiram"]
 
@@ -32,8 +57,6 @@ pairs(regression_data_no_nas[,-1], pch=20, col="Lightblue3")
 learning_celllines = sample(1:nrow(regression_data_no_nas), 13, replace = F)
 learning_regression <- regression_data_no_nas[learning_celllines,]
 check_regression <- regression_data_no_nas[-learning_celllines,]
-
-
 ```
 
 
@@ -55,6 +78,9 @@ qqnorm(regression_model$residuals, ylab = "Residuals", main = "Q-Q Plot residual
 cor(learning_regression$disulfiram, regression_model$residuals)
 
 plot(learning_regression$disulfiram, regression_model$fitted.values,pch=20, col="light blue", xlab = "Control", ylab = "Residuals");abline(0,1,col="red")
+
+
+# the residuals should have the expected value of zero 
 ```
 
 
@@ -74,10 +100,30 @@ rmse.learning = sqrt(1/n*sum(regression_model$residuals^2))
 #RMSE of predicted model
 n=nrow(check_regression)
 # the residuals of the predicted model are: 
-residuals = check_regression$disulfiram - proliferation_pred
+residuals = check_regression$disulfiram- proliferation_pred
 rmse.check = sqrt(1/n*sum(residuals^2))
 
 rmse.learning
 rmse.check
 ```
+
+- Multiple Regression = looking for an equation that describes the linear relationship between a dependent variable and **multiple** independent variables 
+- the difference between each observed value and each estimated value is called "residual" and can be calculated for each observation 
+- lm (dependent variable ~ data set used):
+**Call:**
+- the specification of the calculated model is specified --> the command, the dependent and independent variables as well as the dataset 
+- residuals: quick overview of the size and distribution of the residuals; the minimum, 1st quantile, median and 3rd quantile and the maximum (residuals should be normally distributed i.e. the median should be approximately zero + the model is better the smaller the residuals are)
+- F-statistic is our test statistic; we can take the value of the F-statistic and compare it with the value of the F-distribution table or we can look at the p-value
+--> the null hypothesis of regression model is: the model does not explain the dependent variable; the corresponding alternative hypothesis is: the model explains the dependent variable
+--> if the p-value is small, we reject null hypothesis and proceed with alternative hypothesis 
+- significance level alpha = 0.01 is definied in advance of analysis and p value would need to be smaller than 1 % for us to assume that the model explains the dependent variable
+- R^2 (multiple R-squared) shows how much variation of the dependent variable is explained by the model e.g if it's 0.2, 20 % of the variation is explained by the model and 80 % remain unexplained
+- adjusted-R^2 is better the higher it is 
+- standard error of the residuals is a measure for the quality of the regression model (can be interpreted as the average deviation of the estimated values from the true values [value is displayed in the unit of the dependent variable])
+- Coefficients: a matrix and we get the coefficients of the regression model (Estimate), the standard error (Std. Error), the t-value and the p-value (Pr(>|t|)). We have a null hypothesis and an alternative hypothesis for each variable. The null hypothesis is: The variable does not contribute to the explanation of the dependent variable. The alternative hypothesis is: The variable contributes to the explanation of the dependent variable; The t-value is our test statistic and the Pr(>|t|) is used to reject the null hypothesis or not
+--> if the p-value is really small, we can reject the null hypothesis for each specified level of significance and assume that the variables contribute to the explanation of the model 
+
+
+
+
 

@@ -1,0 +1,5 @@
+
+# MULTIPLE REGRESSION MODEL
+
+In order to predict drug efficiency from unrelated variables in ovarian cancer cell lines, we built a regression model using the drug disulfiram as the dependent variable. The unrelated variables consisted of PCAs of the data frames prism.achilles, prism.exp and prism.cnv with regard to the ovarian cell lines. 
+We chose disulfiram since it is currently used to treat alcohol dependency and belongs to the disease area neurology/psychiatry. However, it was found to be effective against arm-level 16q loss which occurs in several tumor types but primarily in breast and ovarian cancer [@Corsello2020]. This is why we found that drug interesting in terms of drug repurposing regarding the treatment of ovarian cancer. 

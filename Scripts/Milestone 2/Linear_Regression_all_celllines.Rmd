@@ -13,6 +13,8 @@ A_exp = as.matrix(prism.exp)
 A_exp_new <- A_exp[ , which(apply(A_exp, 2, var) != 0)] ## removing zero variance values
 pca_A_exp = prcomp(A_exp_new, scale = TRUE)
 plot(pca_A_exp$x[,1], pca_A_exp$x[,2], pch=20)
+
+
 ```
 ```{r}
 # performing PCA for all cancer cell lines based on their gene knockdown scores
