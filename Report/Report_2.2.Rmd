@@ -1,0 +1,96 @@
+---
+title: "Dependency of drug response on gene expression patterns or knockdown scores "
+author: "Rositsa Todorovska"
+date: "7/14/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE,global_options, R.options=knitr::opts_chunk$set(warning=FALSE, message=FALSE)}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(knitr)
+library(xtable)
+library(dplyr)
+library(readxl)
+library(kableExtra)
+
+```
+
+```{r, include = FALSE}
+
+#load("../Original_Environment/Original.RData")
+load("../Original_Environment/prism_datasets.rda")
+load("../Original_Environment/cellline_datasets.rda")
+
+```
+
+## GENERAL
+
+In this milestone our aim was to investigate whether the drug response depends on gene expression patterns or knockdown scores in ovary cancer cell lines.
+
+## PROCESS AND RESULTS
+
+First, we extracted all ovary cell lines from prism.achilles which belong to each of the 4 clusters, created in Milestones 1.1 and 1.2, and saved them as vectors. Then we reduced the prism.achilles data frame only to the selected cell lines from the clusters. The first cluster contained one cell line, the second - six, the third - 16 and the fourth - 7, respectively.
+In our further investigation, we looked at one drug, which shows different response between the clusters 3 and 4, 1 and 3, 1 and 4. Therefore, we calculated the mean values for each cluster and performed a two-sided t-test for each column. From the results, we built a data frame, containing the p-values and genes. We adjusted the p-value by all methods with the Bonferroni correction and created data frame with those methods as columns. and ranked the drugs. Nevertheless, the results, obtained from the hypothesis testing at prism.treat data frame, were significant for the drug response for cluster 1 vs 3 and for cluster 1 vs 4. These are shown in the two dataframes below. 
+
+The drugs which showed a dependency on certain gene expression patterns of ovary cell lines from clusters 1 and 3 are "trichostatin-a", "semaxanib" and "alvocidib". "torin-1" and "AVN-944" demonstrated similar behaviour towards expression patternsof ovary cell lines from clusters 1 and 4.   Their p- values....
+
+
+
+
+```{r echo=FALSE, results='asis',fig.cap="**1.a** Table of the 3 successfully tested drugs for dependency on gene expression patterns in clusters 1 and 3 **1.b** Table of the 2 successfully tested drugs for dependency on gene expression patterns in clusters 1 and 4 ", fig.height = 3, fig.width = 8, fig.align = 'center'}
+
+#1 vs 3
+##extra dataframe for the report to show the solutions from the t.test at prism.treat
+pvalues_t_test_treat3vs1_reduced<-pvalues_t_test_treat3vs1[rownames(pvalues_t_test_treat3vs1)%in% c("trichostatin-a","semaxanib","alvocidib"),]
+#pvalues_t_test_treat3vs1_reduced
+
+
+##1 vs 4
+
+pvalues_t_test_treat4vs1_reduced<-pvalues_t_test_treat4vs1[rownames(pvalues_t_test_treat4vs1)%in% c("torin-1","AVN-944"),]
+#pvalues_t_test_treat4vs1_reduced
+
+
+df_1 <- pvalues_t_test_treat3vs1_reduced
+df_2 <- pvalues_t_test_treat4vs1_reduced
+knitr::kable(list(df_1, df_2)) %>%
+  kable_styling(full_width=F)
+
+
+#t1 <- kable(pvalues_t_test_treat3vs1_reduced, format = "latex", booktabs = TRUE)
+#t2 <- kable(pvalues_t_test_treat4vs1_reduced, format = "latex", booktabs = TRUE)
+
+#cat(c("\\begin{table}[!htb]
+#    \\begin{minipage}{.5\\linewidth}
+ #     \\caption{}
+  #    \\centering",
+   #     t1,
+    #"\\end{minipage}%
+    #\\begin{minipage}{.5\\linewidth}
+     # \\centering
+      #  \\caption{}",
+       # t2,
+    #"\\end{minipage} 
+#\\end{table}"
+#)) 
+#knitr::kable(list(table1, table2))
+```
+
+
+Furthermore, we displayed the selected drugs and the ovary cancer cell lines, for which they show a good response from the corresponding clusters 1 and 3.
+
+
+We observed the genes from prism.achilles, belonging to clusters 1 and 3, through non-hypothesis testing( two-sided Welch t-test), thereby assuming an equal variance of the clusters. Again, a dataframe with the calculated p-values and the genes was created and the p-value was adjusted through Bonferroni correction.
+
+
+Next, we repeated the procedure of hypothesis testing, described before, on the genes from clusters 1 and 3, 1 and 4 from prism.exp and prism.cnv datasets to investigate whether our hypothesis was correct. In this case, again, we did not observe significant values, greater than 0.05.
+
+
+We created also a data frame to show the results from performing a t-test at prism.achilles for the clusters 1 and 4.
+
+
+
+
+
+
