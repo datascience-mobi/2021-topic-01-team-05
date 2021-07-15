@@ -58,6 +58,8 @@ regression_data_no_nas <- na.omit(regression_data)
 pairs(regression_data_no_nas[,-1], pch=20, col="Lightblue3")
 ```
 
+Fig. X shows the pairwise correlation of the explanatory variables. Highly correlated variables should be avoided in a regression model. By choosing PCs to build our regression model, it makes sense that they do not correlate. This is important for successfully computing a linear regression. 
+
 ```{r, echo=FALSE, include = FALSE}
 # splitting cell lines into 2 groups (learning cell lines and one to check our model)
 
@@ -65,7 +67,7 @@ learning_celllines = sample(1:nrow(regression_data_no_nas), 13, replace = F)
 learning_regression <- regression_data_no_nas[learning_celllines,]
 check_regression <- regression_data_no_nas[-learning_celllines,]
 ```
-
+Next, we split the cell lines into two groups. We used one group for regression-learning 
 
 ```{r, echo = FALSE, include = FALSE}
 regression_model <- lm(formula = (disulfiram) ~  .,data=learning_regression)
