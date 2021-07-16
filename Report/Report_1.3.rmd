@@ -1,4 +1,5 @@
 ---
+title: Dependence of proliferation rates on drug dosage
 output: pdf_document
 ---
 
@@ -109,13 +110,13 @@ ggplot_plot_boxplot_dose_proliferation <- ggplot(df_ovary_prism_treat_effective_
 ggplot_plot_boxplot_dose_proliferation
 
 ```
-Therefore, a boxplot of the distribution of the proliferation rates, regarding the drug dose was performed. We could not divide the boxplot by the 2.5 micromolar dosage, but rather in 3 stages: low dose, median dose and high dose, corresponding with a highest median proliferation rate, median rate and lowest rate, respectively. Consequently, an increasing of drug dose leads to reduction of proliferation rates.
+We implied a boxplot of the distribution of the ovary cell proliferation rates, regarding the drug dose. We could not divide the boxplot by the 2.5 micromolar dosage (Corsello et al. 2020), but rather in 3 stages: low, median and high dose, corresponding with a highest median, median and lowest proliferation rate, respectively. Consequently, an increasing of drug dose leads to reduction of proliferation rates.
 
 ## Pearson Correlation
-Almost all Pearson correlation coefficients are negative, except for one between 'ACH-000713' and 'exatecan-mesylate'. It has a positive value and thus is an outlier(measurement error). Consequently,some drugs have a quite strong negative correlation with proliferation, while others do not affect it.
+Almost all Pearson correlation coefficients are negative, except for one between 'ACH-000713' and 'exatecan-mesylate', which is positive value and thus is an outlier(measurement error). Consequently,some drugs have a quite strong negative correlation with proliferation, while others do not affect it.
 
 ## Visualization - GGPLOT
-Furthermore, we created correlation matrix from the dosages of the different drugs per cell line and displayed graphically the Pearson correlation. The blue and the purple squares indicate higher correlation, meaning that the majority of the drugs reduce the cell proliferation.
+Furthermore, we created correlation matrix from the dosages of the different drugs per cell line and displayed the Pearson correlation. The blue and the purple squares indicate higher correlation, meaning that the majority of the drugs reduce the cell proliferation.
 
 ```{r out.width = "70%",echo=FALSE, error=FALSE, fig.cap="**2.** ggplot of the correlation between the proliferation rates of ovary cell lines and the dosage of the applied medical treatment", fig.height=5,fig.weight=9, message=FALSE, warning=FALSE, results='hide', fig.align='center', cex.axis = 0.75}
 
