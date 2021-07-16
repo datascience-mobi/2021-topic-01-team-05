@@ -24,70 +24,151 @@ load("../Original_Environment/cellline_datasets.rda")
 
 ```
 
-## GENERAL
-
-In this milestone our aim was to investigate whether the drug response depends on gene expression patterns or knockdown scores in ovary cancer cell lines.
-
 ## PROCESS AND RESULTS
 
-First, we extracted all ovary cell lines from prism.achilles which belong to each of the 4 clusters, created in Milestones 1.1 and 1.2, and saved them as vectors. Then we reduced the prism.achilles data frame only to the selected cell lines from the clusters. The first cluster contained one cell line, the second - six, the third - 16 and the fourth - 7, respectively.
-In our further investigation, we looked at one drug, which shows different response between the clusters 3 and 4, 1 and 3, 1 and 4. Therefore, we calculated the mean values for each cluster and performed a two-sided t-test for each column. From the results, we built a data frame, containing the p-values and genes. We adjusted the p-value by all methods with the Bonferroni correction and created data frame with those methods as columns. and ranked the drugs. Nevertheless, the results, obtained from the hypothesis testing at prism.treat data frame, were significant for the drug response for cluster 1 vs 3 and for cluster 1 vs 4. These are shown in the two dataframes below. 
-
-The drugs which showed a dependency on certain gene expression patterns of ovary cell lines from clusters 1 and 3 are "trichostatin-a", "semaxanib" and "alvocidib". "torin-1" and "AVN-944" demonstrated similar behaviour towards expression patternsof ovary cell lines from clusters 1 and 4.   Their p- values....
-
+In this step, we proved through an unpaired two-sided Welch t-test, that there is no dependence of the effect of the drug response on specific gene expression rates, gene knockdowns or copy number of variations.
+We performed multiple t-tests on prism.treat and genes from clusters 1 and 3, 1 and 4, as well as 3 and 4.We could not perform any tests on cluster 2 due to the only one cell line it consisted of which would provide an unrepresentative result. We also performed t-tests on the pairs of clusters from prism.exp, prism.cnv and prism.achilles. Only the results from the t-tests on prism.treat for the clusters 1-3 and 1-4 gave important information.They demonstrate that there are not any significsnt differences in the drug response between the clusters. However, there were not any major differences in knockdown scores and gene expression rates. Thus, this was not the reason for the different drug response.
+For clusters 1-3 there are 3 significant drugs - "trichostatin-a","semaxanib","alvocidib" and for clusters 1-4 there are 2 drugs - "torin-1","AVN-944". 
 
 
+```{r echo=FALSE,include = FALSE, results='asis',fig.cap="**1.a** Table of the 3 drugs with a significant different response for clusters 1 and 3 **1.b** Table of the 2 drugs with a significant different response for clusters 1 and 4 ", fig.height = 3, fig.width = 8, fig.align = 'center'}
 
-```{r echo=FALSE, results='asis',fig.cap="**1.a** Table of the 3 successfully tested drugs for dependency on gene expression patterns in clusters 1 and 3 **1.b** Table of the 2 successfully tested drugs for dependency on gene expression patterns in clusters 1 and 4 ", fig.height = 3, fig.width = 8, fig.align = 'center'}
+
+km2_moa$cluster
+
+achilles_vector_cluster1 = as.vector(na.omit(names(which(km2_moa$cluster == 1))))
+
+achilles_vector_cluster2 = as.vector(na.omit(names(which(km2_moa$cluster == 2))))
+
+achilles_vector_cluster3 = as.vector(na.omit(names(which(km2_moa$cluster == 3))))
+
+achilles_vector_cluster4 = as.vector(na.omit(names(which(km2_moa$cluster == 4))))
+
+ovary_achilles_cluster1 <- prism.achilles[rownames(prism.achilles) %in% achilles_vector_cluster1,]
+
+ovary_achilles_cluster2 <- prism.achilles[rownames(prism.achilles) %in% achilles_vector_cluster2,]
+
+ovary_achilles_cluster3 <- prism.achilles[rownames(prism.achilles) %in% achilles_vector_cluster3,]
+
+ovary_achilles_cluster4 <- prism.achilles[rownames(prism.achilles) %in% achilles_vector_cluster4,]
+
+
+
+mean_effective_ovary_new4= data.frame(row.names=rownames(prism))
+
+for (drug in unique(prism.treat$name)){
+  dose = prism.treat[prism.treat$name==drug,]$dose
+  response = prism[,rownames(prism.treat)[prism.treat$name == drug]]
+  
+  mean_effective_ovary_new4[drug]=apply(response,1,function(x){mean(x, na.rm=TRUE)})
+}
+mean_effective_ovary_new4<-mean_effective_ovary_new4[rownames(mean_effective_ovary_new4) %in% achilles_vector_cluster4,]
+
+mean_effective_ovarynew3= data.frame(row.names=rownames(prism))
+
+for (drug in unique(prism.treat$name)){
+  dose = prism.treat[prism.treat$name==drug,]$dose
+  response = prism[,rownames(prism.treat)[prism.treat$name == drug]]
+  
+  mean_effective_ovarynew3[drug]=apply(response,1,function(x){mean(x, na.rm=TRUE)})
+}
+mean_effective_ovarynew3<-mean_effective_ovarynew3[rownames(mean_effective_ovarynew3) %in% achilles_vector_cluster3,]
+
+pvalues_t_test_treat3vs4<-data.frame(mapply(function(x,y)t.test(x,y,na.rm=TRUE,alternative="two.sided", var.equal= FALSE, paired=FALSE)$p.value,mean_effective_ovary_new4,mean_effective_ovarynew3))
+
+pvalues_t_test_treat3vs4<-dplyr::rename(pvalues_t_test_treat3vs4,p_value=mapply.function.x..y..t.test.x..y..na.rm...TRUE..alternative....two.sided...)
+
+pvalues_t_test_treat3vs4$Bonferroni <-
+      p.adjust(pvalues_t_test_treat3vs4$p_value,
+               method = "bonferroni")
+
+
+
+dplyr::arrange(pvalues_t_test_treat3vs4, Bonferroni)
+
+mean_effective_ovary_new1= data.frame(row.names=rownames(prism))
+
+for (drug in unique(prism.treat$name)){
+  dose = prism.treat[prism.treat$name==drug,]$dose
+  response = prism[,rownames(prism.treat)[prism.treat$name == drug]]
+  
+  mean_effective_ovary_new1[drug]=apply(response,1,function(x){mean(x, na.rm=TRUE)})
+}
+mean_effective_ovary_new1<-mean_effective_ovary_new1[rownames(mean_effective_ovary_new1) %in% achilles_vector_cluster1,]
+
+mean_effective_ovarynew3= data.frame(row.names=rownames(prism))
+
+for (drug in unique(prism.treat$name)){
+  dose = prism.treat[prism.treat$name==drug,]$dose
+  response = prism[,rownames(prism.treat)[prism.treat$name == drug]]
+  
+  mean_effective_ovarynew3[drug]=apply(response,1,function(x){mean(x, na.rm=TRUE)})
+}
+mean_effective_ovarynew3<-mean_effective_ovarynew3[rownames(mean_effective_ovarynew3) %in% achilles_vector_cluster3,]
+
+pvalues_t_test_treat3vs1<-data.frame(mapply(function(x,y)t.test(x,y,na.rm=TRUE,alternative="two.sided", var.equal= FALSE, paired=FALSE)$p.value,mean_effective_ovary_new1,mean_effective_ovarynew3))
+
+pvalues_t_test_treat3vs1<-dplyr::rename(pvalues_t_test_treat3vs1,p_value=mapply.function.x..y..t.test.x..y..na.rm...TRUE..alternative....two.sided...)
+
+pvalues_t_test_treat3vs1$Bonferroni <-
+      p.adjust(pvalues_t_test_treat3vs1$p_value,
+               method = "bonferroni")
+
+
+pvalues_t_test_treat3vs1<-dplyr::arrange(pvalues_t_test_treat3vs1, Bonferroni)
+
+
+
+
+pvalues_t_test_treat4vs1<-data.frame(mapply(function(x,y)t.test(x,y,na.rm=TRUE,alternative="two.sided", var.equal= FALSE, paired=FALSE)$p.value,mean_effective_ovary_new1,mean_effective_ovary_new4))
+
+pvalues_t_test_treat4vs1<-dplyr::rename(pvalues_t_test_treat4vs1,p_value=mapply.function.x..y..t.test.x..y..na.rm...TRUE..alternative....two.sided...)
+
+pvalues_t_test_treat4vs1$Bonferroni <-
+      p.adjust(pvalues_t_test_treat4vs1$p_value,
+               method = "bonferroni")
+
+
+pvalues_t_test_treat4vs1<-dplyr::arrange(pvalues_t_test_treat4vs1, Bonferroni)
+
+
+
+
 
 #1 vs 3
-##extra dataframe for the report to show the solutions from the t.test at prism.treat
 pvalues_t_test_treat3vs1_reduced<-pvalues_t_test_treat3vs1[rownames(pvalues_t_test_treat3vs1)%in% c("trichostatin-a","semaxanib","alvocidib"),]
-#pvalues_t_test_treat3vs1_reduced
-
 
 ##1 vs 4
-
 pvalues_t_test_treat4vs1_reduced<-pvalues_t_test_treat4vs1[rownames(pvalues_t_test_treat4vs1)%in% c("torin-1","AVN-944"),]
-#pvalues_t_test_treat4vs1_reduced
 
-
+# First trial 
 df_1 <- pvalues_t_test_treat3vs1_reduced
 df_2 <- pvalues_t_test_treat4vs1_reduced
 knitr::kable(list(df_1, df_2)) %>%
   kable_styling(full_width=F)
 
+#Second trial
+t1 <- kable(pvalues_t_test_treat3vs1_reduced, format = "latex", booktabs = TRUE)
+t2 <- kable(pvalues_t_test_treat4vs1_reduced, format = "latex", booktabs = TRUE)
 
-#t1 <- kable(pvalues_t_test_treat3vs1_reduced, format = "latex", booktabs = TRUE)
-#t2 <- kable(pvalues_t_test_treat4vs1_reduced, format = "latex", booktabs = TRUE)
-
-#cat(c("\\begin{table}[!htb]
-#    \\begin{minipage}{.5\\linewidth}
- #     \\caption{}
-  #    \\centering",
-   #     t1,
-    #"\\end{minipage}%
-    #\\begin{minipage}{.5\\linewidth}
-     # \\centering
-      #  \\caption{}",
-       # t2,
-    #"\\end{minipage} 
-#\\end{table}"
-#)) 
+cat(c("\\begin{table}[!htb]
+    \\begin{minipage}{.5\\linewidth}
+      \\caption{}
+      \\centering",
+        t1,
+    "\\end{minipage}%
+    \\begin{minipage}{.5\\linewidth}
+      \\centering
+        \\caption{}",
+        t2,
+    "\\end{minipage} 
+\\end{table}"
+)) 
 #knitr::kable(list(table1, table2))
 ```
 
 
-Furthermore, we displayed the selected drugs and the ovary cancer cell lines, for which they show a good response from the corresponding clusters 1 and 3.
 
-
-We observed the genes from prism.achilles, belonging to clusters 1 and 3, through non-hypothesis testing( two-sided Welch t-test), thereby assuming an equal variance of the clusters. Again, a dataframe with the calculated p-values and the genes was created and the p-value was adjusted through Bonferroni correction.
-
-
-Next, we repeated the procedure of hypothesis testing, described before, on the genes from clusters 1 and 3, 1 and 4 from prism.exp and prism.cnv datasets to investigate whether our hypothesis was correct. In this case, again, we did not observe significant values, greater than 0.05.
-
-
-We created also a data frame to show the results from performing a t-test at prism.achilles for the clusters 1 and 4.
 
 
 
