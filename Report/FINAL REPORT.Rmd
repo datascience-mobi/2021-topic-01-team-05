@@ -593,6 +593,7 @@ As a next step we decided to perform a PCA on all cell lines. We clustered by ce
 
 ```{r, include = FALSE}
 
+
 ##
 moa_drugs <- prism_reduced_no_NAs[,names_use]
 
@@ -604,17 +605,23 @@ pca1_moa = prcomp(A_moa, scale = TRUE)
 pca2_moa = prcomp(B_moa, scale = TRUE)
 
 ## 
+set.seed(26)
 km1_moa = kmeans(pca1_moa$x[,1:2],centers=5,nstart = 100)
+set.seed(26)
 km2_moa = kmeans(pca2_moa$x[,1:2],centers=4,nstart = 100)
 
-##creating a dataframe from the cellines out of cluster 2 and 4
-##creating a vector for cluster k2moa 2 and 4
+##creating a dataframe from the cellines out of cluster 1 and 4
+##creating a vector for cluster k2moa 1 and 4
 ##ovary
+set.seed(26)
 achilles_vector_cluster2 = as.vector(na.omit(names(which(km2_moa$cluster == 2))))
+set.seed(26)
 achilles_vector_cluster4 = as.vector(na.omit(names(which(km2_moa$cluster == 4))))
 
 ##noovary
+set.seed(26)
 achilles_noovary_vector_cluster2 = as.vector(na.omit(names(which(km1_moa$cluster == 2))))
+set.seed(26)
 achilles_noovary_vector_cluster4 = as.vector(na.omit(names(which(km1_moa$cluster == 4))))
 
 
@@ -625,7 +632,7 @@ achilles_vector_cluster24<- as.vector(c(achilles_vector_cluster2,achilles_vector
 achilles_noovary_vector_cluster24<- as.vector(c(achilles_noovary_vector_cluster2, achilles_noovary_vector_cluster4))
 
 
-##reducing prism.achilles for the t.test to only the cluster 24 celllines
+##reducing prism.achilles for the t.test to only the cluster 14 celllines
 ##ovary
 ovary_achilles_cluster24 <- prism.achilles[rownames(prism.achilles) %in% achilles_vector_cluster24,]
 
@@ -637,6 +644,7 @@ noovary_achilles_cluster24 <- prism.achilles[rownames(prism.achilles) %in% achil
 ```{r, include = FALSE}
 ## looking at one drug which is responding to those cluster differently
 ##mean for non ovary
+
 mean_effective_noovary24= data.frame(row.names=rownames(prism))
 
 for (drug in unique(prism.treat$name)){
@@ -665,10 +673,12 @@ pvalues_t_test_treat24<-data.frame(mapply(function(x,y)t.test(x,y,na.rm=TRUE,alt
 
 
 ##creatig a dataframe with p-values and drugs
-pvalues_t_test_treat24<-rename(pvalues_t_test_treat24,p_value=mapply.function.x..y..t.test.x..y..na.rm...TRUE..alternative....two.sided...)
+pvalues_t_test_treat24<-dplyr::rename(pvalues_t_test_treat24,p_value=mapply.function.x..y..t.test.x..y..na.rm...TRUE..alternative....two.sided...)
 
 ##adjusting the pvalue by all methods and creating a dataframe with new columns with those methods
-pvalues_t_test_treat24$Bonferroni <- p.adjust(pvalues_t_test_treat24$p_value, method = "bonferroni")
+pvalues_t_test_treat24$Bonferroni <- 
+  p.adjust(pvalues_t_test_treat24$p_value, 
+           method = "bonferroni")
 
 pvalues_t_test_treat24$BH <-
       p.adjust(pvalues_t_test_treat24$p_value,
@@ -700,10 +710,7 @@ selected_drug_ovary<-select(mean_effective_ovary24, "TAK-733")
 
 selected_drug_noovary<-select(mean_effective_noovary24,"TAK-733")
 ```
-Additionally to the PCA clustering in Fig. 4.a. and the PCA clustering above, we also conducted a PCA using only non-ovary cell lines (not shown). As a final step to find out if the drug response is related to the cell line type, we decided to perform a Welch's unpaired two sided t-test, which was subjected a Bonferroni correction. In order to do this we reduced the prism.treat data frame further. It now included only those cell lines located in clusters two and four from the PCA clusterings for non ovary and ovary cell lines, respectively. With these two data frames we performed a Welch's unpaired two sided t-test, which was subjected a Bonferroni correction. The resulting p-value was higher than the confidence level of 0.05 which means that the null hypothesis - that there is no association between the mean value of the drug response in ovary and non ovary cell lines - could not be rejected. This shows once again that the drug response seems to be independent of the cell line type in regards to the ovary or non-ovary cell lines. 
-
-
-
+Additionally to the PCA clustering in Fig. 4.a. and the PCA clustering above, we also conducted a PCA using only non-ovary cell lines (not shown). As a final step to find out if the drug response is related to the cell line type, we decided to perform a Welch's unpaired two sided t-test, which was subjected a Bonferroni correction. In order to do this we reduced the prism.treat data frame further. It now included only those cell lines located in clusters two and four from the PCA clusterings for non ovary and ovary cell lines, respectively. With these two data frames we performed a Welch's unpaired two sided t-test, which was subjected a Bonferroni correction. The resulting p-value was higher than the confidence level of 0.05 which means that the null hypothesis - that there is no association between the mean value of the drug response in ovary and non ovary cell lines - could not be rejected. This shows once again that the drug response seems to be independent of the cell line type in regards to the ovary or non-ovary cell lines.
 
 
 \newpage
