@@ -97,12 +97,12 @@ plot(check_regression$disulfiram, proliferation_pred,pch=20, col="lightblue3", x
 
 In order to make the linearity assumption, the residuals should be normally distributed [@kronthaler2020data]. We checked this with the help of a q-q plot and saw that this was not fully the case as several values lay outside the qq-line. However, the residuals do have a mean value close to zero and do not correlate with our predicted values (see. Fig. X.a.).
 
-Finally, we tried to predict the drug efficiency of disulfiram on our remaining group of ovarian cell lines. As you can see in Fig. X.b., this worked semi-good. Nonetheless, this does correlate with our results of the previous analyses which showed that there is hardly a correlation between the proliferation values and the other data sets containing gene expression patterns and knockdown scores. Therefore, trying to predict a drug response based on PCs of these data sets is not a sufficient model in this case. 
+Finally, we tried to predict the drug efficiency of disulfiram on our remaining group of ovarian cell lines. As you can see in Fig. X.b., this worked semi-good. Nonetheless, this does correlate with our results of the previous analyses which showed that there is hardly a correlation between the proliferation values of most ovarian cell lines and the other data sets containing gene expression patterns and knockdown scores. Therefore, trying to predict a drug response based on PCs of these data sets is not a sufficient model in this case. 
 
 # CONCLUSION
 
 To conduct to our two main questions, we found that HDAC-, topoisomerase- and CDK-inhibitors showed promising effects on the proliferation of ovarian cell lines. These were also the most prominent MOAs regarding all the other cell lines which was also proved by several Fisher's tests. They showed that there is no significant difference regarding the effect of these MOAs whether they were applied on ovarian or non ovarian cell lines.  
-In addition, by performing an unpaired two-sided Welch's t-test, we found that while certain drugs do have differing effects on different cell lines, we could not find a connection that these differences were a result of specific cancer-related genes or gene knock-outs. Therefore, our regression model did not work properly.
+In addition, by performing an unpaired two-sided Welch's t-test, we found that while certain drugs do have differing effects on different cell lines, we could not find a connection that these differences were a result of specific cancer-related genes or gene knock-outs - at least within the clusters we focused on. Therefore, our regression model did not work properly.
 
 
 

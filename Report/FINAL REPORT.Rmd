@@ -64,7 +64,7 @@ We subdivided our project into smaller steps in order to find answers to these q
 
 First, we analyzed the drugs and their influence on the proliferation of cancer cell lines. We were able to identify the most promising drugs and categorized them based on their mechanism of action (MOA).  
 In addition, we analyzed to what extent the used drug dosage had an effect on the proliferation values of the cancer cell lines and found out that in most cases the higher the dosage the greater the effect on proliferation.  
-We also investigated the drug response of the ovarian cancer cell lines based on certain gene expression patterns and knockdown scores which showed less correlations than we initially anticipated.
+We also investigated the drug response of certain ovarian cancer cell line clusters based on certain gene expression patterns and knockdown scores which showed less correlations than we initially anticipated.
 Finally, we used the data to perform a linear regression model in order to predict drug efficiency from certain gene mutations or expressions.
 
 \newpage
