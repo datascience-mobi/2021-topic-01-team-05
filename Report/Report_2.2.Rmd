@@ -31,34 +31,31 @@ load("../Original_Environment/cellline_datasets.rda")
 
 ## PROCESS AND RESULTS
 
-
 In this step, we used an unpaired two-sided Welch's t-test, which was subjected to a Bonferroni correction, to show that the different drug response could not be explained by significant differences in specific gene expression rates, gene knockdowns or copy number of variations.
 We reduced prism.treat to only the cells from the clusters 1 and 3, 1 and 2, as well as 2 and 3, to perform multiple t-tests.We could not perform any tests on cluster 4 due to the only one cell line it consisted of which would provide an unrepresentative result. We also performed t-tests on the pairs of clusters from prism.exp, prism.cnv and prism.achilles. Only the results from the t-tests on prism.treat for the clusters 1-2 and 2-3 gave important information.They demonstrate that there are significant differences in the drug response between the clusters. However, there were not any major differences in knockdown scores and gene expression rates. Thus, this was not the reason for the different drug response.
-There are significant differences in the drug response for the drugs - "torin-1","AVN-944" for the clusters 1-2 and "trichostatin-a","semaxanib","alvocidib" for the clusters 2-3.
+There are significant differences in the drug response for the drugs - "torin-1","AVN-944" for the clusters 2-3 and "trichostatin-a","semaxanib","alvocidib" for the clusters 1-3.
 
 
 ```{r echo=FALSE,include = FALSE, results='asis',fig.cap="**1.a** Table of the 3 drugs with a significant different response for clusters 1 and 3 **1.b** Table of the 2 drugs with a significant different response for clusters 1 and 4 ", fig.height = 3, fig.width = 8, fig.align = 'center'}
-
-
 ## cluster out of Milestone 1.1 1.2 the most effective ovarycelllines
 # Extract celllines from prism.achilles which belong to cluster 1
-set.seed(18)
+set.seed(26)
 achilles_vector_cluster1 = as.vector(na.omit(names(which(km2_moa$cluster == 1))))
 
 
 # Extract celllines from prism.achilles which belong to cluster 2
-set.seed(18)
+set.seed(26)
 achilles_vector_cluster2 = as.vector(na.omit(names(which(km2_moa$cluster == 2))))
 
 
 # Extract celllines from prism.achilles which belong to cluster 3
-set.seed(18)
+set.seed(26)
 achilles_vector_cluster3 = as.vector(na.omit(names(which(km2_moa$cluster == 3))))
 
 
 
 # Extract celllines from prism.achilles which belong to cluster 4
-set.seed(18)
+set.seed(26)
 achilles_vector_cluster4 = as.vector(na.omit(names(which(km2_moa$cluster == 4))))
 
 
@@ -119,11 +116,11 @@ pvalues_t_test_treat3vs2$Bonferroni <-
 pvalues_t_test_treat3vs2<-dplyr::arrange(pvalues_t_test_treat3vs2, Bonferroni)
 
 ##extra dataframe for the report to show the solutions from the t.test at prism.treat
-pvalues_t_test_treat3vs2_reduced<-pvalues_t_test_treat3vs2[rownames(pvalues_t_test_treat3vs2)%in% c("trichostatin-a","semaxanib","alvocidib"),]
+pvalues_t_test_treat3vs2_reduced<-pvalues_t_test_treat3vs2[rownames(pvalues_t_test_treat3vs2)%in% c("torin-1","AVN-944"),]
 
-selected_drug_ovary2<-select(mean_effective_ovary_new2, c("trichostatin-a","semaxanib","alvocidib"))
+selected_drug_ovary2<-select(mean_effective_ovary_new2, c("torin-1","AVN-944"))
 
-selected_drug_ovary3<-select(mean_effective_ovarynew3,c("trichostatin-a","semaxanib","alvocidib"))
+selected_drug_ovary3<-select(mean_effective_ovarynew3,c("torin-1","AVN-944"))
 
 ## looking at the genes from cluster 1 and 3 and doing a t-test
 ##prism.achilles
@@ -147,7 +144,7 @@ pvalues_t_test_achilles_new2vs3<-dplyr::arrange(pvalues_t_test_achilles_new2vs3,
 
 ##2vs3
 ##extra dataframe for the report to show the solutions from the t.test at prism.achilles
-pvalues_t_test_achilles_new2vs3_reduced<-pvalues_t_test_achilles_new2vs3[rownames(pvalues_t_test_achilles_new2vs3)%in% c("OR4C11","KLRK1","KRT36"),]
+pvalues_t_test_achilles_new2vs3_reduced<-pvalues_t_test_achilles_new2vs3[rownames(pvalues_t_test_achilles_new2vs3)%in% c("SF3B5","TM4SF4","GINS4"),]
 
 ## looking at the genes from cluster 2 and 3 and doing a t-test
 ##prism.exp
@@ -173,7 +170,7 @@ pvalues_t_test_exp_2vs3<-dplyr::arrange(pvalues_t_test_exp_2vs3, p_value)
 
 ##1vs3
 ##extra dataframe for the report to show the solutions from the t.test at prism.exp
-pvalues_t_test_exp_2vs3_reduced<-pvalues_t_test_exp_2vs3[rownames(pvalues_t_test_exp_2vs3)%in% c("UCHL1","UACA","BEX4"),]
+pvalues_t_test_exp_2vs3_reduced<-pvalues_t_test_exp_2vs3[rownames(pvalues_t_test_exp_2vs3)%in% c("KBTBD11","TSPAN33","ASPHD2"),]
 
 ## looking at the genes from cluster 2 and 3 and doing a t-test
 ##prism.cnv
@@ -197,7 +194,7 @@ pvalues_t_test_cnv_2vs3<-dplyr::arrange(pvalues_t_test_cnv_2vs3, p_value)
 
 ##2vs3
 ##extra dataframe for the report to show the solutions from the t.test at prism.cnv
-pvalues_t_test_cnv_2vs3_reduced<-pvalues_t_test_cnv_2vs3[rownames(pvalues_t_test_cnv_2vs3)%in% c("OPHN1","YIPF6","STARD8"),]
+pvalues_t_test_cnv_2vs3_reduced<-pvalues_t_test_cnv_2vs3[rownames(pvalues_t_test_cnv_2vs3)%in% c("LINC00842","ANTXRLP1","MIR1468"),]
 ```
 
 
@@ -246,12 +243,12 @@ pvalues_t_test_treat3vs1<-dplyr::arrange(pvalues_t_test_treat3vs1, Bonferroni)
 
 
 ##extra dataframe for the report to show the solutions from the t.test at prism.treat
-pvalues_t_test_treat3vs1_reduced<-pvalues_t_test_treat3vs1[rownames(pvalues_t_test_treat3vs1)%in% c("BMS-387032","alvocidib"),]
+pvalues_t_test_treat3vs1_reduced<-pvalues_t_test_treat3vs1[rownames(pvalues_t_test_treat3vs1)%in% c("trichostatin-a","semaxanib","alvocidib"),]
 
 
-selected_drug_ovary1<-select(mean_effective_ovary_new1, c("BMS-387032","alvocidib"))
+selected_drug_ovary1<-select(mean_effective_ovary_new1, c("trichostatin-a","semaxanib","alvocidib"))
 
-selected_drug_ovary3<-select(mean_effective_ovarynew3,c("BMS-387032","alvocidib"))
+selected_drug_ovary3<-select(mean_effective_ovarynew3,c("trichostatin-a","semaxanib","alvocidib"))
 
 
 ## looking at the genes from cluster 1 and 3 and doing a t-test
@@ -275,7 +272,7 @@ pvalues_t_test_achilles_new1vs3<-dplyr::arrange(pvalues_t_test_achilles_new1vs3,
 
 ##1vs3
 ##extra dataframe for the report to show the solutions from the t.test at prism.achilles
-pvalues_t_test_achilles_new1vs3_reduced<-pvalues_t_test_achilles_new1vs3[rownames(pvalues_t_test_achilles_new1vs3)%in% c("CLCN3"),]
+pvalues_t_test_achilles_new1vs3_reduced<-pvalues_t_test_achilles_new1vs3[rownames(pvalues_t_test_achilles_new1vs3)%in% c("OR4C11","KLRK1","KRT36"),]
 
 ## looking at the genes from cluster 1 and 3 and doing a t-test
 ##prism.exp
@@ -301,7 +298,7 @@ pvalues_t_test_exp_1vs3<-dplyr::arrange(pvalues_t_test_exp_1vs3, p_value)
 
 ##1vs3
 ##extra dataframe for the report to show the solutions from the t.test at prism.exp
-pvalues_t_test_exp_1vs3_reduced<-pvalues_t_test_exp_1vs3[rownames(pvalues_t_test_exp_1vs3)%in% c("SLFN13"),]
+pvalues_t_test_exp_1vs3_reduced<-pvalues_t_test_exp_1vs3[rownames(pvalues_t_test_exp_1vs3)%in% c("UCHL1","UACA","BEX4"),]
 
 ## looking at the genes from cluster 1 and 3 and doing a t-test
 ##prism.cnv
@@ -325,7 +322,7 @@ pvalues_t_test_cnv_1vs3<-dplyr::arrange(pvalues_t_test_cnv_1vs3, p_value)
 
 ##1vs3
 ##extra dataframe for the report to show the solutions from the t.test at prism.cnv
-pvalues_t_test_cnv_1vs3_reduced<-pvalues_t_test_cnv_1vs3[rownames(pvalues_t_test_cnv_1vs3)%in% c("FAM227B","FGF7","DTWD1"),]
+pvalues_t_test_cnv_1vs3_reduced<-pvalues_t_test_cnv_1vs3[rownames(pvalues_t_test_cnv_1vs3)%in% c("OPHN1","YIPF6","STARD8"),]
 
 
 ```
@@ -352,12 +349,12 @@ pvalues_t_test_treat2vs1<-dplyr::arrange(pvalues_t_test_treat2vs1, Bonferroni)
 
 
 
-##1vs2
+##1vs4
 ##extra dataframe for the report to show the solutions from the t.test at prism.treat
-pvalues_t_test_treat2vs1_reduced<-pvalues_t_test_treat2vs1[rownames(pvalues_t_test_treat2vs1)%in% c("torin-1","AVN-944"),]
+pvalues_t_test_treat2vs1_reduced<-pvalues_t_test_treat2vs1[rownames(pvalues_t_test_treat2vs1)%in% c("BMS-387032","alvocidib"),]
 
-selected_drug_ovary1<-select(mean_effective_ovary_new1, c("torin-1","AVN-944"))
-selected_drug_ovary2<-select(mean_effective_ovary_new2,c("torin-1","AVN-944"))
+selected_drug_ovary1<-select(mean_effective_ovary_new1, c("BMS-387032","alvocidib"))
+selected_drug_ovary2<-select(mean_effective_ovary_new2,c("BMS-387032","alvocidib"))
 
 
 ## looking at the genes from cluster 1 and 4 and doing a t-test
@@ -378,7 +375,7 @@ pvalues_t_test_achilles_new1vs2<-dplyr::arrange(pvalues_t_test_achilles_new1vs2,
 
 ##1vs2
 ##extra dataframe for the report to show the solutions from the t.test at prism.achilles
-pvalues_t_test_achilles_new1vs2_reduced<-pvalues_t_test_achilles_new1vs2[rownames(pvalues_t_test_achilles_new1vs2)%in% c("SF3B5","TM4SF4","GINS4"),]
+pvalues_t_test_achilles_new1vs2_reduced<-pvalues_t_test_achilles_new1vs2[rownames(pvalues_t_test_achilles_new1vs2)%in% c("CLCN3"),]
 
 ## looking at the genes from cluster 1 and 4 and doing a t-test
 ##prism.exp
@@ -401,7 +398,7 @@ pvalues_t_test_exp_1vs2<-dplyr::arrange(pvalues_t_test_exp_1vs2, p_value)
 
 ##1vs4
 ##extra dataframe for the report to show the solutions from the t.test at prism.exp
-pvalues_t_test_exp_1vs2_reduced<-pvalues_t_test_exp_1vs2[rownames(pvalues_t_test_exp_1vs2)%in% c("KBTBD11","TSPAN33","ASPHD2"),]
+pvalues_t_test_exp_1vs2_reduced<-pvalues_t_test_exp_1vs2[rownames(pvalues_t_test_exp_1vs2)%in% c("SLFN13"),]
 
 ## looking at the genes from cluster 1 and 4 and doing a t-test
 ##prism.cnv
@@ -424,26 +421,18 @@ pvalues_t_test_cnv_1vs2<-dplyr::arrange(pvalues_t_test_cnv_1vs2, p_value)
 
 ##1vs4
 ##extra dataframe for the report to show the solutions from the t.test at prism.cnv
-pvalues_t_test_cnv_1vs2_reduced<-pvalues_t_test_cnv_1vs2[rownames(pvalues_t_test_cnv_1vs2)%in% c("LINC00842","ANTXRLP1","MIR1468"),]
-
+pvalues_t_test_cnv_1vs2_reduced<-pvalues_t_test_cnv_1vs2[rownames(pvalues_t_test_cnv_1vs2)%in% c("FAM227B","FGF7","DTWD1"),]
 
 
 # First trial 
-#df_1 <- pvalues_t_test_treat3vs2
-#df_2 <- pvalues_t_test_achilles_new2vs3_reduced
-#knitr::kable(list(df_1, df_2)) %>%
- #kable_styling(full_width=F)
+df_1 <- pvalues_t_test_treat3vs1_reduced
+df_2 <- pvalues_t_test_treat2vs1_reduced
+knitr::kable(list(df_1, df_2)) %>%
+  kable_styling(full_width=F)
 
-#df_1 <- pvalues_t_test_treat3vs1_reduced
-#df_2 <- pvalues_t_test_achilles_new1vs3_reduced
-#knitr::kable(list(df_1, df_2)) %>%
- # kable_styling(full_width=F)
-
-
-
-t1 <- kable(pvalues_t_test_treat3vs2, format = "latex", booktabs = TRUE)
-
-t2 <- kable(pvalues_t_test_achilles_new2vs3_reduced, format = "latex", booktabs = TRUE)
+#Second trial
+t1 <- kable(pvalues_t_test_treat3vs1_reduced, format = "latex", booktabs = TRUE)
+t2 <- kable(pvalues_t_test_treat3vs2_reduced, format = "latex", booktabs = TRUE)
 
 cat(c("\\begin{table}[!htb]
     \\begin{minipage}{.5\\linewidth}
@@ -458,35 +447,5 @@ cat(c("\\begin{table}[!htb]
     "\\end{minipage} 
 \\end{table}"
 )) 
-
-
-
-#df_1 <- pvalues_t_test_exp_1vs3_reduced
-#df_2 <- pvalues_t_test_cnv_1vs3_reduced
-#knitr::kable(list(df_1, df_2)) %>%
- # kable_styling(full_width=F)
-
-t3 <- kable(pvalues_t_test_exp_2vs3_reduced, format = "latex", booktabs = TRUE)
-t4 <- kable(pvalues_t_test_cnv_2vs3_reduced, format = "latex", booktabs = TRUE)
-
-cat(c("\\begin{table}[!htb]
-    \\begin{minipage}{.5\\linewidth}
-      \\caption{}
-      \\centering",
-        t3,
-    "\\end{minipage}%
-    \\begin{minipage}{.5\\linewidth}
-      \\centering
-        \\caption{}",
-        t4,
-    "\\end{minipage} 
-\\end{table}"
-)) 
-
-
-
-
-
-
 #knitr::kable(list(table1, table2))
 ```
