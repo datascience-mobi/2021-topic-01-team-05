@@ -5,7 +5,7 @@ date: "7/14/2021"
 output: pdf_document
 ---
 
-```{r setup, include=FALSE,global_options, R.options=knitr::opts_chunk$set(warning=FALSE, message=FALSE)}
+```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
 library(knitr)
