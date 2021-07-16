@@ -404,19 +404,20 @@ prism.treat_reduced_2 = prism.treat_reduced[,which(colnames(prism.treat_reduced)
 
 ## MECHANISM OF ACTION
 
-```{r, echo=FALSE, fig.cap = "Most frequent MOA's amongst the most effective drugs"}
+```{r, echo=FALSE, fig.cap = "Most frequent MOA's amongst the most effective drugs", fig.height=3, fig.width=4}
 
 moa_frequencies = prism.treat_reduced_2 %>% dplyr::count(moa) %>% filter(n >= 3)
 moa_frequencies = moa_frequencies[0:9,]
 
-par(mar=c(4, 20, 4, 4))
+par(mar=c(2, 10, 2, 2))
 barplot(moa_frequencies$n, names.arg = moa_frequencies$moa, 
         las = 1, 
         xlab = "Frequency", 
         horiz = TRUE, 
         xlim = c(0,10),
         col = "Lightblue3",
-        main = NULL) 
+        main = NULL,
+        cex.axis=0.75) 
 
 ```
 
@@ -571,7 +572,7 @@ moa_drugs_all = prism_reduced_all_no_NAs[,names_use]
 ```
 
 
-```{r, echo = FALSE, fig.cap = "PC1 vs. PC2 for All Cell Line Clusters"}
+```{r, echo = FALSE, fig.cap = "PC1 vs. PC2 for All Cell Line Clusters", fig.height=4.5, fig.width=5}
 
 A_moa_all = as.matrix(moa_drugs_all)
 
@@ -583,10 +584,10 @@ colVec[-which(rownames(A_moa_all) %in% df_ovary_cl$DepMap_ID)] = "gray"
 
 plot(pca1_moa_all$x[,1], pca1_moa_all$x[,2], pch=20, col = colVec, 
      xlab='PC1',ylab='PC2',
-      main = " ")
-      legend("topleft", legend = c("Ovary cell lines", "Other cell lines"), fill = c("Red3", "Gray"))
-
+      main = " ", cex.axis=0.75)
+      legend("topleft", legend = c("Ovary cell lines", "Other cell lines"), fill = c("Red3", "Gray"), cex = 0.7)
 ```
+
 As a next step we decided to perform a PCA on all cell lines. We clustered by cell lines in order to test if the ovary cell lines would form their own distinctive cluster regarding the drug response. As can be seen in Fig. X, this was not the case. The red dots representing the ovary cancer cell lines are distributed across the entire plot, rather than concentrated into one distinctive cluster. The fact that the ovary cell lines did not form their own cluster shows that there seems to be no combining trait among them that would trigger a similar drug response. 
 
 ## WELCH'S T-TEST
@@ -711,6 +712,128 @@ selected_drug_ovary<-select(mean_effective_ovary24, "TAK-733")
 selected_drug_noovary<-select(mean_effective_noovary24,"TAK-733")
 ```
 Additionally to the PCA clustering in Fig. 4.a. and the PCA clustering above, we also conducted a PCA using only non-ovary cell lines (not shown). As a final step to find out if the drug response is related to the cell line type, we decided to perform a Welch's unpaired two sided t-test, which was subjected a Bonferroni correction. In order to do this we reduced the prism.treat data frame further. It now included only those cell lines located in clusters two and four from the PCA clusterings for non ovary and ovary cell lines, respectively. With these two data frames we performed a Welch's unpaired two sided t-test, which was subjected a Bonferroni correction. The resulting p-value was higher than the confidence level of 0.05 which means that the null hypothesis - that there is no association between the mean value of the drug response in ovary and non ovary cell lines - could not be rejected. This shows once again that the drug response seems to be independent of the cell line type in regards to the ovary or non-ovary cell lines.
+
+# DRUG DOSAGE DEPENDENCY
+
+## BOXPLOT OF PROLIFERATION VALUES 
+```{r out.width = "70%", echo = FALSE, fig.cap="Boxplot of the distribution of the proliferation rates of ovary cell lines according to the drug dosage", fig.height = 3, fig.width = 8, fig.align = 'center', cex.axis = 0.75}
+
+dosage<- prism.treat$dose
+broadID<- prism.treat$broad_id
+
+df_treat <- data.frame(broadID, dosage)
+
+broadID2<- prism.treat[,0]
+
+broadID3<-rownames(prism.treat)
+
+df_treat2<- data.frame (broadID2, dosage)
+
+df_treat_lowdose<-df_treat[dosage<2.5, c("broadID","dosage")]
+
+df_treat_highdose<-df_treat[dosage>=2.5, c("broadID","dosage")]
+
+
+
+lineage <- prism.cl$lineage
+DepMap_ID <- prism.cl$DepMap_ID 
+
+df_cl <- data.frame(DepMap_ID, lineage)
+
+df_ovary_cl <- subset(df_cl, lineage == "ovary")
+
+
+vector_ovary_DepMI <- as.vector(df_ovary_cl$DepMap_ID)
+
+
+df_ovary_DepMI_prism  <- prism[rownames(prism) %in% vector_ovary_DepMI,]
+
+
+new_df_ovary_DepMI_prism<- as.data.frame(t(df_ovary_DepMI_prism))
+
+
+
+df_ovary_DepMI_prism_treat <-merge(prism.treat,new_df_ovary_DepMI_prism , by="row.names")
+
+
+df_ovary_DepMI_prism_treat[,c('screen_id','compound_plate','moa','target','disease.area','indication','smiles','phase')]<-list(NULL)
+
+
+df_ovary_DepMI_prism_treat_NAs<-drop_na(df_ovary_DepMI_prism_treat)
+
+most_effective_moas_drugs<-c("TAS-103","nemorubicin","idarubicin","10-hydroxycamptothecin", "amsacrine","SN-38","doxorubicin","exatecan-mesylate","genz-644282","ixazomib-citrate","carfilzomib","delanzomib","ixazomib","BGT226","buparlisib","CUDC-907","PCI-24781","AR-42", "givinostat","scriptaid","M-344","romidepsin","trichostatin-a","vorinostat","JNJ-26481585","pelitinib","PD-168393","dacomitinib","afatinib","AT-7519","dinaciclib","CR8-(R)","P276-00" ,"R547","oridonin","obatoclax","HA14-1","TW-37","digoxin","thonzonium","digitoxigenin","NMS-873")
+
+df_ovary_prism_treat_effective <- df_ovary_DepMI_prism_treat[df_ovary_DepMI_prism_treat$name %in% most_effective_moas_drugs,]
+
+df_lowdose<- df_ovary_DepMI_prism_treat[-which(df_ovary_DepMI_prism_treat$dose>2,5),]
+
+df_lowdose_NAs<-df_ovary_DepMI_prism_treat_NAs[-which(df_ovary_DepMI_prism_treat_NAs$dose>2,5),]
+
+df_highdose<- df_ovary_DepMI_prism_treat[-which(df_ovary_DepMI_prism_treat$dose<=2,5),]
+
+df_highdose_NAs<-df_ovary_DepMI_prism_treat_NAs[-which(df_ovary_DepMI_prism_treat_NAs$dose<=2,5),]
+
+df_lowdose_effectivedrugs<- df_ovary_prism_treat_effective[-which(df_ovary_prism_treat_effective$dose>2,5),]
+
+
+df_highdose_effectivedrugs<- df_ovary_prism_treat_effective[-which(df_ovary_prism_treat_effective$dose<=2,5),]
+
+df_ovary_prism_treat_effective_long<-pivot_longer(df_ovary_prism_treat_effective,cols = starts_with("ACH"),names_to= "DepMap_ID", values_to="proliferationvalues", values_drop_na=TRUE)
+
+ggplot_dose_proliferationvalues<-ggplot(df_ovary_prism_treat_effective_long, aes(x=dose, y=proliferationvalues)) +
+  geom_point()+
+  labs(title="Plot of proliferation value per dose",x="Dose (µm)", y = "proliferation value")
+
+df_ovary_prism_treat_effective_long$dose_high_low <- df_ovary_prism_treat_effective_long$dose
+for(i in 1:nrow(df_ovary_prism_treat_effective_long)){
+  if(df_ovary_prism_treat_effective_long$dose[i] < 2){
+    df_ovary_prism_treat_effective_long$dose_high_low[i]="0<=2"
+  } else if(df_ovary_prism_treat_effective_long$dose[i] >= 2 & df_ovary_prism_treat_effective_long$dose[i] <= 7.5){
+    df_ovary_prism_treat_effective_long$dose_high_low[i]="2<7.5"
+  } else if(df_ovary_prism_treat_effective_long$dose[i] > 7.5){
+    df_ovary_prism_treat_effective_long$dose_high_low[i]="7.5<11"
+  }
+}
+
+
+ggplot_plot_boxplot_dose_proliferation <- ggplot(df_ovary_prism_treat_effective_long, aes(x=dose_high_low, y=proliferationvalues)) + geom_boxplot(outlier.shape=8, aes(fill=dose_high_low))+labs(x="Dose (micromolar)", y = "Proliferation value")
+ggplot_plot_boxplot_dose_proliferation
+
+```
+We implied a boxplot of the distribution of the ovary cell proliferation rates, regarding the drug dose. We could not divide the boxplot by the 2.5 micromolar dosage (Corsello et al. 2020), but rather in 3 stages: low, median and high dose, corresponding with a highest median, median and lowest proliferation rate, respectively. Consequently, an increasing of drug dose leads to reduction of proliferation rates.
+
+## PPEARSON CORRELATION
+Almost all Pearson correlation coefficients are negative, except for one between 'ACH-000713' and 'exatecan-mesylate', which is positive and thus is an outlier. Consequently,some drugs have a quite strong negative correlation with the proliferation, while others do not affect it.
+
+## VISUALIZATION - GGPLOT
+Furthermore, we created correlation matrix from the dosages of the different drugs per cell line and displayed the Pearson correlation. The blue and the purple squares indicate higher correlation, meaning that the majority of the drugs reduce the cell proliferation.
+
+```{r out.width = "70%",echo=FALSE, error=FALSE, fig.cap="ggplot of the correlation between the proliferation rates of ovary cell lines and the dosage of the applied medical treatment", fig.height=5,fig.weight=9, message=FALSE, warning=FALSE, results='hide', fig.align='center', cex.axis = 0.75}
+
+cordf_effective= data.frame(row.names=rownames(prism))
+
+for (drug in unique(df_ovary_prism_treat_effective$name)){
+  dose = prism.treat[prism.treat$name==drug,]$dose
+  response = prism[,rownames(prism.treat)[prism.treat$name == drug]]
+  
+  cordf_effective[drug]=apply(response,1,function(x){cor(x,dose)})
+}
+cordf_effective<-cordf_effective[rownames(cordf_effective) %in% vector_ovary_DepMI,]
+
+cormatrix_effective<- data.matrix(cordf_effective)
+
+
+cf <- coord_fixed()
+cf$default <- TRUE
+ggplot2_dose_proliferation<-ggcorrplot(cormatrix_effective, tl.cex = 7.5 )+ 
+  cf +
+  coord_fixed(xlim = c(15, 7))
+ 
+ggplot2_dose_proliferation + coord_flip()
+
+```
+
+
 
 
 \newpage
