@@ -29,11 +29,11 @@ load("../Original_Environment/cellline_datasets.rda")
 ## PROCESS AND RESULTS
 
 In this step, we proved through an unpaired two-sided Welch t-test, that there is no dependence of the effect of the drug response on specific gene expression rates, gene knockdowns or copy number of variations.
-We performed multiple t-tests on prism.treat and genes from clusters 1 and 3, 1 and 4, as well as 3 and 4.We could not perform any tests on cluster 2 due to the only one cell line it consisted of which would provide an unrepresentative result. We also performed t-tests on the pairs of clusters from prism.exp, prism.cnv and prism.achilles. Only the results from the t-tests on prism.treat for the clusters 1-3 and 1-4 gave important information.They demonstrate that there are not any significsnt differences in the drug response between the clusters. However, there were not any major differences in knockdown scores and gene expression rates. Thus, this was not the reason for the different drug response.
-For clusters 1-3 there are 3 significant drugs - "trichostatin-a","semaxanib","alvocidib" and for clusters 1-4 there are 2 drugs - "torin-1","AVN-944". 
+We performed multiple t-tests on prism.treat and clusters 1 and 3, 3 and 2, 2 and 1 from prism.exp, prism.cnv, prism.achilles and prism.treat. In clusters 2 and 1 there were not any significant differences in the drug response. Only the results from the t-tests for the clusters 1 and 3 as well as 3 and 2 gave important information.They demonstrate that there are significant differences in the drug response between these clusters. However, there were not any major differences in knockdown scores and gene expression rates.Thus, this was not the reason for the different drug response.
+For clusters 1 and 3 there are 2 significant drugs - "torin-1" and "AVN-944", and for clusters 2 and 3 - "trichostatin-a", "semaxanib", "alvocidib".
 
 
-```{r echo=FALSE,include = FALSE, results='asis',fig.cap="**1.a** Table of the 3 drugs with a significant different response for clusters 1 and 3 **1.b** Table of the 2 drugs with a significant different response for clusters 1 and 4 ", fig.height = 3, fig.width = 8, fig.align = 'center'}
+```{r echo=FALSE,include = FALSE, results='asis',fig.cap="**1.a** Table of the 2 drugs with a significant different response for clusters 1 and 3 **1.b** Table of the 3 drugs with a significant different response for clusters 2 and 3 ", fig.height = 3, fig.width = 8, fig.align = 'center'}
 
 
 ## cluster out of Milestone 1.1 1.2 the most effective ovarycelllines
@@ -337,15 +337,14 @@ pvalues_t_test_cnv_1vs4<-dplyr::arrange(pvalues_t_test_cnv_1vs4, p_value)
 pvalues_t_test_cnv_1vs4_reduced<-pvalues_t_test_cnv_1vs4[rownames(pvalues_t_test_cnv_1vs4)%in% c("LINC00842","ANTXRLP1","MIR1468"),]
 
 
-# First trial 
-df_1 <- pvalues_t_test_treat3vs1_reduced
-df_2 <- pvalues_t_test_treat4vs1_reduced
-knitr::kable(list(df_1, df_2)) %>%
-  kable_styling(full_width=F)
+#df_1 <- pvalues_t_test_treat3vs1_reduced
+#df_2 <- pvalues_t_test_achilles_new1vs3_reduced
+#knitr::kable(list(df_1, df_2)) %>%
+ # kable_styling(full_width=F)
 
-#Second trial
+
 t1 <- kable(pvalues_t_test_treat3vs1_reduced, format = "latex", booktabs = TRUE)
-t2 <- kable(pvalues_t_test_treat4vs1_reduced, format = "latex", booktabs = TRUE)
+t2 <- kable(pvalues_t_test_achilles_new1vs3_reduced, format = "latex", booktabs = TRUE)
 
 cat(c("\\begin{table}[!htb]
     \\begin{minipage}{.5\\linewidth}
@@ -360,6 +359,36 @@ cat(c("\\begin{table}[!htb]
     "\\end{minipage} 
 \\end{table}"
 )) 
+
+
+
+#df_1 <- pvalues_t_test_exp_1vs3_reduced
+#df_2 <- pvalues_t_test_cnv_1vs3_reduced
+#knitr::kable(list(df_1, df_2)) %>%
+ # kable_styling(full_width=F)
+
+t1 <- kable(pvalues_t_test_exp_1vs3_reduced, format = "latex", booktabs = TRUE)
+t2 <- kable(pvalues_t_test_cnv_1vs3_reduced, format = "latex", booktabs = TRUE)
+
+cat(c("\\begin{table}[!htb]
+    \\begin{minipage}{.5\\linewidth}
+      \\caption{}
+      \\centering",
+        t1,
+    "\\end{minipage}%
+    \\begin{minipage}{.5\\linewidth}
+      \\centering
+        \\caption{}",
+        t2,
+    "\\end{minipage} 
+\\end{table}"
+)) 
+
+
+
+
+
+
 #knitr::kable(list(table1, table2))
 ```
 
