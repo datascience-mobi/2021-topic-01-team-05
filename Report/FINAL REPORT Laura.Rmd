@@ -42,8 +42,8 @@ library(tibble)
 
 
 ```{r, include=FALSE}
-load("/Users/laura/OneDrive/Dokumente/Uni/Bioinfo/Data Project/Original_Environment/cellline_datasets.rda")
-load("/Users/laura/OneDrive/Dokumente/Uni/Bioinfo/Data Project/Original_Environment/prism_datasets.rda")
+load("../Original_Environment/prism_datasets.rda")
+load("../Original_Environment/cellline_datasets.rda")
 ```
 
 
@@ -763,7 +763,7 @@ ovary_achilles_cluster4 <- prism.achilles[rownames(prism.achilles) %in% achilles
 ```
 
 
-```{r echo=FALSE,include = FALSE, results='asis',fig.cap="**1.a** Table of the 3 drugs with a significant different response for clusters 1 and 3 **1.b** Table of the 2 drugs with a significant different response for clusters 1 and 4 ", fig.height = 3, fig.width = 8, fig.align = 'center'}
+```{r echo=FALSE,include = FALSE, results='asis',fig.cap="**8.a** Table of the 3 drugs with a significant different response for clusters 1 and 3 **8.b** Table of the 2 drugs with a significant different response for clusters 1 and 4 ", fig.height = 3, fig.width = 8, fig.align = 'center'}
 
 ## looking at one drug which is responding to those cluster differently between 3 and 2
 ##mean for 2
@@ -1017,7 +1017,7 @@ pvalues_t_test_cnv_1vs3_reduced<-pvalues_t_test_cnv_1vs3[rownames(pvalues_t_test
 
 ```
 
-```{r}
+```{r, include = FALSE}
 ##trying cluster 1vs2
 ##important
 ## looking at one drug which is responding to those cluster differently between 1 and 4
@@ -1113,31 +1113,33 @@ pvalues_t_test_cnv_1vs2<-dplyr::arrange(pvalues_t_test_cnv_1vs2, p_value)
 ##extra dataframe for the report to show the solutions from the t.test at prism.cnv
 pvalues_t_test_cnv_1vs2_reduced<-pvalues_t_test_cnv_1vs2[rownames(pvalues_t_test_cnv_1vs2)%in% c("FAM227B","FGF7","DTWD1"),]
 
+```
 
-# First trial 
-df_1 <- pvalues_t_test_treat3vs1_reduced
-df_2 <- pvalues_t_test_treat2vs1_reduced
-knitr::kable(list(df_1, df_2)) %>%
-  kable_styling(full_width=F)
+```{r, include = TRUE, comment="", echo = FALSE, results = 'asis',fig.cap="**1.a** Table of the 3 drugs with a significant different response for clusters 1 and 3 **1.b** Table of the 2 drugs with a significant different response for clusters 2 and 3 "}
 
-#Second trial
-t1 <- kable(pvalues_t_test_treat3vs1_reduced, format = "latex", booktabs = TRUE)
-t2 <- kable(pvalues_t_test_treat3vs2_reduced, format = "latex", booktabs = TRUE)
 
-cat(c("\\begin{table}[!htb]
-    \\begin{minipage}{.5\\linewidth}
-      \\caption{}
-      \\centering",
-        t1,
-    "\\end{minipage}%
-    \\begin{minipage}{.5\\linewidth}
-      \\centering
-        \\caption{}",
-        t2,
-    "\\end{minipage} 
-\\end{table}"
-)) 
-#knitr::kable(list(table1, table2))
+knitr::kable(pvalues_t_test_treat3vs1_reduced,
+            caption = "Table of the 3 drugs with a significant different response for clusters 1 and 3")
+t1 <-kable(pvalues_t_test_treat3vs1_reduced, format = "latex", booktabs = TRUE)
+knitr::kable(pvalues_t_test_treat3vs2_reduced,
+             caption = "Table of the 2 drugs with a significant different response for clusters 2 and 3")
+t2 <-kable(pvalues_t_test_treat3vs2_reduced, format = "latex", booktabs = TRUE)
+
+
+#cat(c("\\begin{table}[!htb]
+ #  \\begin{minipage}{.5\\linewidth}
+  #    \\caption{}
+   #  \\centering",
+    #    t1,
+    #"\\end{minipage}%
+    #\\begin{minipage}{.5\\linewidth}
+     # \\centering
+      #  \\caption{}",
+       # t2,
+    #"\\end{minipage} 
+#\\end{table}"
+#)) 
+
 ```
 
 
