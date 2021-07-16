@@ -352,7 +352,7 @@ pvalues_t_test_treat2vs1<-dplyr::arrange(pvalues_t_test_treat2vs1, Bonferroni)
 
 
 
-##1vs4
+##1vs2
 ##extra dataframe for the report to show the solutions from the t.test at prism.treat
 pvalues_t_test_treat2vs1_reduced<-pvalues_t_test_treat2vs1[rownames(pvalues_t_test_treat2vs1)%in% c("torin-1","AVN-944"),]
 
@@ -429,7 +429,7 @@ pvalues_t_test_cnv_1vs2_reduced<-pvalues_t_test_cnv_1vs2[rownames(pvalues_t_test
 
 
 # First trial 
-df_1 <- pvalues_t_test_treat3vs1_reduced
+df_1 <- pvalues_t_test_treat3vs2_reduced
 df_2 <- pvalues_t_test_treat2vs1_reduced
 knitr::kable(list(df_1, df_2)) %>%
   kable_styling(full_width=F)
@@ -441,11 +441,9 @@ knitr::kable(list(df_1, df_2)) %>%
 
 
 
-t1 <- kable(pvalues_t_test_treat3vs1_reduced, format = "latex", booktabs = TRUE)
+t1 <- kable(pvalues_t_test_treat3vs2, format = "latex", booktabs = TRUE)
 
-t2 <- kable(pvalues_t_test_treat3vs2_reduced, format = "latex", booktabs = TRUE)
-
-t2 <- kable(pvalues_t_test_achilles_new1vs3_reduced, format = "latex", booktabs = TRUE)
+t2 <- kable(pvalues_t_test_achilles_new2vs3_reduced, format = "latex", booktabs = TRUE)
 
 cat(c("\\begin{table}[!htb]
     \\begin{minipage}{.5\\linewidth}
@@ -468,8 +466,8 @@ cat(c("\\begin{table}[!htb]
 #knitr::kable(list(df_1, df_2)) %>%
  # kable_styling(full_width=F)
 
-t1 <- kable(pvalues_t_test_exp_1vs3_reduced, format = "latex", booktabs = TRUE)
-t2 <- kable(pvalues_t_test_cnv_1vs3_reduced, format = "latex", booktabs = TRUE)
+t1 <- kable(pvalues_t_test_exp_2vs3_reduced, format = "latex", booktabs = TRUE)
+t2 <- kable(pvalues_t_test_cnv_2vs3_reduced, format = "latex", booktabs = TRUE)
 
 cat(c("\\begin{table}[!htb]
     \\begin{minipage}{.5\\linewidth}
