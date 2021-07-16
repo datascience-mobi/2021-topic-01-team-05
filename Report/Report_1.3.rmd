@@ -113,7 +113,7 @@ ggplot_plot_boxplot_dose_proliferation
 We implied a boxplot of the distribution of the ovary cell proliferation rates, regarding the drug dose. We could not divide the boxplot by the 2.5 micromolar dosage (Corsello et al. 2020), but rather in 3 stages: low, median and high dose, corresponding with a highest median, median and lowest proliferation rate, respectively. Consequently, an increasing of drug dose leads to reduction of proliferation rates.
 
 ## Pearson Correlation
-Almost all Pearson correlation coefficients are negative, except for one between 'ACH-000713' and 'exatecan-mesylate', which is positive value and thus is an outlier(measurement error). Consequently,some drugs have a quite strong negative correlation with proliferation, while others do not affect it.
+Almost all Pearson correlation coefficients are negative, except for one between 'ACH-000713' and 'exatecan-mesylate', which is positive and thus is an outlier. Consequently,some drugs have a quite strong negative correlation with the proliferation, while others do not affect it.
 
 ## Visualization - GGPLOT
 Furthermore, we created correlation matrix from the dosages of the different drugs per cell line and displayed the Pearson correlation. The blue and the purple squares indicate higher correlation, meaning that the majority of the drugs reduce the cell proliferation.
