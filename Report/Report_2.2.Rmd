@@ -73,7 +73,7 @@ ovary_achilles_cluster4 <- prism.achilles[rownames(prism.achilles) %in% achilles
 ```
 
 
-```{r echo=FALSE,include = FALSE, results='asis',fig.cap="**1.a** Table of the 3 drugs with a significant different response for clusters 1 and 3 **1.b** Table of the 2 drugs with a significant different response for clusters 1 and 4 ", fig.height = 3, fig.width = 8, fig.align = 'center'}
+```{r echo=FALSE,include = FALSE, results='asis',fig.cap="**1.a** Table of the 3 drugs with a significant different response for clusters 1 and 3 **1.b** Table of the 2 drugs with a significant different response for clusters 2 and 3 ", fig.height = 3, fig.width = 8, fig.align = 'center'}
 
 ## looking at one drug which is responding to those cluster differently between 3 and 2
 ##mean for 2
@@ -425,10 +425,10 @@ pvalues_t_test_cnv_1vs2_reduced<-pvalues_t_test_cnv_1vs2[rownames(pvalues_t_test
 
 
 # First trial 
-df_1 <- pvalues_t_test_treat3vs1_reduced
-df_2 <- pvalues_t_test_treat3vs2_reduced
-knitr::kable(list(df_1, df_2)) %>%
-  kable_styling(full_width=F)
+#df_1 <- pvalues_t_test_treat3vs1_reduced
+#df_2 <- pvalues_t_test_treat3vs2_reduced
+#knitr::kable(list(df_1, df_2)) %>%
+#  kable_styling(full_width=F)
 
 #Second trial
 t1 <- kable(pvalues_t_test_treat3vs1_reduced, format = "latex", booktabs = TRUE)
