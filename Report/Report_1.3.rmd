@@ -25,7 +25,7 @@ load("../Original_Environment/cellline_datasets.rda")
 ```
 
 ## Visualization - Boxplot
-```{r out.width = "70%", echo = FALSE, fig.cap="**1.** Boxplot of the distribution of the proliferation rates of ovary cell lines according to the drug dosage", fig.height = 3, fig.width = 8, fig.align = 'center'}
+```{r out.width = "70%", echo = FALSE, fig.cap="**1.** Boxplot of the distribution of the proliferation rates of ovary cell lines according to the drug dosage", fig.height = 3, fig.width = 8, fig.align = 'center', cex.axis = 0.75}
 
 dosage<- prism.treat$dose
 broadID<- prism.treat$broad_id
@@ -117,7 +117,7 @@ Almost all Pearson correlation coefficients are negative, except for one between
 ## Visualization - GGPLOT
 Furthermore, we created correlation matrix from the dosages of the different drugs per cell line and displayed graphically the Pearson correlation. The blue and the purple squares indicate higher correlation, meaning that the majority of the drugs reduce the cell proliferation.
 
-```{r out.width = "70%",echo=FALSE, error=FALSE, fig.cap="**2.** ggplot of the correlation between the proliferation rates of ovary cell lines and the dosage of the applied medical treatment", fig.height=5,fig.weight=9, message=FALSE, warning=FALSE, results='hide', fig.align='center'}
+```{r out.width = "70%",echo=FALSE, error=FALSE, fig.cap="**2.** ggplot of the correlation between the proliferation rates of ovary cell lines and the dosage of the applied medical treatment", fig.height=5,fig.weight=9, message=FALSE, warning=FALSE, results='hide', fig.align='center', cex.axis = 0.75}
 
 cordf_effective= data.frame(row.names=rownames(prism))
 
