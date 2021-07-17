@@ -1219,7 +1219,7 @@ qqnorm(regression_model$residuals, ylab = "Residuals", main = "Q-Q Plot residual
 cor(learning_regression$disulfiram, regression_model$residuals)
 ```
 
-```{r, echo=FALSE, fig.cap = "**X.a.** Correlation between Residuals and Control **X.b.** Predicted Values vs. Real Values", fig.height=3.5, fig.width=8}
+```{r, echo=FALSE, fig.cap = "**11.a.** Correlation between Residuals and Control **11.b.** Predicted Values vs. Real Values", fig.height=3.5, fig.width=8}
 
 par(mfrow = c(1,2))
 
