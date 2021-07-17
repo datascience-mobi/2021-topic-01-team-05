@@ -1234,6 +1234,8 @@ pvalues_t_test_cnv_1vs2_reduced<-pvalues_t_test_cnv_1vs2[rownames(pvalues_t_test
 description_drug_vector<- c("HDAC inhibitor [Quelle]","tyrosine kinase inhibitor [Quelle]","CDK9 inhibitor [Quelle]")
 pvalues_t_test_treat3vs1_reduced$target<-description_drug_vector
 
+disease_area_vector<- c("non-oncological [Quelle]","oncological [Quelle]", "oncological [Quelle]")
+pvalues_t_test_treat3vs1_reduced$disease_area<-disease_area_vector
 ```
 
 ```{r, include = TRUE, comment="", echo = FALSE, results = 'asis',fig.cap="**1.a** Table of the 3 drugs with a significant different response for clusters 1 and 3 **1.b** Table of the 2 drugs with a significant different response for clusters 2 and 3 "}
@@ -1241,10 +1243,8 @@ pvalues_t_test_treat3vs1_reduced$target<-description_drug_vector
 par(mfrow = c(1,2))
 
 knitr::kable(pvalues_t_test_treat3vs1_reduced,
-           caption = "Table of the 3 drugs with a significant different response for clusters 1 and 3")
-t1 <-kable(pvalues_t_test_treat3vs1_reduced, format = "latex", booktabs = TRUE)
-knitr::kable(pvalues_t_test_treat3vs2_reduced,
-             caption = "Table of the 2 drugs with a significant different response for clusters 2 and 3")
+           caption = "Table of drugs with a significant different response for clusters 1 and 3")
+
 
 
 #cat(c("\\begin{table}[!htb]
