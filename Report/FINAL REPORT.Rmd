@@ -834,12 +834,10 @@ ggplot2_dose_proliferation + coord_flip()
 ```
 
 ## DRUG RESPONSE DEPENDENCY ON GENE EXPRESSION PATTERNS
-## PROCESS AND RESULTS
 
-In this step, we used an unpaired two-sided Welch's t-test, which was subjected to a Bonferroni correction, to show that the different drug response could not be explained by significant differences in specific gene expression rates, gene knockdowns or copy number of variations.
-We reduced prism.treat to only the cells from the clusters 1 and 3, 1 and 2, as well as 2 and 3, to perform multiple t-tests.We could not perform any tests on cluster 4 due to the only one cell line it consisted of which would provide an unrepresentative result. We also performed t-tests on the pairs of clusters from prism.exp, prism.cnv and prism.achilles. Only the results from the t-tests on prism.treat for the clusters 1-2 and 2-3 gave important information.They demonstrate that there are significant differences in the drug response between the clusters. However, there were not any major differences in knockdown scores and gene expression rates. Thus, this was not the reason for the different drug response.
-There are significant differences in the drug response for some drugs shown in table 1.
-
+In order to show that the different drug response could not be explained by significant differences in specific gene expression rates, gene knockdowns or copy number variations, we used an unpaired two-sided Welch's t-test that was subjected to a Bonferroni correction.
+We extracted the ovarian cell lines of the clusters 1 and 3, 1 and 2, as well as 2 and 3 (see Fig. 4.a.) in order to perform multiple t-tests. We did not include cluster 4 since it consisted of only one cell line which would have provided an unrepresentative result. We performed t-tests on these pairs of clusters with the corresponding data extracted from prism.exp, prism.cnv and prism.achilles. We found that there are significant differences regarding the drug response between the clusters 1-2 and 2-3, respectively. 
+However, we did not find any major differences concerning the knockdown scores and gene expression rates. Thus, these values do not seem to be the reason for the differing drug responses. Table 1 shows a selection of the drugs that we found to cause significantly different responses between the clusters. Additionally, the statistical values, targets and disease areas are shown.
 
 ```{r echo=FALSE,include = FALSE, results='asis',fig.cap="**1.a** Table of the 3 drugs with a significant different response for clusters 1 and 3 **1.b** Table of the 2 drugs with a significant different response for clusters 1 and 4 ", fig.height = 3, fig.width = 8, fig.align = 'center'}
 ## cluster out of Milestone 1.1 1.2 the most effective ovarycelllines
@@ -1128,8 +1126,6 @@ pvalues_t_test_cnv_1vs3<-dplyr::arrange(pvalues_t_test_cnv_1vs3, p_value)
 ##1vs3
 ##extra dataframe for the report to show the solutions from the t.test at prism.cnv
 pvalues_t_test_cnv_1vs3_reduced<-pvalues_t_test_cnv_1vs3[rownames(pvalues_t_test_cnv_1vs3)%in% c("OPHN1","YIPF6","STARD8"),]
-
-
 ```
 
 ```{r, include = FALSE}
@@ -1227,14 +1223,13 @@ pvalues_t_test_cnv_1vs2<-dplyr::arrange(pvalues_t_test_cnv_1vs2, p_value)
 ##1vs4
 ##extra dataframe for the report to show the solutions from the t.test at prism.cnv
 pvalues_t_test_cnv_1vs2_reduced<-pvalues_t_test_cnv_1vs2[rownames(pvalues_t_test_cnv_1vs2)%in% c("FAM227B","FGF7","DTWD1"),]
-
 ```
 
 ```{r, include = TRUE, comment="", echo = FALSE, results = 'asis',fig.cap="**1.a** Table of the 3 drugs with a significant different response for clusters 1 and 3 **1.b** Table of the 2 drugs with a significant different response for clusters 2 and 3 "}
-description_drug_vector<- c("HDAC inhibitor [Quelle]","tyrosine kinase inhibitor [Quelle]","CDK9 inhibitor [Quelle]")
+description_drug_vector<- c("HDAC inhibitor","VEGFR inhibitor","CDK inhibitor")
 pvalues_t_test_treat3vs1_reduced$target<-description_drug_vector
 
-disease_area_vector<- c("other [Quelle]","oncology [Quelle]", "oncology [Quelle]")
+disease_area_vector<- c("Other [Quelle]","Oncology [Quelle]", "Oncology [Quelle]")
 pvalues_t_test_treat3vs1_reduced$disease_area<-disease_area_vector
 ```
 
@@ -1243,7 +1238,7 @@ pvalues_t_test_treat3vs1_reduced$disease_area<-disease_area_vector
 par(mfrow = c(1,2))
 
 knitr::kable(pvalues_t_test_treat3vs1_reduced,
-           caption = "Table of drugs with a significant different response for clusters 1 and 3")
+           caption = "Selection of Significant Drugs for Clusters 1 and 3")
 
 
 
@@ -1260,13 +1255,9 @@ knitr::kable(pvalues_t_test_treat3vs1_reduced,
     #"\\end{minipage} 
 #\\end{table}"
 #)) 
-
 ```
 
 # MULTIPLE REGRESSION MODEL
-
-In order to predict drug efficiency from unrelated variables in ovarian cancer cell lines, we built a regression model using the drug disulfiram as the dependent variable. As unrelated variables we chose PCs of the data frames prism.achilles, prism.exp and prism.cnv with regard to the ovarian cell lines. 
-We tested disulfiram since it is currently used to treat alcohol dependency and belongs to the disease area neurology/psychiatry. However, it was found to be effective against arm-level 16q loss which occurs in several tumor types but primarily in breast and ovarian cancer [@Corsello2020]. This is why we found that drug interesting with regard to drug repurposing for the treatment of ovarian cancer.
 
 ```{r, echo=FALSE, include = FALSE}
 
@@ -1282,8 +1273,6 @@ B_exp = as.matrix(ovary_exp)
 B_exp_new <- B_exp[ , which(apply(B_exp, 2, var) != 0)] ## removing zero variance values
 pca_exp = prcomp(B_exp_new, scale = TRUE)
 ```
-
-We used PC1 to PC3 of prism.achilles and PC1 and PC2 of prism.exp and prism.cnv, respectively. 
 
 ```{r, echo=FALSE, include = FALSE}
 
@@ -1302,6 +1291,9 @@ regression_data$pca_cnv2 = pca_cnv$x[match(rownames(regression_data), names(pca_
 regression_data_no_nas <- na.omit(regression_data)
 ```
 
+In order to predict drug efficiency from unrelated variables in ovarian cancer cell lines, we built a regression model using the drug disulfiram as the dependent variable. As unrelated variables we chose PCs of the data frames prism.achilles, prism.exp and prism.cnv with regard to the ovarian cell lines. 
+We tested disulfiram since it is currently used to treat alcohol dependency and belongs to the disease area neurology/psychiatry. However, it was found to be effective against arm-level 16q loss which occurs in several tumor types but primarily in breast and ovarian cancer [@Corsello2020]. This is why we found that drug interesting with regard to drug repurposing for the treatment of ovarian cancer.
+We used PC1 to PC3 of prism.achilles and PC1 and PC2 of prism.exp and prism.cnv, respectively. 
 
 ```{r, echo=FALSE, fig.cap = "Pairwise Plots of Chosen Variables", fig.height=3.5, fig.width=6}
 # plotting pairwise correlation to visualize the variables
