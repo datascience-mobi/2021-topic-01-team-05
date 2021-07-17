@@ -6,7 +6,6 @@
 *.html
 *.tex
 *.md
-*.pdf
 *.rda
 *.rds
 *.png
