@@ -1234,7 +1234,7 @@ pvalues_t_test_cnv_1vs2_reduced<-pvalues_t_test_cnv_1vs2[rownames(pvalues_t_test
 description_drug_vector<- c("HDAC inhibitor [Quelle]","tyrosine kinase inhibitor [Quelle]","CDK9 inhibitor [Quelle]")
 pvalues_t_test_treat3vs1_reduced$target<-description_drug_vector
 
-disease_area_vector<- c("non-oncological [Quelle]","oncological [Quelle]", "oncological [Quelle]")
+disease_area_vector<- c("other [Quelle]","oncology [Quelle]", "oncology [Quelle]")
 pvalues_t_test_treat3vs1_reduced$disease_area<-disease_area_vector
 ```
 
