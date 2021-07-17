@@ -406,9 +406,11 @@ prism.treat_reduced_2 = prism.treat_reduced[,which(colnames(prism.treat_reduced)
 
 ```{r, echo=FALSE, fig.cap = "Most frequent MOA's amongst the most effective drugs", fig.height=3, fig.width=4}
 
+##Creating dataframe which includes the frequency of the different moas in prism.treat_reduced_2
 moa_frequencies = prism.treat_reduced_2 %>% dplyr::count(moa) %>% filter(n >= 3)
 moa_frequencies = moa_frequencies[0:9,]
 
+##Plotting the frequency of the different moas
 par(mar=c(2, 10, 2, 2))
 barplot(moa_frequencies$n, names.arg = moa_frequencies$moa, 
         las = 1, 
@@ -500,19 +502,6 @@ fisher.test(fisher_BCL)
 fisher.test(fisher_ATPase)
 
 ```
-
-
-```{r, include = FALSE, echo = FALSE, fig.cap = "Barplot showing all p-values and OR"}
-
-par(mar=c(10,10,2,2))
-barplot(c(1, 1, 0.7494, 1.520121, 1, 1, 1,  0.6628035, 1, 1.119206, 1, 0.7453084, 0.7694, 1.419276, 1, 0.7453084, 1, 1),
-        names.arg = c("Topoisomerase p-value", "Topoisomerase OR", "Proteasome p-value", "Proteasome OR", "PI3K p-value", "PI3K OR", "NFkB p-value", "NFkB OR", "HDAC p-value", "HDAC OR", "EGFR p-value", "EGFR OR", "CDK p-value", "CDK OR", "BCL p-value", "BCL OR", "ATPase p-value", "ATPase OR"),
-        las = 2,
-        col = c("Lightblue3", "Lightblue3", "Lightblue1", "Lightblue1", "Lightblue3", "Lightblue3", "Lightblue1", "Lightblue1", "Lightblue3", "Lightblue3", "Lightblue1", "Lightblue1", "Lightblue3", "Lightblue3", "Lightblue1", "Lightblue1", "Lightblue3", "Lightblue3", "Lightblue1", "Lightblue1", "Lightblue3", "Lightblue3", "Lightblue1", "Lightblue1", "Lightblue3", "Lightblue3", "Lightblue1", "Lightblue1"),
-        ylim = c(0, 1.7))
-
-```
-
 After finding the most common MOAs among the ovary and all other cell lines respectively, the next step in our analysis was to find out if any of these MOAs showed a statistically significant occurrence in ovary cancer specifically. In order to test this, we decided to perform a fisher-exact-test on all of our selected most common MOAs for ovary cancer and all other cell lines (see Fig. X).
 
 In order for the null hypothesis - that there is no association between the occurrence of specific MOAs and the cell line type (either ovary or non-ovary) - to be rejected, the p-value must be smaller than the confidence level of 0.05 [@Biau2010]. This was not the case with any of the fisher tests that we conducted. For the fisher tests conducted on the topoisomerase inhibitor, the PI3K inhibitor, the NFkB pathway inhibitor, the HDAC inhibitor, the EGFR inhibitor, the BCL inhibitor, and the ATPase inhibitor the p-values were equal to one, as were the odds-ratios. This shows without a doubt that the H0-hypothesis cannot be rejected and that there therefore is no association between the occurrence of specific MOAs and the cell line type (either ovary or the others) for these MOAs. The fisher tests conducted on the remaining MOAs all calculate a p-value that is lower than 1, none of which are lower than 0.7 however. The odds ratios for these remaining MOAs are all either larger than one or lower than one, which would suggest a positive/negative association, respectively. Since the corresponding p-values are much larger than the confidence level of 0.5 however, these associations are most likely due to chance and aren't true associations. Conclusively these fisher tests have shown that not a single one of the most common MOAs among our cell lines occur so commonly due to an association to a specific cell line (either ovary or the others).
@@ -560,7 +549,6 @@ BCL_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$
 ATPase_inhibitors = as.vector(na.omit((prism.treat_reduced_2[prism.treat_reduced_2$moa == "ATPase inhibitor",])$name)) 
 
 ## Combining all the medication names into one vector 
-
 most_effective_moas_drugs = c(topoisomerase_inhibitors, proteasome_inhibitors, PI3K_inhibitors, NFkB_pathway_inhibitors, hdac_inhibitors, EGFR_inhibitors, CDK_inhibitors, BCL_inhibitors, ATPase_inhibitors)
 
 ## names_use
@@ -574,6 +562,7 @@ moa_drugs_all = prism_reduced_all_no_NAs[,names_use]
 
 ```{r, echo = FALSE, fig.cap = "PC1 vs. PC2 for All Cell Line Clusters", fig.height=4.5, fig.width=5}
 
+## PC1 vs. PC2 for All Cell Line Clusters
 A_moa_all = as.matrix(moa_drugs_all)
 
 pca1_moa_all = prcomp(A_moa_all[,-42], scale = TRUE)
@@ -800,13 +789,13 @@ ggplot_plot_boxplot_dose_proliferation <- ggplot(df_ovary_prism_treat_effective_
 ggplot_plot_boxplot_dose_proliferation
 
 ```
-We implied a boxplot of the distribution of the ovary cell proliferation rates, regarding the drug dose. We could not divide the boxplot by the 2.5 micromolar dosage (Corsello et al. 2020), but rather in 3 stages: low, median and high dose, corresponding with a highest median, median and lowest proliferation rate, respectively. Consequently, an increasing of drug dose leads to reduction of proliferation rates.
+We created a boxplot visualizing the distribution of only the ovary cell proliferation rates in regards to the drug dose. Since we were unable to divide the boxplot by the 2.5 micromolar dosage [@Corsello2020], we decided to divide it into 3 stages instead: low, medium, and high dose. The boxplot shows an inverse correlation between the drug dose and cell proliferation. Consequently, an increased drug dose leads to reduced proliferation rates.
 
 ## PPEARSON CORRELATION
-Almost all Pearson correlation coefficients are negative, except for one between 'ACH-000713' and 'exatecan-mesylate', which is positive and thus is an outlier. Consequently,some drugs have a quite strong negative correlation with the proliferation, while others do not affect it.
+Almost all computed Pearson correlation coefficients are negative, except for the one between 'ACH-000713' and 'exatecan-mesylate'. This particular correlation is positive and thus is an outlier. Consequently, some drugs have quite a strong negative correlation with the proliferation in the ovary cell lines, while others do not.
 
 ## VISUALIZATION - GGPLOT
-Furthermore, we created correlation matrix from the dosages of the different drugs per cell line and displayed the Pearson correlation. The blue and the purple squares indicate higher correlation, meaning that the majority of the drugs reduce the cell proliferation.
+Furthermore, we created correlation matrix with the dosages of the different drugs per ovary cell line and displayed the Pearson correlation. The blue and the purple squares indicate a higher correlation, showing that the majority of the drugs reduce the cell proliferation.
 
 ```{r out.width = "70%",echo=FALSE, error=FALSE, fig.cap="ggplot of the correlation between the proliferation rates of ovary cell lines and the dosage of the applied medical treatment", fig.height=5,fig.weight=9, message=FALSE, warning=FALSE, results='hide', fig.align='center', cex.axis = 0.75}
 
