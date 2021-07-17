@@ -1186,13 +1186,13 @@ pvalues_t_test_cnv_1vs2_reduced<-pvalues_t_test_cnv_1vs2[rownames(pvalues_t_test
 
 In order to show that the different drug response could not be explained by significant differences in specific gene expression rates, gene knockdowns or copy number variations, we used an unpaired two-sided Welch's t-test that was subjected to a Bonferroni correction.
 We extracted the ovarian cell lines of the clusters 1 and 3, 1 and 2, as well as 2 and 3 (see Fig. 4.a.) in order to perform multiple t-tests. We did not include cluster 4 since it consisted of only one cell line which would have provided an unrepresentative result. We performed t-tests on these pairs of clusters with the corresponding data extracted from prism.exp, prism.cnv and prism.achilles. We found that there are significant differences regarding the drug response between the clusters 1-2 and 2-3, respectively.
-However, we did not find any major differences concerning the knockdown scores and gene expression rates. Thus, these values do not seem to be the reason for the differing drug responses. Table 1 shows a selection of the drugs that we found to cause significantly different responses between the clusters. Additionally, the statistical values, targets and disease areas are shown.
+However, we did not find any major differences concerning the knockdown scores and gene expression rates. Thus, these values do not seem to be the reason for the differing drug responses. Table 1 shows a selection of the drugs that we found to cause significantly different responses between the clusters. Additionally, the statistical values, targets and disease areas are shown. We found semaxanib [@KAUR2018129], alvocidib [@doi:10.1080/15384101.2016.1138186], and tricholstatin-a [@CUI2019105973]all  to be used in oncology.
 
 ```{r, include = TRUE, comment="", echo = FALSE, results = 'asis',fig.cap="**1.a** Table of the 3 drugs with a significant different response for clusters 1 and 3 **1.b** Table of the 2 drugs with a significant different response for clusters 2 and 3 "}
 description_drug_vector<- c("HDAC inhibitor","VEGFR inhibitor","CDK inhibitor")
 pvalues_t_test_treat3vs1_reduced$target<-description_drug_vector
 
-disease_area_vector<- c("Other [Quelle]","Oncology [Quelle]", "Oncology [Quelle]")
+disease_area_vector<- c("Oncology","Oncology", "Oncology")
 pvalues_t_test_treat3vs1_reduced$disease_area<-disease_area_vector
 ```
 
