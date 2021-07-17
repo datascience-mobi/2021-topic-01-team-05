@@ -1234,12 +1234,13 @@ pvalues_t_test_cnv_1vs2_reduced<-pvalues_t_test_cnv_1vs2[rownames(pvalues_t_test
 par(mfrow = c(1,2))
 
 knitr::kable(pvalues_t_test_treat3vs1_reduced,
-            caption = "Table of the 3 drugs with a significant different response for clusters 1 and 3")
+           caption = "Table of the 3 drugs with a significant different response for clusters 1 and 3")
 t1 <-kable(pvalues_t_test_treat3vs1_reduced, format = "latex", booktabs = TRUE)
 knitr::kable(pvalues_t_test_treat3vs2_reduced,
              caption = "Table of the 2 drugs with a significant different response for clusters 2 and 3")
 t2 <-kable(pvalues_t_test_treat3vs2_reduced, format = "latex", booktabs = TRUE)
-
+#knitr::kable(pvalues_t_test_treat3vs2_reduced,
+          #  caption = "Table of the drugs with a significant different response for clusters 1,2 and 3")
 
 #cat(c("\\begin{table}[!htb]
  #  \\begin{minipage}{.5\\linewidth}
