@@ -569,7 +569,7 @@ colVec = vector(length = nrow(A_moa_all))
 colVec[which(rownames(A_moa_all) %in% df_ovary_cl$DepMap_ID)] = "red3"
 colVec[-which(rownames(A_moa_all) %in% df_ovary_cl$DepMap_ID)] = "gray"
 
-plot(pca1_moa_all$x[,1], pca1_moa_all$x[,2], pch=20, col = colVec,
+plot(pca1_moa_all$x[,1], pca1_moa_all$x[,2], pch=20, col = alpha(colVec, 0.5),
      xlab='PC1',ylab='PC2',
       main = " ", cex.axis=0.75)
       legend("topleft", legend = c("Ovary cell lines", "Other cell lines"), fill = c("Red3", "Gray"), cex = 0.7)
@@ -789,7 +789,7 @@ ggplot2_dose_proliferation<-ggcorrplot(cormatrix_effective, tl.cex = 7.5 )+
 ggplot2_dose_proliferation + coord_flip()
 ```
 
-# Drug Response Dependency on Gene Expression Patterns
+# COMPARISON OF GENE EXPRESSION PATTERNS
 
 ```{r echo=FALSE,include = FALSE, results='asis',fig.cap="**1.a** Table of the 3 drugs with a significant different response for clusters 1 and 3 **1.b** Table of the 2 drugs with a significant different response for clusters 1 and 4 ", fig.height = 3, fig.width = 8, fig.align = 'center'}
 ## cluster out of Milestone 1.1 1.2 the most effective ovarycelllines
@@ -1184,7 +1184,7 @@ In order to predict drug efficiency from unrelated variables in ovarian cancer c
 We tested disulfiram since it is currently used to treat alcohol dependency and belongs to the disease area neurology/psychiatry. However, it was found to be effective against arm-level 16q loss which occurs in several tumor types but primarily in breast and ovarian cancer [@Corsello2020]. This is why we found that drug interesting with regard to drug repurposing for the treatment of ovarian cancer.
 We used PC1 to PC3 of prism.achilles and PC1 and PC2 of prism.exp and prism.cnv, respectively.
 
-```{r, echo=FALSE, fig.cap = "Pairwise Plots of Chosen Variables", fig.height=3.5, fig.width=6}
+```{r, echo=FALSE, fig.cap = "Pairwise Plots of Chosen Variables", fig.height=3.5, fig.width=6, fig.pos="H"}
 # plotting pairwise correlation to visualize the variables
 pairs(regression_data_no_nas[,-1], pch=20, col="Lightblue3")
 ```
@@ -1219,7 +1219,7 @@ qqnorm(regression_model$residuals, ylab = "Residuals", main = "Q-Q Plot residual
 cor(learning_regression$disulfiram, regression_model$residuals)
 ```
 
-```{r, echo=FALSE, fig.cap = "**X.a.** Correlation between Residuals and Control **X.b.** Predicted Values vs. Real Values", fig.height=3.5, fig.width=8}
+```{r, echo=FALSE, fig.cap = "**11.a.** Correlation between Residuals and Control **11.b.** Predicted Values vs. Real Values", fig.height=3.5, fig.width=8}
 
 par(mfrow = c(1,2))
 
