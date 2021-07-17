@@ -1196,7 +1196,7 @@ disease_area_vector<- c("Other [Quelle]","Oncology [Quelle]", "Oncology [Quelle]
 pvalues_t_test_treat3vs1_reduced$disease_area<-disease_area_vector
 ```
 
-```{r, include = TRUE, comment="", echo = FALSE, results = 'asis',fig.cap="**1.a** Table of the 3 drugs with a significant different response for clusters 1 and 3 **1.b** Table of the 2 drugs with a significant different response for clusters 2 and 3 "}
+```{r, include = TRUE, comment="", echo = FALSE, results = 'asis',fig.cap="**1.a** Table of the 3 drugs with a significant different response for clusters 1 and 3 **1.b** Table of the 2 drugs with a significant different response for clusters 2 and 3"}
 
 par(mfrow = c(1,2))
 
