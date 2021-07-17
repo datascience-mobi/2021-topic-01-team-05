@@ -420,7 +420,6 @@ barplot(moa_frequencies$n, names.arg = moa_frequencies$moa,
         col = "Lightblue3",
         main = NULL,
         cex.axis=0.75) 
-
 ```
 
 After finding the drugs with the most effective response in regards to the ovary cancer cell lines, we now continued our analysis by testing if the efficiency of these drugs is dependent on the cancer cell line type or not. In order to test this we repeated many of the same steps we completed for the ovary cell lines but on the non-ovary cell lines. We extracted the most negative proliferation value for each drug in each non-ovary cell line, set the threshold to the 10% quantile, and then extracted the most common MOAs.
@@ -560,7 +559,7 @@ moa_drugs_all = prism_reduced_all_no_NAs[,names_use]
 ```
 
 
-```{r, echo = FALSE, fig.cap = "PC1 vs. PC2 for All Cell Line Clusters", fig.height=4.5, fig.width=5}
+```{r, echo = FALSE, fig.cap = "PC1 vs. PC2 for All Cell Line Clusters", fig.height=4, fig.width=6}
 
 ## PC1 vs. PC2 for All Cell Line Clusters
 A_moa_all = as.matrix(moa_drugs_all)
@@ -700,53 +699,34 @@ selected_drug_ovary<-select(mean_effective_ovary24, "TAK-733")
 
 selected_drug_noovary<-select(mean_effective_noovary24,"TAK-733")
 ```
+
 Additionally to the PCA clustering in Fig. 4.a. and the PCA clustering above, we also conducted a PCA using only non-ovary cell lines (not shown). As a final step to find out if the drug response is related to the cell line type, we decided to perform a Welch's unpaired two sided t-test, which was subjected a Bonferroni correction. In order to do this we reduced the prism.treat data frame further. It now included only those cell lines located in clusters two and four from the PCA clusterings for non ovary and ovary cell lines, respectively. With these two data frames we performed a Welch's unpaired two sided t-test, which was subjected a Bonferroni correction. The resulting p-value was higher than the confidence level of 0.05 which means that the null hypothesis - that there is no association between the mean value of the drug response in ovary and non ovary cell lines - could not be rejected. This shows once again that the drug response seems to be independent of the cell line type in regards to the ovary or non-ovary cell lines.
 
 # DRUG DOSAGE DEPENDENCY
 
 ## BOXPLOT OF PROLIFERATION VALUES 
+
 ```{r out.width = "70%", echo = FALSE, fig.cap="Boxplot of the distribution of the proliferation rates of ovary cell lines according to the drug dosage", fig.height = 3, fig.width = 8, fig.align = 'center', cex.axis = 0.75}
 
 dosage<- prism.treat$dose
 broadID<- prism.treat$broad_id
-
 df_treat <- data.frame(broadID, dosage)
-
 broadID2<- prism.treat[,0]
-
 broadID3<-rownames(prism.treat)
-
 df_treat2<- data.frame (broadID2, dosage)
-
 df_treat_lowdose<-df_treat[dosage<2.5, c("broadID","dosage")]
-
 df_treat_highdose<-df_treat[dosage>=2.5, c("broadID","dosage")]
-
-
 
 lineage <- prism.cl$lineage
 DepMap_ID <- prism.cl$DepMap_ID 
-
 df_cl <- data.frame(DepMap_ID, lineage)
-
 df_ovary_cl <- subset(df_cl, lineage == "ovary")
 
-
 vector_ovary_DepMI <- as.vector(df_ovary_cl$DepMap_ID)
-
-
 df_ovary_DepMI_prism  <- prism[rownames(prism) %in% vector_ovary_DepMI,]
-
-
 new_df_ovary_DepMI_prism<- as.data.frame(t(df_ovary_DepMI_prism))
-
-
-
 df_ovary_DepMI_prism_treat <-merge(prism.treat,new_df_ovary_DepMI_prism , by="row.names")
-
-
 df_ovary_DepMI_prism_treat[,c('screen_id','compound_plate','moa','target','disease.area','indication','smiles','phase')]<-list(NULL)
-
 
 df_ovary_DepMI_prism_treat_NAs<-drop_na(df_ovary_DepMI_prism_treat)
 
@@ -763,7 +743,6 @@ df_highdose<- df_ovary_DepMI_prism_treat[-which(df_ovary_DepMI_prism_treat$dose<
 df_highdose_NAs<-df_ovary_DepMI_prism_treat_NAs[-which(df_ovary_DepMI_prism_treat_NAs$dose<=2,5),]
 
 df_lowdose_effectivedrugs<- df_ovary_prism_treat_effective[-which(df_ovary_prism_treat_effective$dose>2,5),]
-
 
 df_highdose_effectivedrugs<- df_ovary_prism_treat_effective[-which(df_ovary_prism_treat_effective$dose<=2,5),]
 
@@ -784,18 +763,16 @@ for(i in 1:nrow(df_ovary_prism_treat_effective_long)){
   }
 }
 
-
 ggplot_plot_boxplot_dose_proliferation <- ggplot(df_ovary_prism_treat_effective_long, aes(x=dose_high_low, y=proliferationvalues)) + geom_boxplot(outlier.shape=8, aes(fill=dose_high_low))+labs(x="Dose (micromolar)", y = "Proliferation value")
 ggplot_plot_boxplot_dose_proliferation
-
 ```
+
 We created a boxplot visualizing the distribution of only the ovary cell proliferation rates in regards to the drug dose. Since we were unable to divide the boxplot by the 2.5 micromolar dosage [@Corsello2020], we decided to divide it into 3 stages instead: low, medium, and high dose. The boxplot shows an inverse correlation between the drug dose and cell proliferation. Consequently, an increased drug dose leads to reduced proliferation rates.
 
-## PPEARSON CORRELATION
-Almost all computed Pearson correlation coefficients are negative, except for the one between 'ACH-000713' and 'exatecan-mesylate'. This particular correlation is positive and thus is an outlier. Consequently, some drugs have quite a strong negative correlation with the proliferation in the ovary cell lines, while others do not.
+## PEARSON CORRELATION
 
-## VISUALIZATION - GGPLOT
-Furthermore, we created correlation matrix with the dosages of the different drugs per ovary cell line and displayed the Pearson correlation. The blue and the purple squares indicate a higher correlation, showing that the majority of the drugs reduce the cell proliferation.
+Almost all computed Pearson correlation coefficients are negative, except for the one between 'ACH-000713' and 'exatecan-mesylate'. This particular correlation is positive and thus is an outlier. Consequently, some drugs have quite a strong negative correlation with the proliferation in the ovary cell lines, while others do not.
+Furthermore, we created a correlation matrix with the dosages of the different drugs per ovary cell line and displayed the Pearson correlation. The blue and the purple squares indicate a higher correlation, showing that the majority of the drugs reduce the cell proliferation.
 
 ```{r out.width = "70%",echo=FALSE, error=FALSE, fig.cap="ggplot of the correlation between the proliferation rates of ovary cell lines and the dosage of the applied medical treatment", fig.height=5,fig.weight=9, message=FALSE, warning=FALSE, results='hide', fig.align='center', cex.axis = 0.75}
 
@@ -811,7 +788,6 @@ cordf_effective<-cordf_effective[rownames(cordf_effective) %in% vector_ovary_Dep
 
 cormatrix_effective<- data.matrix(cordf_effective)
 
-
 cf <- coord_fixed()
 cf$default <- TRUE
 ggplot2_dose_proliferation<-ggcorrplot(cormatrix_effective, tl.cex = 7.5 )+ 
@@ -819,14 +795,9 @@ ggplot2_dose_proliferation<-ggcorrplot(cormatrix_effective, tl.cex = 7.5 )+
   coord_fixed(xlim = c(15, 7))
  
 ggplot2_dose_proliferation + coord_flip()
-
 ```
 
-## DRUG RESPONSE DEPENDENCY ON GENE EXPRESSION PATTERNS
-
-In order to show that the different drug response could not be explained by significant differences in specific gene expression rates, gene knockdowns or copy number variations, we used an unpaired two-sided Welch's t-test that was subjected to a Bonferroni correction.
-We extracted the ovarian cell lines of the clusters 1 and 3, 1 and 2, as well as 2 and 3 (see Fig. 4.a.) in order to perform multiple t-tests. We did not include cluster 4 since it consisted of only one cell line which would have provided an unrepresentative result. We performed t-tests on these pairs of clusters with the corresponding data extracted from prism.exp, prism.cnv and prism.achilles. We found that there are significant differences regarding the drug response between the clusters 1-2 and 2-3, respectively. 
-However, we did not find any major differences concerning the knockdown scores and gene expression rates. Thus, these values do not seem to be the reason for the differing drug responses. Table 1 shows a selection of the drugs that we found to cause significantly different responses between the clusters. Additionally, the statistical values, targets and disease areas are shown.
+# DRUG RESPONSE DEPENDENCY ON GENE EXPRESSION PATTERNS
 
 ```{r echo=FALSE,include = FALSE, results='asis',fig.cap="**1.a** Table of the 3 drugs with a significant different response for clusters 1 and 3 **1.b** Table of the 2 drugs with a significant different response for clusters 1 and 4 ", fig.height = 3, fig.width = 8, fig.align = 'center'}
 ## cluster out of Milestone 1.1 1.2 the most effective ovarycelllines
@@ -1213,6 +1184,10 @@ pvalues_t_test_cnv_1vs2<-dplyr::arrange(pvalues_t_test_cnv_1vs2, p_value)
 ##extra dataframe for the report to show the solutions from the t.test at prism.cnv
 pvalues_t_test_cnv_1vs2_reduced<-pvalues_t_test_cnv_1vs2[rownames(pvalues_t_test_cnv_1vs2)%in% c("FAM227B","FGF7","DTWD1"),]
 ```
+
+In order to show that the different drug response could not be explained by significant differences in specific gene expression rates, gene knockdowns or copy number variations, we used an unpaired two-sided Welch's t-test that was subjected to a Bonferroni correction.
+We extracted the ovarian cell lines of the clusters 1 and 3, 1 and 2, as well as 2 and 3 (see Fig. 4.a.) in order to perform multiple t-tests. We did not include cluster 4 since it consisted of only one cell line which would have provided an unrepresentative result. We performed t-tests on these pairs of clusters with the corresponding data extracted from prism.exp, prism.cnv and prism.achilles. We found that there are significant differences regarding the drug response between the clusters 1-2 and 2-3, respectively. 
+However, we did not find any major differences concerning the knockdown scores and gene expression rates. Thus, these values do not seem to be the reason for the differing drug responses. Table 1 shows a selection of the drugs that we found to cause significantly different responses between the clusters. Additionally, the statistical values, targets and disease areas are shown.
 
 ```{r, include = TRUE, comment="", echo = FALSE, results = 'asis',fig.cap="**1.a** Table of the 3 drugs with a significant different response for clusters 1 and 3 **1.b** Table of the 2 drugs with a significant different response for clusters 2 and 3 "}
 description_drug_vector<- c("HDAC inhibitor","VEGFR inhibitor","CDK inhibitor")
