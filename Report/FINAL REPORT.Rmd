@@ -833,6 +833,7 @@ ggplot2_dose_proliferation + coord_flip()
 
 ```
 
+## DRUG RESPONSE DEPENDENCY ON GENE EXPRESSION PATTERNS
 ## PROCESS AND RESULTS
 
 In this step, we used an unpaired two-sided Welch's t-test, which was subjected to a Bonferroni correction, to show that the different drug response could not be explained by significant differences in specific gene expression rates, gene knockdowns or copy number of variations.
