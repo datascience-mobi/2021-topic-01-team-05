@@ -705,7 +705,7 @@ Additionally to the PCA clustering in Fig. 4.a. and the PCA clustering above, we
 # DRUG DOSAGE DEPENDENCY
 
 ## BOXPLOT OF PROLIFERATION VALUES 
-```{r out.width = "70%", echo = FALSE, fig.cap="Boxplot of the distribution of the proliferation rates of ovary cell lines according to the drug dosage", fig.height = 3, fig.width = 8, fig.align = 'center', cex.axis = 0.75}
+```{r out.width = "70%", echo = FALSE, fig.cap="Drug Dosage Dependency of Ovary Cell Line Proliferation", fig.height = 3, fig.width = 8, fig.align = 'center', cex.axis = 0.75}
 
 dosage<- prism.treat$dose
 broadID<- prism.treat$broad_id
@@ -797,7 +797,7 @@ Almost all computed Pearson correlation coefficients are negative, except for th
 ## VISUALIZATION - GGPLOT
 Furthermore, we created correlation matrix with the dosages of the different drugs per ovary cell line and displayed the Pearson correlation. The blue and the purple squares indicate a higher correlation, showing that the majority of the drugs reduce the cell proliferation.
 
-```{r out.width = "70%",echo=FALSE, error=FALSE, fig.cap="ggplot of the correlation between the proliferation rates of ovary cell lines and the dosage of the applied medical treatment", fig.height=5,fig.weight=9, message=FALSE, warning=FALSE, results='hide', fig.align='center', cex.axis = 0.75}
+```{r out.width = "70%",echo=FALSE, error=FALSE, fig.cap="Visualization of the Pearson Correlation Values", fig.height=5,fig.weight=9, message=FALSE, warning=FALSE, results='hide', fig.align='center', cex.axis = 0.75}
 
 cordf_effective= data.frame(row.names=rownames(prism))
 
@@ -1223,7 +1223,7 @@ pvalues_t_test_cnv_1vs2_reduced<-pvalues_t_test_cnv_1vs2[rownames(pvalues_t_test
 description_drug_vector<- c("HDAC inhibitor [Quelle]","tyrosine kinase inhibitor [Quelle]","CDK9 inhibitor [Quelle]")
 pvalues_t_test_treat3vs1_reduced$target<-description_drug_vector
 
-disease_area_vector<- c("other [Quelle]","oncology [Quelle]", "oncology [Quelle]")
+disease_area_vector<- c("other [@H{\"O}RING1351]","oncology [Quelle]", "oncology [Quelle]")
 pvalues_t_test_treat3vs1_reduced$disease_area<-disease_area_vector
 ```
 
