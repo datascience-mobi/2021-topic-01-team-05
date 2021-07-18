@@ -45,9 +45,9 @@ load("../Original_Environment//cellline_datasets.rda")
 # INTRODUCTION
 
 Drug repurposing describes the strategy of reusing drugs that have already been approved for other medical applications. These drugs can obtain a new purpose by using them in a different therapeutic indication. This approach offers several advantages compared to the development and research of novel drugs.
-Drug repurposing allows researchers to use already approved pharmaceuticals, which helps them face less obstacles regarding potential side effects and the general approval of these drugs. This is due to the fact that the safety of the drugs has already been tested and validated in prior researches. Therefore, costs and legal requirements can be reduced which results in a quicker development of new treatment options [@Pushpakom2019].
+Drug repurposing allows researchers to use already approved pharmaceuticals, which helps them face less obstacles regarding potential side effects and the general approval of these drugs. This is due to the fact that the safety of the drugs has already been tested and validated in prior research. Therefore, costs and legal requirements can be reduced which results in a quicker development of new treatment options [@Pushpakom2019].
 
-According to the WHO [^1] , cancer is the second leading cause of death in the United States and a major global health problem. In addition, the progress of diagnosing and treating this disease was set back due to the coronavirus disease 2019 (COVID-19) pandemic which resulted in reduced health care capacities [@https://doi.org/10.3322/caac.21654]. Hence, finding new treatment options by repurposing drugs in order to safe resources and time seems to be essential for our society.
+According to the WHO [^1] , cancer is the second leading cause of death in the United States and a major global health problem. In addition, the progress of diagnosing and treating this disease was set back due to the coronavirus disease 2019 (COVID-19) pandemic which resulted in reduced health care capacities [@https://doi.org/10.3322/caac.21654]. Hence, finding new treatment options by repurposing drugs in order to save resources and time seems to be essential for our society.
 
 For our project, we used data obtained from a large screening of 1396 oncological and non-oncological drugs that were tested on 481 different cancer cell lines [@Corsello2020]. While also working with the whole data consisting of several different cancer cell lines, in our analysis we particularly focused on the included 30 ovarian cancer cell lines. The American Cancer Society states that ovarian cancer causes more deaths than any other form of cancer being related to the female reproductive system [^2].
 
@@ -114,7 +114,7 @@ The right plot (Fig. 1.b.) shows all values for the mean drug efficiency in ovar
 
 ## Setting a Threshold
 
-```{r, echo=FALSE, fig.cap="**2.a.** Most Effective Drug-Proliferation Values in Ovarian Cell Lines  **2.b.** Most Frequent MOAs Among the Most Effective Drugs", fig.height=3, fig.width=8}
+```{r, echo=FALSE, fig.cap="**2.a.** Most Effective Drug-Proliferation Values in Ovarian Cell Lines  **2.b.** Most Frequent MOAs among the Most Effective Drugs", fig.height=3, fig.width=8}
 
 # creating a data frame that contains the most effective treatment values for each drug and dosage (min values) for every cell line and getting rid of nas
 prism_reduced_ovary = data.frame(row.names = rownames(df_ovary_DepMI_prism))
@@ -201,7 +201,7 @@ We found 6 proteasome inhibitors to be most effective against ovarian cancer cel
 
 In a different study, researchers found that epidermal growth factor receptor (EGFR) is not a suitable target for ovarian cancer therapy [@Mehner2017] and seems to be more effective for lung cancer and pancreas cancer therapy. However, we found three EGFR inhibitors with effective impacts on ovarian cancer cell lines.
 
-The remaining three MOAs: Phosphoinositide 3-kinase (PI3K)- [@Vanhaesebroeck2021], B-cell lymphoma (BCL)- [@Montero2018] and ATPase-inhibitors [@doi:10.4155/ppa.12.3], are all cancer related MOAs. Therefore, all of them are commonly used in cancer therapy which is why it is not surprising that they appeard in our findings.
+The remaining three MOAs: Phosphoinositide 3-kinase (PI3K)- [@Vanhaesebroeck2021], B-cell lymphoma (BCL)- [@Montero2018] and ATPase-inhibitors [@doi:10.4155/ppa.12.3], are all cancer related MOAs. Therefore, all of them are commonly used in cancer therapy which is why it is not surprising that they appeared in our findings.
 
 [^3]: National Center for Biotechnology Information (2021). PubChem Compound Summary for CID 4212, Mitoxantrone. Retrieved July 11, 2021 from https://pubchem.ncbi.nlm.nih.gov/compound/Mitoxantrone.
 
@@ -1235,7 +1235,7 @@ Finally, we tried to predict the drug efficiency of disulfiram on our remaining 
 
 # CONCLUSION
 
-To conduct to our two main questions, we found that HDAC-, topoisomerase- and CDK-inhibitors showed promising effects on the proliferation of ovarian cell lines. These were also the most prominent MOAs regarding all the other cell lines which was also proved by several Fisher's tests. They showed that there is no significant difference regarding the effect of these MOAs whether they were applied on ovarian or non ovarian cell lines.  
+To come back to our two main questions, we found that HDAC-, topoisomerase- and CDK-inhibitors showed promising effects on the proliferation of ovarian cell lines. These were also the most prominent MOAs regarding all the other cell lines which was also proved by several Fisher's tests. They showed that there is no significant difference regarding the effect of these MOAs - whether they were applied on ovarian or non ovarian cell lines.  
 In addition, by performing an unpaired two-sided Welch's t-test, we found that while certain drugs do have differing effects on different cell lines, we could not find a connection that these differences were a result of specific cancer-related genes or gene knock-outs - at least within the clusters we focused on. Therefore, our regression model did not work properly.
 
 
