@@ -698,7 +698,7 @@ selected_drug_ovary<-select(mean_effective_ovary24, "TAK-733")
 selected_drug_noovary<-select(mean_effective_noovary24,"TAK-733")
 ```
 
-Additionally to the PCA clustering in Fig. 4.a. and the PCA clustering above, we also conducted a PCA using only non-ovarian cell lines (not shown). As a final step to find out if the drug response is related to the cell line type, we decided to perform a Welch's unpaired two sided t-test, which was subjected a Bonferroni correction. In order to do this we reduced the prism.treat data frame further. It now included only those cell lines located in clusters two and four from the PCA clusterings for non-ovarian and ovarian cell lines, respectively. We used this data for the t-test. The resulting p-value was higher than the confidence level of 0.05 which means that the null hypothesis - that there is no association between the mean value of the drug response in ovarian and non-ovarian cell lines - could not be rejected. This shows once again that the drug response seems to be independent of the cell line type in regards to the ovarian or non-ovarian cell lines.
+Additionally to the PCA clustering in Fig. 4.a. and the PCA clustering above, we also conducted a PCA using only non-ovarian cell lines (not shown). As a final step to find out if the drug response is related to the cell line type, we decided to perform a Welch's unpaired two sided t-test, which was subjected a Bonferroni correction. In order to do this we reduced the prism.treat data frame further. It now included only those cell lines located in clusters two and four from the PCA clusterings for non-ovarian and ovarian cell lines, respectively. We used this data and the above mentioned PCA clustering for the t-test. The resulting p-value was higher than the confidence level of 0.05 which means that the null hypothesis - that there is no association between the mean value of the drug response in ovarian and non-ovarian cell lines - could not be rejected. This shows once again that the drug response seems to be independent of the cell line type in regards to the ovarian or non-ovarian cell lines.
 
 # DRUG DOSAGE DEPENDENCY
 
@@ -762,9 +762,9 @@ We created a boxplot visualizing the distribution of only the ovary cell prolife
 
 ## Pearson Correlation
 
-Furthermore, we created a correlation matrix with the dosages of the different drugs per ovary cell line and displayed the Pearson correlation. The blue and the purple squares indicate a higher correlation, showing that the higher the drug dosage the smaller the cell proliferation rates become (see Fig. 9).
+Furthermore, we created a correlation matrix with the dosages of the different drugs per ovary cell line and displayed the Pearson correlation in a heatmap. The blue and the purple squares indicate a high and negative correlation, showing that the higher the drug dosage the smaller the cell proliferation rates become (see Fig. 9).
 Almost all computed Pearson correlation coefficients are negative, except for the one between 'ACH-000713' and 'exatecan-mesylate'. This particular correlation is positive and thus is an outlier.
-However, in general you can see that some drugs have quite a strong negative correlation with the proliferation in the ovary cell lines, while others do not.
+This visualization of the Pearson correlation values shows that there seems to be a strong correlation between increasing dosages and decreasing proliferation values.
 
 ```{r out.width = "70%",echo=FALSE, error=FALSE, fig.cap="Visualization of the Pearson Correlation Values", fig.height=5,fig.weight=9, message=FALSE, warning=FALSE, results='hide', fig.align='center', cex.axis = 0.75}
 
