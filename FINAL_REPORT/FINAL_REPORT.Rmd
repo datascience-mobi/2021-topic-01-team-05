@@ -315,7 +315,7 @@ legend("bottomleft", legend = c("ACH000524", "Other"), fill = c("Red3", "Gray"),
 ## Outlier
 
 Fig. 4.a. shows the clustering for the ovarian cell lines according to their reactions towards the 45 selected drugs (see Fig. 2.b.). They do not cluster in completely distinct clusters but one cell line (ACH-000524) forms its own cluster. We found that interesting, which is why we looked further into that one.
-According to the data set prism.cl, the outlier cell line belongs to the most prominent lineage subtype: ovarian adenocarcinoma. This subtype makes up 28 of the 30 lineage subtypes in our data with the remaining two being brenner tumor and ovarian carcinoma. This is why we figured that the lineage subtype could not have been the reason for the cell line forming its own cluster.
+According to the data set prism.cl, the outlier cell line belongs to the most prominent lineage subtype: ovarian adenocarcinoma. This subtype makes up 28 of the 30 lineage subtypes in our data with the remaining two being brenner tumor and ovary carcinoma. This is why we figured that the lineage subtype could not have been the reason for the cell line forming its own cluster.
 
 We performed several PCAs with the other provided data sets (prism.achilles, prism.exp and prism.cnv) and inspected the behavior of the outlier cell line.
 When we analyzed the gene transcripts per million (TPM) values and the gene knockdown scores, the cell line ACH-000524 clustered in the biggest clusters together with the other cell lines (not shown).
