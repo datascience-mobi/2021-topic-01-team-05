@@ -335,11 +335,8 @@ barplot(sort(pca2_moa$rotation[,1]), las=3, cex.names = 0.6, main = NULL, col = 
 In Fig. 5, the contribution of specific drug responses to PC1 for ovary cell line clusters (see Fig. 4.a.) is shown. Drugs with values close to zero show a similar effect on the proliferation among all cell lines - thus, these are generally effective when administered to ovary cancer cell lines. This is the case for the following drugs (see highlighted red in Fig. 5).
 
 The ATPase inhibitor ouabain is normally used to treat hypertension and cardiac arrhythmia - however, a study found that it can have promising effects as a cancer treatment for ER+ breast cancer [@Chen2006]. In another study, researchers found that one in three ovarian cancers is ER+ [@Harding1990], which leads to the conclusion that this is why we found that ouabain generally showed positive effects among the ovarian cancer cell lines.
-
 The drugs JNJ-26481585 [@Arts6841] and romidepsin [@doi:10.1517/13543784.2011.594437] are HDAC inhibitors that, as mentioned before, in general show promising effects on ovarian cancer cell lines. Therefore, it makes sense that we found them among the five generally most effective drugs.
-
 BGT226 is a PI3K inhibitor that is actually being considered as a potential therapeutic treatment option in different solid tumors, including ovarian cancer [@Simioni2015].
-
 Amsacrine, a topoisomerase inhibitor, is a chemotherapy drug that is commonly used for acute leukemia as well as Hodgkin’s and non-Hodgkin’s lymphomas [@Ketron2012]. Hence, a general effect on the proliferation of other cancer cell lines such as ovarian cancer seems to be logical.
 
 ```{r, include = FALSE}
@@ -1180,14 +1177,15 @@ regression_data$pca_cnv2 = pca_cnv$x[match(rownames(regression_data), names(pca_
 regression_data_no_nas <- na.omit(regression_data)
 ```
 
-In order to predict drug efficiency from unrelated variables in ovarian cancer cell lines, we built a regression model using the drug disulfiram as the dependent variable. As unrelated variables we chose PCs of the data frames prism.achilles, prism.exp and prism.cnv with regard to the ovarian cell lines. We computed the linear regression model prior to the previous analysis steps, which is why we did not know that it might turn out insufficiently. 
+In order to predict drug efficiency from unrelated variables in ovarian cancer cell lines, we built a regression model using the drug disulfiram as the dependent variable. As unrelated variables we chose PCs of the data frames prism.achilles, prism.exp and prism.cnv with regard to the ovarian cell lines.
 We tested disulfiram since it is currently used to treat alcohol dependency and belongs to the disease area neurology/psychiatry. However, it was found to be effective against arm-level 16q loss which occurs in several tumor types but primarily in breast and ovarian cancer [@Corsello2020]. This is why we found that drug interesting with regard to drug repurposing for the treatment of ovarian cancer.
 We used PC1 to PC3 of prism.achilles and PC1 and PC2 of prism.exp and prism.cnv, respectively.
 
-```{r, echo=FALSE, fig.cap = "Pairwise Plots of Chosen Variables", fig.height=3.25, fig.width=8, fig.pos="H"}
+```{r, echo=FALSE, fig.cap = "Pairwise Plots of Chosen Variables", fig.height=3.5, fig.width=6.5}
 # plotting pairwise correlation to visualize the variables
 pairs(regression_data_no_nas[,-1], pch=20, col="Lightblue3", cex=0.7)
 ```
+
 Fig. 10 shows the scatter plots of the explanatory variables. Highly correlated variables should be avoided in a regression model. By choosing PCs to build our regression model, it makes sense that they do not correlate. This is important for successfully computing a linear regression.
 
 ```{r, echo=FALSE, include = FALSE}
@@ -1228,8 +1226,7 @@ plot(check_regression$disulfiram, proliferation_pred,pch=20, col="lightblue3", x
 ```
 
 In order to make the linearity assumption, the residuals should be normally distributed [@kronthaler2020data]. We checked this with the help of a q-q plot and saw that this was not fully the case as several values lay outside the qq-line. In addition to that, the residuals show a correlation with our explanatory variables (`r cor(learning_regression$disulfiram, regression_model$residuals)`) which again revokes the linearity assumption (see. Fig. 11.a.). However, the residuals do have a mean value close to zero (`r mean(regression_model$residuals)`).
-
-Finally, we tried to predict the drug efficiency of disulfiram on our remaining group of ovarian cell lines. As you can see in Fig. 11.b., this worked semi-good. Nonetheless, this does correlate with our results of the previous analyses which showed that there is hardly a correlation between the proliferation values of most ovarian cell lines and the other data sets containing gene expression patterns and knockdown scores.  Therefore, trying to predict a drug response based on PCs of these data sets is not a sufficient model in this case.
+Finally, we tried to predict the drug efficiency of disulfiram on our remaining group of ovarian cell lines. As you can see in Fig. 11.b., this worked semi-good. Nonetheless, this does correlate with our results of the previous analyses which showed that there is hardly a correlation between the proliferation values of most ovarian cell lines and the other data sets containing gene expression patterns and knockdown scores. Therefore, trying to predict a drug response based on PCs of these data sets is not a sufficient model in this case. We computed the linear regression model prior to the previous analysis steps, which is why we did not know that it might turn out insufficiently. 
 
 # CONCLUSION
 
