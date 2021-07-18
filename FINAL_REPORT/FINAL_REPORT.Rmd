@@ -56,9 +56,9 @@ For our project, we used data obtained from a large screening of 1396 oncologica
 
 In our project, we aimed to answer two main questions:
 
-> 1. How do different drugs influence ovary cancer cell lines and which are particularly noticeable? How do these drugs affect the other cell lines?
+> 1. How do different drugs influence ovarian cancer cell lines and which are particularly noticeable? How do these drugs affect the other cell lines?
 
-> 2. Is the sensitivity of different drugs on ovary cancer cell lines connected to specific cancer-related genes or gene knock-outs?
+> 2. Is the sensitivity of different drugs on ovarian cancer cell lines connected to specific cancer-related genes or gene knock-outs?
 
 We subdivided our project into smaller steps in order to find answers to these questions.
 
@@ -315,7 +315,7 @@ legend("bottomleft", legend = c("ACH000524", "Other"), fill = c("Red3", "Gray"),
 ## Outlier
 
 Fig. 4.a. shows the clustering for the ovarian cell lines according to their reactions towards the 45 selected drugs (see Fig. 2.b.). They do not cluster in completely distinct clusters but one cell line (ACH-000524) forms its own cluster. We found that interesting, which is why we looked further into that one.
-According to the data set prism.cl, the outlier cell line belongs to the most prominent lineage subtype: ovary adenocarcinoma. This subtype makes up 28 of the 30 lineage subtypes in our data with the remaining two being brenner tumor and ovary carcinoma. This is why we figured that the lineage subtype could not have been the reason for the cell line forming its own cluster.
+According to the data set prism.cl, the outlier cell line belongs to the most prominent lineage subtype: ovarian adenocarcinoma. This subtype makes up 28 of the 30 lineage subtypes in our data with the remaining two being brenner tumor and ovarian carcinoma. This is why we figured that the lineage subtype could not have been the reason for the cell line forming its own cluster.
 
 We performed several PCAs with the other provided data sets (prism.achilles, prism.exp and prism.cnv) and inspected the behavior of the outlier cell line.
 When we analyzed the gene transcripts per million (TPM) values and the gene knockdown scores, the cell line ACH-000524 clustered in the biggest clusters together with the other cell lines (not shown).
@@ -332,7 +332,7 @@ colVec2[1] = "Lightblue3"
 barplot(sort(pca2_moa$rotation[,1]), las=3, cex.names = 0.6, main = NULL, col = colVec2)
 ```
 
-In Fig. 5, the contribution of specific drug responses to PC1 for ovary cell line clusters (see Fig. 4.a.) is shown. Drugs with values close to zero show a similar effect on the proliferation among all cell lines - thus, these are generally effective when administered to ovary cancer cell lines. This is the case for the following drugs (see highlighted red in Fig. 5).
+In Fig. 5, the contribution of specific drug responses to PC1 for ovarian cell line clusters (see Fig. 4.a.) is shown. Drugs with values close to zero show a similar effect on the proliferation among all cell lines - thus, these are generally effective when administered to ovarian cancer cell lines. This is the case for the following drugs (see highlighted red in Fig. 5).
 
 The ATPase inhibitor ouabain is normally used to treat hypertension and cardiac arrhythmia - however, a study found that it can have promising effects as a cancer treatment for ER+ breast cancer [@Chen2006]. In another study, researchers found that one in three ovarian cancers is ER+ [@Harding1990], which leads to the conclusion that this is why we found that ouabain generally showed positive effects among the ovarian cancer cell lines.
 The drugs JNJ-26481585 [@Arts6841] and romidepsin [@doi:10.1517/13543784.2011.594437] are HDAC inhibitors that, as mentioned before, in general show promising effects on ovarian cancer cell lines. Therefore, it makes sense that we found them among the five generally most effective drugs.
@@ -755,11 +755,11 @@ ggplot_plot_boxplot_dose_proliferation <- ggplot(df_ovary_prism_treat_effective_
 ggplot_plot_boxplot_dose_proliferation
 ```
 
-We created a boxplot visualizing the distribution of only the ovary cell proliferation rates in regards to the drug dose (see Fig. 8). We decided to divide the boxplot into 3 stages: low, medium, and high dose. The boxplot shows an inverse correlation between the drug dose and cell proliferation. Consequently, an increased drug dose leads to reduced proliferation rates.
+We created a boxplot visualizing the distribution of only the ovarian cell proliferation rates in regards to the drug dose (see Fig. 8). We decided to divide the boxplot into 3 stages: low, medium, and high dose. The boxplot shows an inverse correlation between the drug dose and cell proliferation. Consequently, an increased drug dose leads to reduced proliferation rates.
 
 ## Pearson Correlation
 
-Furthermore, we created a correlation matrix with the dosages of the different drugs per ovary cell line and displayed the Pearson correlation in a heatmap. The blue and the purple squares indicate a high and negative correlation, showing that the higher the drug dosage the smaller the cell proliferation rates become (see Fig. 9).
+Furthermore, we created a correlation matrix with the dosages of the different drugs per ovarian cell line and displayed the Pearson correlation in a heatmap. The blue and the purple squares indicate a high and negative correlation, showing that the higher the drug dosage the smaller the cell proliferation rates become (see Fig. 9).
 Almost all computed Pearson correlation coefficients are negative, except for the one between 'ACH-000713' and 'exatecan-mesylate'. This particular correlation is positive and thus is an outlier.
 This visualization of the Pearson correlation values shows that there seems to be a strong correlation between increasing dosages and decreasing proliferation values.
 
