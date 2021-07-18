@@ -148,7 +148,7 @@ hist(min_values_treat_prism_reduced_ovary_vector,
      cex.axis = 0.75,
      cex.lab = 0.75)
 abline(v=quantile(min_values_treat_prism_reduced_ovary_vector, 0.1), col = "red3", lwd=1)
-text(-10, 175, "10 % quantile", col = "red", lwd = 0.5, cex = 0.5)
+text(-10, 175, "10 % quantile", col = "red3", lwd = 0.5, cex = 0.5)
 
 # creating a vector with values smaller than threshold value at 10 % quantile
 under_threshold_prism_reduced_ovary <- min_values_treat_prism_reduced_ovary_vector[min_values_treat_prism_reduced_ovary_vector < quantile(min_values_treat_prism_reduced_ovary_vector, 0.1)]
@@ -191,7 +191,7 @@ Our results are shown in Fig. 2.b. These are the 45 most common MOAs regarding t
 
 We further investigated these MOAs and came to the following results.
 
-10 out of the 140 drugs below our threshold are Histone deacetylase (HDAC) inhibitors. Their targets include among other things HDAC3, HDAC4, HDAC8. These are epigenetic targets for noncancer drug repurposing candiates [@Moreira-Silva2020] and were also found to be potential anti-cancer agents for inhibiting cancer cell migration and invasion in ovarian cancer [@AHN2012189].
+10 out of the 140 drugs below our threshold are histone deacetylase (HDAC) inhibitors. Their targets include among other things HDAC3, HDAC4, HDAC8. These are epigenetic targets for noncancer drug repurposing candiates [@Moreira-Silva2020] and were also found to be potential anti-cancer agents for inhibiting cancer cell migration and invasion in ovarian cancer [@AHN2012189].
 
 With 9 occurrences, the topoisomerase inhibitors are the second most frequent MOAs we found. However, this is not surprising since these drugs are commonly used in cancer therapy, thus they showed strong effects on the cancer cell lines [@Parchment1998]. Interestingly, one of the drugs, mitoxantrone, is also used in the disease area neurology/psychiatry and multiple sclerosis[^3].
 
@@ -201,7 +201,7 @@ We found 6 proteasome inhibitors to be most effective against ovarian cancer cel
 
 In a different study, researchers found that epidermal growth factor receptor (EGFR) is not a suitable target for ovarian cancer therapy [@Mehner2017] and seems to be more effective for lung cancer and pancreas cancer therapy. However, we found three EGFR inhibitors with effective impacts on ovarian cancer cell lines.
 
-The remaining three MOAs: Phosphoinositide 3-kinase (PI3K)- [@Vanhaesebroeck2021], B-cell lymphoma (BCL)- [@Montero2018] and ATPase-inhibitors [@doi:10.4155/ppa.12.3], are all cancer related MOAs. Therefore, all of them are commonly used in cancer therapy which is why it is not surprising that they appeared in our findings.
+The remaining three MOAs: phosphoinositide 3-kinase (PI3K)- [@Vanhaesebroeck2021], B-cell lymphoma (BCL)- [@Montero2018] and ATPase-inhibitors [@doi:10.4155/ppa.12.3] are all cancer related MOAs. Therefore, all of them are commonly used in cancer therapy which is why it is not surprising that they appeared in our findings.
 
 [^3]: National Center for Biotechnology Information (2021). PubChem Compound Summary for CID 4212, Mitoxantrone. Retrieved July 11, 2021 from https://pubchem.ncbi.nlm.nih.gov/compound/Mitoxantrone.
 
@@ -1225,7 +1225,7 @@ proliferation_pred <- predict(regression_model, newdata = check_regression)
 plot(check_regression$disulfiram, proliferation_pred,pch=20, col="lightblue3", xlab = "Real Proliferation Values", ylab = "Predicted Proliferation Values", cex.lab = 0.75);abline(0,1,col="red" )
 ```
 
-In order to make the linearity assumption, the residuals should be normally distributed [@kronthaler2020data]. We checked this with the help of a q-q plot and saw that this was not fully the case as several values lay outside the qq-line. In addition to that, the residuals show a correlation with our explanatory variables (`r cor(learning_regression$disulfiram, regression_model$residuals)`) which again revokes the linearity assumption (see. Fig. 11.a.). However, the residuals do have a mean value close to zero (`r mean(regression_model$residuals)`).
+In order to make the linearity assumption, the residuals should be normally distributed [@kronthaler2020data]. We checked this with the help of a q-q plot and saw that this was not fully the case as several values lay outside the qq-line (not shown). In addition to that, the residuals show a correlation with our explanatory variables (`r cor(learning_regression$disulfiram, regression_model$residuals)`) which again revokes the linearity assumption (see. Fig. 11.a.). However, the residuals do have a mean value close to zero (`r mean(regression_model$residuals)`).
 Finally, we tried to predict the drug efficiency of disulfiram on our remaining group of ovarian cell lines. As you can see in Fig. 11.b., this worked semi-good. Nonetheless, this does correlate with our results of the previous analyses which showed that there is hardly a correlation between the proliferation values of most ovarian cell lines and the other data sets containing gene expression patterns and knockdown scores. Therefore, trying to predict a drug response based on PCs of these data sets is not a sufficient model in this case. We computed the linear regression model prior to the previous analysis steps, which is why we did not know that it might turn out insufficiently. 
 
 # CONCLUSION
