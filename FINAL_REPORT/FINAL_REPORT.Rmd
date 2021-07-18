@@ -332,7 +332,7 @@ colVec2[1] = "Lightblue3"
 barplot(sort(pca2_moa$rotation[,1]), las=3, cex.names = 0.6, main = NULL, col = colVec2)
 ```
 
-In Fig. 5, the contribution to PC1 for ovary cell line clusters (see Fig. 4.a.) is shown. Drugs with values close to zero show a similar effect on the proliferation among all cell lines - thus, these are generally effective when administered to ovary cancer cell lines. This is the case for the following drugs (see highlighted red in Fig. 5).
+In Fig. 5, the contribution of specific drug responses to PC1 for ovary cell line clusters (see Fig. 4.a.) is shown. Drugs with values close to zero show a similar effect on the proliferation among all cell lines - thus, these are generally effective when administered to ovary cancer cell lines. This is the case for the following drugs (see highlighted red in Fig. 5).
 
 The ATPase inhibitor ouabain is normally used to treat hypertension and cardiac arrhythmia - however, a study found that it can have promising effects as a cancer treatment for ER+ breast cancer [@Chen2006]. In another study, researchers found that one in three ovarian cancers is ER+ [@Harding1990], which leads to the conclusion that this is why we found that ouabain generally showed positive effects among the ovarian cancer cell lines.
 
@@ -1180,16 +1180,15 @@ regression_data$pca_cnv2 = pca_cnv$x[match(rownames(regression_data), names(pca_
 regression_data_no_nas <- na.omit(regression_data)
 ```
 
-In order to predict drug efficiency from unrelated variables in ovarian cancer cell lines, we built a regression model using the drug disulfiram as the dependent variable. As unrelated variables we chose PCs of the data frames prism.achilles, prism.exp and prism.cnv with regard to the ovarian cell lines.
+In order to predict drug efficiency from unrelated variables in ovarian cancer cell lines, we built a regression model using the drug disulfiram as the dependent variable. As unrelated variables we chose PCs of the data frames prism.achilles, prism.exp and prism.cnv with regard to the ovarian cell lines. We computed the linear regression model prior to the previous analysis steps, which is why we did not know that it might turn out insufficiently. 
 We tested disulfiram since it is currently used to treat alcohol dependency and belongs to the disease area neurology/psychiatry. However, it was found to be effective against arm-level 16q loss which occurs in several tumor types but primarily in breast and ovarian cancer [@Corsello2020]. This is why we found that drug interesting with regard to drug repurposing for the treatment of ovarian cancer.
 We used PC1 to PC3 of prism.achilles and PC1 and PC2 of prism.exp and prism.cnv, respectively.
 
-```{r, echo=FALSE, fig.cap = "Pairwise Plots of Chosen Variables", fig.height=3.5, fig.width=6, fig.pos="H"}
+```{r, echo=FALSE, fig.cap = "Pairwise Plots of Chosen Variables", fig.height=3.25, fig.width=8, fig.pos="H"}
 # plotting pairwise correlation to visualize the variables
-pairs(regression_data_no_nas[,-1], pch=20, col="Lightblue3")
+pairs(regression_data_no_nas[,-1], pch=20, col="Lightblue3", cex=0.7)
 ```
-
-Fig. 10 shows the pairwise correlation of the explanatory variables. Highly correlated variables should be avoided in a regression model. By choosing PCs to build our regression model, it makes sense that they do not correlate. This is important for successfully computing a linear regression.
+Fig. 10 shows the scatter plots of the explanatory variables. Highly correlated variables should be avoided in a regression model. By choosing PCs to build our regression model, it makes sense that they do not correlate. This is important for successfully computing a linear regression.
 
 ```{r, echo=FALSE, include = FALSE}
 # splitting cell lines into 2 groups (learning cell lines and one to check our model)
@@ -1198,14 +1197,13 @@ learning_celllines = sample(1:nrow(regression_data_no_nas), 13, replace = F)
 learning_regression <- regression_data_no_nas[learning_celllines,]
 check_regression <- regression_data_no_nas[-learning_celllines,]
 ```
-Next, we split the cell lines into two groups. We used one group for regression-learning and the other one to check our model. In order to obtain the most reliable results, we split the cell lines in a random manner.
 
 ```{r, echo = FALSE, include = FALSE}
 regression_model <- lm(formula = (disulfiram) ~  .,data=learning_regression)
 summary(regression_model)
 ```
-
-After performing the linear regression, we analyzed the results in order to investigate its accuracy. The first value we looked at to do this was the R-squared value, which describes the percentage of the variance of the dependent variable described by the model [@Schneider2010]. This means that the higher the R-squared value, the more accurate the model. Our linear regression model, with an R-squared value of `r summary(regression_model)$r.squared` therefore seems to be quite unsatisfactory. We also looked at the p-value, which should be under 0.05 in order for the regression model to be accurate [@kronthaler2020data]. In our model, the p-value fluctuates around 0.05 with every execution of the code, sometimes being a little higher or a little lower. This also points towards the inaccuracy and instability of our model, since the p-value would stay consistently under the 0.05 significance level if the model were accurate.
+Next, we split the cell lines into two groups. We used one group for regression-learning (13 out of 25 cell lines) and the remaining cell lines to check our model. In order to obtain the most reliable results, we split the cell lines in a random manner.
+After performing the linear regression, we analyzed the results in order to investigate its accuracy. The first value we looked at to do this was the R-squared value, which describes the percentage of the variance of the dependent variable described by the model [@Schneider2010]. This means that the higher the R-squared value, the more accurate the model. Our linear regression model, with an R-squared value of `r summary(regression_model)$r.squared` therefore seems to be quite unsatisfactory. Additionally, the adjusted R-squared value is negative which shows that the model is unrepresentative. We also looked at the p-value of the F-statistic, which should be under 0.05 in order for the regression model to be useful [@kronthaler2020data]. In our model, the p-value fluctuates around 0.05 with every execution of the code, sometimes being a little higher or a little lower. This also points towards the inaccuracy and instability of our model, since the p-value would stay consistently under the 0.05 significance level if the model were accurate.
 
 ```{r, echo=FALSE, include = FALSE}
 # verifying our regression model
@@ -1215,7 +1213,7 @@ mean(regression_model$residuals) # close to zero
 # residuals should be normally distributed
 qqnorm(regression_model$residuals, ylab = "Residuals", main = "Q-Q Plot residuals" );qqline(regression_model$residuals) # not really
 
-# residuals should not correlate with our predicted values
+# residuals should not correlate with our explanatory values 
 cor(learning_regression$disulfiram, regression_model$residuals)
 ```
 
@@ -1229,13 +1227,13 @@ proliferation_pred <- predict(regression_model, newdata = check_regression)
 plot(check_regression$disulfiram, proliferation_pred,pch=20, col="lightblue3", xlab = "Real Proliferation Values", ylab = "Predicted Proliferation Values", cex.lab = 0.75);abline(0,1,col="red" )
 ```
 
-In order to make the linearity assumption, the residuals should be normally distributed [@kronthaler2020data]. We checked this with the help of a q-q plot and saw that this was not fully the case as several values lay outside the qq-line. However, the residuals do have a mean value close to zero and do not correlate with our predicted values (see. Fig. 11.a.).
+In order to make the linearity assumption, the residuals should be normally distributed [@kronthaler2020data]. We checked this with the help of a q-q plot and saw that this was not fully the case as several values lay outside the qq-line. In addition to that, the residuals show a correlation with our explanatory variables (`r cor(learning_regression$disulfiram, regression_model$residuals)`) which again revokes the linearity assumption (see. Fig. 11.a.). However, the residuals do have a mean value close to zero (`r mean(regression_model$residuals)`).
 
-Finally, we tried to predict the drug efficiency of disulfiram on our remaining group of ovarian cell lines. As you can see in Fig. 11.b., this worked semi-good. Nonetheless, this does correlate with our results of the previous analyses which showed that there is hardly a correlation between the proliferation values of most ovarian cell lines and the other data sets containing gene expression patterns and knockdown scores. Therefore, trying to predict a drug response based on PCs of these data sets is not a sufficient model in this case.
+Finally, we tried to predict the drug efficiency of disulfiram on our remaining group of ovarian cell lines. As you can see in Fig. 11.b., this worked semi-good. Nonetheless, this does correlate with our results of the previous analyses which showed that there is hardly a correlation between the proliferation values of most ovarian cell lines and the other data sets containing gene expression patterns and knockdown scores.  Therefore, trying to predict a drug response based on PCs of these data sets is not a sufficient model in this case.
 
 # CONCLUSION
 
-To come back to our two main questions, we found that HDAC-, topoisomerase- and CDK-inhibitors showed promising effects on the proliferation of ovarian cell lines. These were also the most prominent MOAs regarding all the other cell lines which was also proved by several Fisher's tests. They showed that there is no significant difference regarding the effect of these MOAs - whether they were applied on ovarian or non ovarian cell lines.  
+To come back to our two main questions, we found that HDAC-, topoisomerase- and CDK-inhibitors showed promising effects on the proliferation of ovarian cell lines. These were also the most prominent MOAs regarding all the other cell lines which was also proved by several Fisher's tests. They showed that there is no significant difference regarding the effect of these MOAs - whether they were applied on ovarian or non ovarian cell lines.
 In addition, by performing an unpaired two-sided Welch's t-test, we found that while certain drugs do have differing effects on different cell lines, we could not find a connection that these differences were a result of specific cancer-related genes or gene knock-outs - at least within the clusters we focused on. Therefore, our regression model did not work properly.
 
 
