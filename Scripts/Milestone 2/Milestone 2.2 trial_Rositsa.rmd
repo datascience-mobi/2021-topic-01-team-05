@@ -1,0 +1,451 @@
+---
+title: "Milestone 2.2"
+author: "Rositsa Todorovska"
+date: "6/23/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Does the drug response depend on gene expression patterns/knockdown scores in ovary cancer cell lines?
+Datensatze: prism.exp, prism.achilles
+prism.exp - gene expression patterns
+prism.achilles - gene knockdown scores
+prism.snv - various mutations in a sample
+
+```{r - r1}
+
+## creating a data frame df_cl consisting of DepMap_IDs and lineages
+lineage <- prism.cl$lineage
+
+DepMap_ID <- prism.cl$DepMap_ID 
+
+df_cl <- data.frame(DepMap_ID, lineage)
+
+## subsetting data frame to obtain only ovary cell lines with their DepMap_IDs
+
+df_ovary_cl <- subset(df_cl, lineage == "ovary")
+
+df_ovary_cl
+
+dim(df_ovary_cl)
+
+# Create a vector that only contains the ovary cancer DepMap_IDs 
+
+vector_ovary_DepMI <- as.vector(df_ovary_cl$DepMap_ID)
+
+vector_ovary_DepMI
+
+# Remove the NAs from the prism.snv dataset
+
+prism_snv_no_NAs <- prism.snv
+
+for(i in 1:ncol(prism.snv)){
+  prism_snv_no_NAs[is.na(prism.snv[, i]), i] <- mean(prism.snv[, i], na.rm = TRUE)
+} 
+
+# Creating a new data frame consisting only of DepMap_IDs of ovary cancer cell lines and the Hugo_Symbol(KRAS)
+
+DepMap_ID <- prism.snv$DepMap_ID
+Hugo_Symbol <- prism.snv$Hugo_Symbol
+isDel <- prism.snv$isDeleterious
+
+df_snv <- data.frame(DepMap_ID, Hugo_Symbol)
+
+df_ovary_snv_Hugo <- subset(df_snv, Hugo_Symbol == "KRAS")
+df_snv
+
+df_ovary_snv_Hugo <- subset(df_snv, Hugo_Symbol == "BRCA1")
+df_snv
+
+
+# KRAS 86
+# BRCA1 931
+
+
+
+# Computing kmeans clustering on prism.snv dataset in order to determine whether there are similar mutations
+
+km = kmeans(x=t(prism.snv),
+            centers = 4, 
+            nstart = 10)
+km$cluster
+
+str(km)
+
+km$tot.withinss
+
+# Use elbow method to plot the total within-clusters sum of square against the number of clusters
+
+wss = sapply(1:15,function(k) { 
+  kmeans(x=t(prism.snv), centers =k)$tot.withinss
+})
+plot(1:15,wss,type='b',pch=19,xlab="Number of clusters K",
+     ylab="Total within-clusters sum of squares")
+
+
+```
+
+
+
+```{r milestone 2.2 trial}
+
+library(dplyr)
+
+# Use the dataset km2_moa$cluster which contains information about the celllines which belong to their corresponding cluster
+# Clustering of the celllines according to their drug response
+
+km2_moa$cluster
+
+# Convert the datasets into vectors in order to perform further analysis
+as.vector(km2_moa$cluster)
+
+
+# Plot the dataset km2_moa$cluster in order to visualize the number of celllines which belong to the different clusters
+# Most of the ovary cell lines belong to cluster 3
+plot(km2_moa$cluster, pch = 20, col = "blue")
+
+summary(km2_moa$cluster)
+
+
+
+
+# Get the ovary cancer cell lines from prism.snv dataframe
+ovary_snv <- prism.snv[rownames(prism.snv) %in% vector_ovary_DepMI,]
+
+ovary_snv
+
+# #Filter ovary_achilles by KRAS and BRCA1/2 gene mutations(CRISPR knockdown rates)
+# Dimension 25
+ovary_achilles_kras <- as.data.frame(ovary_achilles$KRAS) # mostly negative scores
+ovary_achilles_brca1 <- as.data.frame(ovary_achilles$BRCA1) # only negative values
+ovary_achilles_brca2 <- as.data.frame(ovary_achilles$BRCA2) # only negative values
+
+
+## Filter ovary_cnv by KRAS and BRCA1/2 gene mutations(copy number variations)
+# Dimension 30
+ovary_cnv_kras <- as.data.frame(ovary_cnv$KRAS) # only positive values
+ovary_cnv_brca1 <- as.data.frame(ovary_cnv$BRCA1) # only positive values
+ovary_cnv_brca2 <- as.data.frame(ovary_cnv$BRCA2) # only positive values
+
+
+## Filter ovary_exp by KRAS and BRCA1/2 gene mutations(gene expression)
+# Dimension 30
+ovary_exp_kras <- as.data.frame(ovary_exp$KRAS) # only positive values
+ovary_exp_brca1 <- as.data.frame(ovary_exp$BRCA1) # only positive values
+ovary_exp_brca2 <- as.data.frame(ovary_exp$BRCA2) # only positive values
+
+
+##
+ovary_achilles_kras_brca1 <- cbind(ovary_achilles_kras, ovary_achilles_brca1) 
+print(ovary_achilles_kras_brca1)
+
+
+ovary_achilles_kras_brca1_brca2 <- cbind(ovary_achilles_kras_brca1, ovary_achilles_brca2)
+print(ovary_achilles_kras_brca1_brca2)
+
+
+##
+ovary_cnv_kras_brca1 <- cbind(ovary_cnv_kras, ovary_cnv_brca1) 
+print(ovary_cnv_kras_brca1)
+
+
+ovary_cnv_kras_brca1_brca2 <- cbind(ovary_cnv_kras_brca1, ovary_cnv_brca2)
+print(ovary_cnv_kras_brca1_brca2)
+
+
+
+##
+ovary_exp_kras_brca1 <- cbind(ovary_exp_kras, ovary_exp_brca1) 
+print(ovary_exp_kras_brca1)
+
+ovary_exp_kras_brca1_brca2 <- cbind(ovary_exp_kras_brca1, ovary_exp_brca2)
+print(ovary_exp_kras_brca1_brca2)
+
+
+# t-test of the best medicaments and the filtered datasets - only on prism.exp and prism.cnv because the number of the celllines is equal to the number of medicaments
+
+
+# Question: Does the drug response depend on specific gene expression patterns in ovary cancer cell lines?
+# H0 hypothesis - the difference in means in the two datasets is equal to zero// There is no dependence of the drug response on gene expression patterns
+# H1 hypothesis(alternative hypothesis) - true difference in means is less than zero// There is a dependence of the drug response on gene expression patterns
+# p0 > alpha -> H0 is valid
+# Performing t.tests on different gene expression datasets and the most effective drugs
+
+t_test_ovary_cnv = t.test(prism_reduced_ovary, ovary_cnv_kras_brca1_brca2,alternative = 'greater', var.equal=TRUE)
+t_test_ovary_cnv
+
+# Visualize the null distribution
+df = 59
+x = seq(-5,5,by=0.01)
+y = dt(x,df=df)
+plot(x,y,type='l',lwd=3);abline(v=t_test_ovary_cnv$statistic,lwd=2,col='blue',lty=3)
+
+# t.test 2
+t_test_ovary_exp = t.test(prism_reduced_ovary,ovary_exp_kras_brca1_brca2 ,alternative = 'greater', var.equal=TRUE)
+t_test_ovary_exp
+
+# t.test 3
+t_test_ovary_achilles = t.test(prism_reduced_ovary,ovary_achilles_kras_brca1_brca2 ,alternative = 'greater', var.equal=TRUE)
+t_test_ovary_achilles
+
+# t.test on ovary_exp_kras_brca1_brca2 with alternative = "less"
+t_test_ovary_exp = t.test(prism_reduced_ovary,ovary_exp_kras_brca1_brca2 ,alternative = 'less', var.equal=TRUE)
+t_test_ovary_exp
+
+# two sided t.test on ovary_exp_kras_brca1_brca2
+t_test_ovary_exp = t.test(prism_reduced_ovary,ovary_exp_kras_brca1_brca2 ,alternative = 'two.sided', var.equal=TRUE)
+t_test_ovary_exp
+
+# Chi square test in order to see whether there are significant changes in resistency/ drug response to crispr knockouts/knockdown
+# Test whether there is an independence between the drug response and the gene expression
+
+table1_ovary_cnv = data.frame(ovary_cnv_kras_brca1_brca2[1], ovary_cnv_kras_brca1_brca2[2]>0,ovary_cnv_kras_brca1_brca2[3])
+
+chisq.test(table1_ovary_cnv)
+
+table2_ovary_exp = data.frame(ovary_exp_kras_brca1_brca2[1], ovary_exp_kras_brca1_brca2[2]>0,ovary_exp_kras_brca1_brca2[3])
+
+chisq.test(table2_ovary_exp)
+
+
+
+
+library(arsenal)
+
+# Compare the meerged dataframes and the corresponding dataframe from prism.achilles dataset
+comparedf(ovary_cnv_exp_kras, ovary_achilles_kras)
+
+comparedf(ovary_cnv_exp_brca1, ovary_achilles_brca1)
+
+comparedf(ovary_cnv_exp_brca2, ovary_achilles_brca2)
+
+
+
+```
+
+
+
+
+```{r }
+
+# Chunk c.4.16 from Milestone 1.1 and 1.2
+B_moa = as.matrix(moa_drugs_ovary)
+
+pca2_moa = prcomp(B_moa, scale = TRUE)
+
+plot(pca2_moa$x[,1], pca2_moa$x[,2], pch=20)
+
+pca2_var_moa = pca2_moa$sdev^2
+pca2_var_per_moa = round(pca2_var_moa/sum(pca2_var_moa)*100,1)
+barplot(pca2_var_per_moa, main = "Distribution of the variation of the data explained by PCs", xlab = "Principal component", ylab = "Percent variation")
+
+summary(prcomp(B_moa))
+
+## Running k-means clustering by using PC1 and PC2
+
+wss2_moa = sapply(2:7,function(k) { 
+  kmeans(x=pca2_moa$x[,1:2], centers = k)$tot.withinss
+})
+plot(2:7,wss2_moa,type='b',pch=20,xlab="Number of clusters K",
+     ylab="Total within-clusters sum of squares")
+
+
+## performing a clustering with pca data
+
+km2_moa = kmeans(pca2_moa$x[,1:2],centers=4,nstart = 100)
+col = c("red", "orange", "blue", "green")
+col.km2_moa = col[km2_moa$cluster]
+plot(pca2_moa$x[,1], pca2_moa$x[,2],
+col= col.km2_moa, pch=20,
+xlab='PC1',ylab='PC2',
+main = "PC1 vs. PC2 for kmeans clusters - clustering by cell lines")
+legend("topright", legend = c("Cluster 1", "Cluster 2", "Cluster 3", "Cluster 4"), fill = col)
+
+
+barplot(sort(pca2_moa$rotation[,1]), las=3, cex.names = 0.4)
+
+
+barplot(sort(pca2_moa$rotation[,2]), las=3, cex.names = 0.4)
+```
+
+
+```{r r2}
+
+# Extract celllines from prism.achilles which belong to cluster 1
+achilles_vector_cluster1 = as.vector(na.omit(names(which(km2_moa$cluster == 1))))
+vector_cluster1
+
+# Extract celllines from prism.achilles which belong to cluster 2
+achilles_vector_cluster2 = as.vector(na.omit(names(which(km2_moa$cluster == 2))))
+vector_cluster2
+
+# Extract celllines from prism.achilles which belong to cluster 3
+achilles_vector_cluster3 = as.vector(na.omit(names(which(km2_moa$cluster == 3))))
+vector_cluster3
+
+
+# Extract celllines from prism.achilles which belong to cluster 4
+achilles_vector_cluster4 = as.vector(na.omit(names(which(km2_moa$cluster == 4))))
+vector_cluster4
+
+
+# Reduce prism.achilles dataset to the selected celllines from the clusters
+ovary_achilles_cluster1 <- prism.achilles[rownames(prism.achilles) %in% vector_cluster1,]
+ovary_achilles_cluster1
+
+ovary_achilles_cluster2 <- prism.achilles[rownames(prism.achilles) %in% vector_cluster2,]
+ovary_achilles_cluster2
+
+ovary_achilles_cluster3 <- prism.achilles[rownames(prism.achilles) %in% vector_cluster3,]
+ovary_achilles_cluster3
+
+ovary_achilles_cluster4 <- prism.achilles[rownames(prism.achilles) %in% vector_cluster4,]
+ovary_achilles_cluster4
+
+
+# Calculate the variance of the genes for each cluster
+
+ovary_achilles_var1 = apply(ovary_achilles_cluster1,1, var)
+ovary_achilles_var1
+
+ovary_achilles_var2 = apply(ovary_achilles_cluster2,1, var)
+ovary_achilles_var2
+
+ovary_achilles_var3 = apply(ovary_achilles_cluster3,1, var)
+ovary_achilles_var3
+
+ovary_achilles_var4 = apply(ovary_achilles_cluster4,1, var)
+ovary_achilles_var4
+
+# Expect which genes have the highest variance, select them and convert them into a vector
+# Genes with the highest variance are most similar to each other
+# returns logical(0)
+highest_var = as.vector(na.omit(which(ovary_achilles_var1 > 0.14) && which( ovary_achilles_var2 > 0.14) && which(ovary_achilles_var3 > 0.14) && which(ovary_achilles_var4 > 0.14)))
+
+
+# Doing the same but with prism.cnv
+# prism.cnv
+
+cnv_vector_cluster1 = as.vector(na.omit(names(which(km2_moa$cluster == 1))))
+cnv_vector_cluster1
+
+cnv_vector_cluster2 = as.vector(na.omit(names(which(km2_moa$cluster == 2))))
+cnv_vector_cluster2
+
+cnv_vector_cluster3 = as.vector(na.omit(names(which(km2_moa$cluster == 3))))
+cnv_vector_cluster3
+
+cnv_vector_cluster4 = as.vector(na.omit(names(which(km2_moa$cluster == 4))))
+cnv_vector_cluster4
+
+# Reduce prism.achilles dataset to the selected celllines from the clusters
+ovary_cnv_cluster1 <- prism.cnv[rownames(prism.cnv) %in% vector_cluster1,]
+ovary_cnv_cluster1
+
+ovary_cnv_cluster2 <- prism.cnv[rownames(prism.cnv) %in% vector_cluster2,]
+ovary_cnv_cluster2
+
+ovary_cnv_cluster3 <- prism.cnv[rownames(prism.cnv) %in% vector_cluster3,]
+ovary_cnv_cluster3
+
+ovary_cnv_cluster4 <- prism.cnv[rownames(prism.cnv) %in% vector_cluster4,]
+ovary_cnv_cluster4
+
+
+
+# Calculate variance
+ovary_cnv_var1 = apply(ovary_cnv_cluster1,1, var)
+ovary_cnv_var1
+
+ovary_cnv_var2 = apply(ovary_cnv_cluster2,1, var)
+ovary_cnv_var2
+
+ovary_cnv_var3 = apply(ovary_cnv_cluster3,1, var)
+ovary_cnv_var3
+
+ovary_cnv_var4 = apply(ovary_cnv_cluster4,1, var)
+ovary_cnv_var4
+
+# Inspect the celllines with the highest variance
+
+
+
+# Doing the same but with prism.exp
+# prism.exp
+
+exp_vector_cluster1 = as.vector(na.omit(names(which(km2_moa$cluster == 1))))
+vector_cluster1
+
+exp_vector_cluster2 = as.vector(na.omit(names(which(km2_moa$cluster == 2))))
+vector_cluster2
+
+exp_vector_cluster3 = as.vector(na.omit(names(which(km2_moa$cluster == 3))))
+vector_cluster3
+
+exp_vector_cluster4 = as.vector(na.omit(names(which(km2_moa$cluster == 4))))
+vector_cluster4
+
+# Reduce prism.achilles dataset to the selected celllines from the clusters
+ovary_exp_cluster1 <- prism.exp[rownames(prism.exp) %in% vector_cluster1,]
+ovary_exp_cluster1
+
+ovary_exp_cluster2 <- prism.exp[rownames(prism.exp) %in% vector_cluster2,]
+ovary_exp_cluster2
+
+ovary_exp_cluster3 <- prism.exp[rownames(prism.exp) %in% vector_cluster3,]
+ovary_exp_cluster3
+
+ovary_exp_cluster4 <- prism.exp[rownames(prism.exp) %in% vector_cluster4,]
+ovary_exp_cluster4
+
+
+#Calculate variance
+ovary_exp_var1 = apply(ovary_exp_cluster1,1, var)
+ovary_exp_var1
+
+ovary_exp_var2 = apply(ovary_exp_cluster2,1, var)
+ovary_exp_var2
+
+ovary_exp_var3 = apply(ovary_exp_cluster3,1, var)
+ovary_exp_var3
+
+ovary_exp_var4 = apply(ovary_exp_cluster4,1, var)
+ovary_exp_var4
+
+# Inspect the celllines with the highest variance
+
+
+
+```
+
+
+```{r r3 performing t-test in order to see whether the drug response depends on gene expression patterns}
+
+# t.test for the selected drugs and the vectors of celllines
+
+t_test_ovary_drugs1 = t.test(vector_cluster1, moa_drugs_ovary ,alternative = 'greater', var.equal=TRUE, na.rm = TRUE)
+t_test_ovary_drugs1
+
+
+
+t_test_ovary_drugs2 = t.test(vector_cluster2, moa_drugs_ovary ,alternative = 'greater', var.equal=TRUE)
+t_test_ovary_drugs2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
